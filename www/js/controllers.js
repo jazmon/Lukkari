@@ -43,6 +43,33 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
+function formatDay(day) {
+    var dayString = '';
+    dayString += day.getDate();
+    dayString += '.';
+    dayString += (day.getMonth() + 1);
+    dayString += '.';
+    dayString += day.getFullYear();
+
+    return dayString;
+}
+
+// TODO: merge this and the other getday, only give parameter offset to current day millis
+function getCurrentDay() {
+    var today = new Date();
+    var todayString = formatDay(today);
+    return todayString;
+}
+
+function getEndDate() {
+    var day = Date.now();
+    // add 7 weeks worth of millisecs
+    day += 4233600000;
+    var endDate = new Date(day);
+    var dayFormatted = formatDay(endDate);
+    return dayFormatted;
+}
+
 /*
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
@@ -51,6 +78,9 @@ lukkariControllers.controller('TodayController', function ($scope, $http) {
     $scope.groupInfo = {};
     $scope.appointments = [];
     $scope.responseData = '';
+    $scope.today = getCurrentDay();
+    $scope.endDate = getEndDate();
+
     $scope.getTimetable = function () {
 
         $http({
@@ -58,13 +88,16 @@ lukkariControllers.controller('TodayController', function ($scope, $http) {
             url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
             withCredentials: true
         }).then(function (response) {
-            $scope.responseData = response;
-
             $http({
                 method: 'GET',
-                url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=2.11.2015&endDate=28.12.2015'
+                url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
+                    getCurrentDay() + '&endDate=' + getEndDate()
             }).then(function (response) {
                 $scope.responseData = response;
+                console.log(typeof response);
+                for (var key in response) {
+                    console.log(key + ":" + response[key]);
+                }
             });
         });
     };
