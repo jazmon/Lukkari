@@ -1,1 +1,1 @@
-var myAppServices = angular.module('myAppServices');
+var lukkariServices = angular.module('lukkari.services', []);
