@@ -1,0 +1,29 @@
+PRODUCT BACKLOG
+
+    File       : PRODUCTBACKLOG.txt
+    Time-stamp : 2015-11-02T14:20 Atte Huhtakangas
+    Description: Product Backlog is the master list of all functionality desired in 
+                 the product. 
+
+PRODUCT BACKLOG WITH RELEASES
+
+    RELEASE 1: 2015-11-09
+
+    - Ability to view courses by their name or by group name
+    - Saving own timetable to preferences
+    - View that shows one day's timetable
+
+    RELEASE 2: 2015-11-23
+
+    - Ability to export .ical for calendar apps
+    - Customizing notifications for .ical
+    - Polished interface
+    - View that shows the whole week's timetable
+
+    RELEASE 3: 2015-12-07
+
+    - Lunch list
+    - push notifications
+    - Language preferences and localization (fi/eng)
+
+End of file.

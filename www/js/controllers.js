@@ -43,37 +43,4 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayController', function ($scope) {
-
-});
-
-/*lukkariControllers.controller('PlaylistsCtrl', function ($scope) {
-    $scope.playlists = [
-        {
-            title: 'Reggae',
-            id: 1
-        },
-        {
-            title: 'Chill',
-            id: 2
-        },
-        {
-            title: 'Dubstep',
-            id: 3
-        },
-        {
-            title: 'Indie',
-            id: 4
-        },
-        {
-            title: 'Rap',
-            id: 5
-        },
-        {
-            title: 'Cowbell',
-            id: 6
-        }
-  ];
-});
-
-lukkariControllers.controller('PlaylistCtrl', function ($scope, $stateParams) {});*/
+lukkariControllers.controller('TodayController', function ($scope, $http) {});
