@@ -43,4 +43,31 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayController', function ($scope, $http) {});
+/*
+https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
+https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
+*/
+lukkariControllers.controller('TodayController', function ($scope, $http) {
+    $scope.groupInfo = {};
+    $scope.appointments = [];
+    $scope.responseData = '';
+    $scope.getTimetable = function () {
+
+        $http({
+            method: 'GET',
+            url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
+            withCredentials: true
+        }).then(function (response) {
+            $scope.responseData = response;
+
+            $http({
+                method: 'GET',
+                url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=2.11.2015&endDate=28.12.2015'
+            }).then(function (response) {
+                $scope.responseData = response;
+            });
+        });
+    };
+
+
+});
