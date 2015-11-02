@@ -1,6 +1,6 @@
 /*jslint devel: true, sloppy: true*/
 /*global angular*/
-var lukkariControllers = angular.module('lukkari.controllers', []);
+var lukkariControllers = angular.module('lukkari.controllers', ['ICAL']);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -74,33 +74,28 @@ function getEndDate() {
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
-lukkariControllers.controller('TodayController', function ($scope, $http) {
-    $scope.groupInfo = {};
-    $scope.appointments = [];
-    $scope.responseData = '';
-    $scope.today = getCurrentDay();
-    $scope.endDate = getEndDate();
-
-    $scope.getTimetable = function () {
-
-        $http({
-            method: 'GET',
-            url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
-            withCredentials: true
-        }).then(function (response) {
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ICAL',
+  function ($scope, $http, ICAL) {
+        $scope.groupInfo = {};
+        $scope.appointments = [];
+        $scope.responseData = '';
+        $scope.today = getCurrentDay();
+        $scope.endDate = getEndDate();
+        $scope.getTimetable = function () {
             $http({
                 method: 'GET',
-                url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
-                    getCurrentDay() + '&endDate=' + getEndDate()
+                url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
+                withCredentials: true
             }).then(function (response) {
-                $scope.responseData = response;
-                console.log(typeof response);
-                for (var key in response) {
-                    console.log(key + ":" + response[key]);
-                }
+                $http({
+                    method: 'GET',
+                    url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
+                        getCurrentDay() + '&endDate=' + getEndDate()
+                }).then(function (response) {
+                    $scope.responseData = response;
+
+                    $scope.appointments = ICAL.parse(response);
+                });
             });
-        });
-    };
-
-
-});
+        };
+}]);
