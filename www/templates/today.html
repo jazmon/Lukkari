@@ -38,9 +38,9 @@
             <div class="item item-divider">
                 Response data
             </div>
-            <div class="item item-text-wrap" ng-bind="responseData">
-                <h2>Responsecode: {{responseData.status}}</h2>
-                <p>{{responseData.data}}</p>
+            <div class="item item-text-wrap">
+                <h2>Response status: {{responseData.status}}</h2>
+                <pre>{{responseData.data}}</pre>
             </div>
         </div>
     </ion-content>
