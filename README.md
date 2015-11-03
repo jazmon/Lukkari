@@ -27,3 +27,7 @@ Features:
 * Lunch list
 * push notifications
 * Language preferences and localization (fi/eng)
+
+Resources:
+----------
+* https://market.ionic.io/starters/requirejs (the requirejs base template that was integrated into the project)
