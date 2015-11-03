@@ -5,6 +5,7 @@
     "ionic": "driftyco/ionic-bower#1.1.0"
   },
   "dependencies": {
-    "ical.js": "~1.1.2"
+    "ical.js": "~1.1.2",
+    "requirejs": "~2.1.20"
   }
 }

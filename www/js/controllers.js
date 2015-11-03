@@ -1,6 +1,6 @@
 /*jslint devel: true, sloppy: true*/
 /*global angular*/
-var lukkariControllers = angular.module('lukkari.controllers', ['ICAL']);
+var lukkariControllers = angular.module('lukkari.controllers', []);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -74,8 +74,8 @@ function getEndDate() {
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ICAL',
-  function ($scope, $http, ICAL) {
+lukkariControllers.controller('TodayController', ['$scope', '$http',
+    function ($scope, $http, ICAL) {
         $scope.groupInfo = {};
         $scope.appointments = [];
         $scope.responseData = '';
@@ -94,8 +94,8 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ICAL',
                 }).then(function (response) {
                     $scope.responseData = response;
 
-                    $scope.appointments = ICAL.parse(response);
+                    //$scope.appointments = ICAL.parse(response);
                 });
             });
         };
-}]);
+    }]);
