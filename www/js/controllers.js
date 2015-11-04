@@ -74,33 +74,43 @@ function getEndDate() {
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
-lukkariControllers.controller('TodayController', function ($scope, $http) {
-    $scope.groupInfo = {};
-    $scope.appointments = [];
-    $scope.responseData = '';
-    $scope.today = getCurrentDay();
-    $scope.endDate = getEndDate();
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
 
-    $scope.getTimetable = function () {
-
-        $http({
-            method: 'GET',
-            url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
-            withCredentials: true
-        }).then(function (response) {
+    function ($scope, $http, ical) {
+        $scope.groupInfo = {};
+        $scope.groupInfo.group = "14tikoot";
+        $scope.appointments = [];
+        $scope.responseData = '';
+        $scope.today = getCurrentDay();
+        $scope.endDate = getEndDate();
+        $scope.getTimetable = function () {
             $http({
                 method: 'GET',
-                url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
-                    getCurrentDay() + '&endDate=' + getEndDate()
+                url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
+                withCredentials: true
             }).then(function (response) {
-                $scope.responseData = response;
-                console.log(typeof response);
-                for (var key in response) {
-                    console.log(key + ":" + response[key]);
-                }
+                $http({
+                    method: 'GET',
+                    url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
+                        getCurrentDay() + '&endDate=' + getEndDate()
+                }).then(function (response) {
+                    $scope.responseData = response;
+                    var vCal = ical.parse(response.data);
+                    var comp = new ical.Component(vCal);
+                    var vEvents = comp.getAllSubcomponents();
+                    $scope.appointments = [];
+                    for (var i = 0; i < vEvents.length; i++) {
+                        var appointment = {};
+                        appointment.summary = vEvents[i].getFirstPropertyValue("summary");
+                        appointment.location = vEvents[i].getFirstPropertyValue("location");
+                        appointment.description = vEvents[i].getFirstPropertyValue("description");
+                        var date = vEvents[i].getFirstPropertyValue("dtstart");
+                        appointment.start = date.hour + ":" + date.minute;
+                        date = vEvents[i].getFirstPropertyValue("dtend");
+                        appointment.end = date.hour + ":" + date.minute;
+                        $scope.appointments.push(appointment);
+                    }
+                });
             });
-        });
-    };
-
-
-});
+        };
+    }]);
