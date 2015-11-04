@@ -27,11 +27,23 @@
                 Timetable today
             </div>
             <div class="item item-text-wrap">
-                <ul class="list" ng-repeat="appointment in appointments">
+                <div class="card" ng-repeat="appointment in appointments">
+                    <div class="item item-divider">
+                        {{appointment.start}} -- {{appointment.end}}
+                    </div>
+                    <div class="item item-text-wrap">
+                        {{appointment.summary}}
+                        <br/> {{appointment.description}}
+                    </div>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+                    </div>
+                </div>
+                <!--<ul class="list" ng-repeat="appointment in appointments">
                     <li class="item">
                         {{appointment.summary}}
                     </li>
-                </ul>
+                </ul>-->
             </div>
         </div>
 

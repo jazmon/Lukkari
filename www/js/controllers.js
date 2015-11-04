@@ -102,6 +102,12 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
                     for (var i = 0; i < vEvents.length; i++) {
                         var appointment = {};
                         appointment.summary = vEvents[i].getFirstPropertyValue("summary");
+                        appointment.location = vEvents[i].getFirstPropertyValue("location");
+                        appointment.description = vEvents[i].getFirstPropertyValue("description");
+                        var date = vEvents[i].getFirstPropertyValue("dtstart");
+                        appointment.start = date.hour + ":" + date.minute;
+                        date = vEvents[i].getFirstPropertyValue("dtend");
+                        appointment.end = date.hour + ":" + date.minute;
 
                         $scope.appointments.push(appointment);
                     }
