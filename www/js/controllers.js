@@ -108,14 +108,8 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
                         appointment.start = date.hour + ":" + date.minute;
                         date = vEvents[i].getFirstPropertyValue("dtend");
                         appointment.end = date.hour + ":" + date.minute;
-
                         $scope.appointments.push(appointment);
                     }
-                    /*$scope.appointments = vCal[2];
-                    for (var key in $scope.appointments[0][1][7]) {
-                        console.log(key + ': ' + $scope.appointments[0][1][7][key]);
-                    }*/
-
                 });
             });
         };
