@@ -101,14 +101,14 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
                     $scope.appointments = [];
                     for (var i = 0; i < vEvents.length; i++) {
                         var appointment = {};
-                        appointment.summary = vEvents[0].getFirstPropertyValue("summary");
+                        appointment.summary = vEvents[i].getFirstPropertyValue("summary");
+
                         $scope.appointments.push(appointment);
                     }
                     /*$scope.appointments = vCal[2];
                     for (var key in $scope.appointments[0][1][7]) {
                         console.log(key + ': ' + $scope.appointments[0][1][7][key]);
                     }*/
-
 
                 });
             });
