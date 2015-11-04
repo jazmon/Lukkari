@@ -74,9 +74,11 @@ function getEndDate() {
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
-lukkariControllers.controller('TodayController', ['$scope', '$http',
-    function ($scope, $http, ICAL) {
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
+
+    function ($scope, $http, ical) {
         $scope.groupInfo = {};
+        $scope.groupInfo.group = "14tikoot";
         $scope.appointments = [];
         $scope.responseData = '';
         $scope.today = getCurrentDay();
@@ -93,8 +95,21 @@ lukkariControllers.controller('TodayController', ['$scope', '$http',
                         getCurrentDay() + '&endDate=' + getEndDate()
                 }).then(function (response) {
                     $scope.responseData = response;
+                    var vCal = ical.parse(response.data);
+                    var comp = new ical.Component(vCal);
+                    var vEvents = comp.getAllSubcomponents();
+                    $scope.appointments = [];
+                    for (var i = 0; i < vEvents.length; i++) {
+                        var appointment = {};
+                        appointment.summary = vEvents[0].getFirstPropertyValue("summary");
+                        $scope.appointments.push(appointment);
+                    }
+                    /*$scope.appointments = vCal[2];
+                    for (var key in $scope.appointments[0][1][7]) {
+                        console.log(key + ': ' + $scope.appointments[0][1][7][key]);
+                    }*/
 
-                    //$scope.appointments = ICAL.parse(response);
+
                 });
             });
         };

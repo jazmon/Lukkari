@@ -1,6 +1,6 @@
 /*jslint browser: true, devel: true, sloppy: true*/
 /*global angular, cordova*/
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services']);
+var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'ngIcal']);
 
 lukkariApp.run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {
