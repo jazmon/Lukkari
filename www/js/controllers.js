@@ -41,28 +41,6 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-function formatDay(day) {
-    var dayString = '';
-    dayString += day.getDate();
-    dayString += '.';
-    dayString += (day.getMonth() + 1);
-    dayString += '.';
-    dayString += day.getFullYear();
-
-    return dayString;
-}
-
-function getCurrentDay(daysToAdd) {
-    var today = Date.now();
-    if (daysToAdd !== undefined && daysToAdd !== null) {
-        today += (daysToAdd * 604800000);
-    }
-    var day = new Date();
-    day.setTime(today);
-    var todayString = formatDay(day);
-    return todayString;
-}
-
 lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies', 'Timetables',
 function ($scope, $http, ical, $cookies, Timetables) {
         $scope.groupInfo = {};
