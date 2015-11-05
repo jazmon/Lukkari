@@ -1,4 +1,4 @@
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'ngIcal']);
+var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services']);
 
 lukkariApp.run(function ($ionicPlatform) {
     $ionicPlatform.ready(function () {

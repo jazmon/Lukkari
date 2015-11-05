@@ -1,4 +1,4 @@
-var lukkariControllers = angular.module('lukkari.controllers', ['ngCookies']);
+var lukkariControllers = angular.module('lukkari.controllers', []);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -63,46 +63,14 @@ function getCurrentDay(daysToAdd) {
     return todayString;
 }
 
-/*
-https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
-https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
-*/
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies',
-function ($scope, $http, ical, $cookies) {
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies', 'Timetables',
+function ($scope, $http, ical, $cookies, Timetables) {
         $scope.groupInfo = {};
-        $scope.groupInfo.group = '14tikoot';
         $scope.appointments = [];
-        $scope.responseData = '';
-        $scope.today = getCurrentDay();
-        $scope.endDate = getCurrentDay(7);
+        $scope.groupInfo.group = '14tikoot';
         $scope.getTimetable = function () {
-            $http({
-                method: 'GET',
-                url: '/api/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
-                withCredentials: true
-            }).then(function (response) {
-                $http({
-                    method: 'GET',
-                    url: '/api/icalcreator.php?startDate=' +
-                        getCurrentDay() + '&endDate=' + getCurrentDay()
-                }).then(function (response) {
-                    $scope.responseData = response;
-                    var vCal = ical.parse(response.data);
-                    var comp = new ical.Component(vCal);
-                    var vEvents = comp.getAllSubcomponents();
-                    $scope.appointments = [];
-                    for (var i = 0; i < vEvents.length; i++) {
-                        var appointment = {};
-                        appointment.summary = vEvents[i].getFirstPropertyValue('summary');
-                        appointment.location = vEvents[i].getFirstPropertyValue('location');
-                        appointment.description = vEvents[i].getFirstPropertyValue('description');
-                        var date = vEvents[i].getFirstPropertyValue('dtstart');
-                        appointment.start = date.hour + ':' + date.minute;
-                        date = vEvents[i].getFirstPropertyValue('dtend');
-                        appointment.end = date.hour + ':' + date.minute;
-                        $scope.appointments.push(appointment);
-                    }
-                });
+            Timetables.get($scope.groupInfo.group, 0, function (result) {
+                $scope.appointments = result;
             });
         };
     }]);

@@ -1,9 +1,9 @@
-var lukkariServices = angular.module('lukkari.services', ['ngCookies']);
+var lukkariServices = angular.module('lukkari.services', ['ngCookies', 'ngIcal']);
 
 
 lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies',
 function ($http, ical, $cookies) {
-        var DAY_IN_MILLISECONDS = 604800000;
+        var DAY_IN_MILLISECONDS = 86400000;
 
         function formatDay(day) {
             var dayString = '';
@@ -27,11 +27,11 @@ function ($http, ical, $cookies) {
             return todayString;
         }
         return {
-            get: function (groupName, dayCount) {
+            get: function (groupName, dayCount, callback) {
                 var appointments = [];
                 $http({
                     method: 'GET',
-                    url: '/api/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
+                    url: '/api/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
                     withCredentials: true
                 }).then(function (response) {
                     $http({
@@ -42,7 +42,7 @@ function ($http, ical, $cookies) {
                         // parse ical to vCal format
                         var vCal = ical.parse(response.data);
                         // extract the vcal (needed for this to work, lol)
-                        var comp = new ical.component(vCal);
+                        var comp = new ical.Component(vCal);
                         // get all vevents
                         var vEvents = comp.getAllSubcomponents();
                         // loop for each event
@@ -55,8 +55,10 @@ function ($http, ical, $cookies) {
                             appointment.start = date.hour + ':' + date.minute;
                             date = vEvents[i].getFirstPropertyValue('dtend');
                             appointment.end = date.hour + ':' + date.minute;
+                            appointments.push(appointment);
                         }
-                        return appointments;
+
+                        callback(appointments);
                     });
                 });
             }
