@@ -3,7 +3,6 @@ var lukkariServices = angular.module('lukkari.services', ['ngCookies']);
 
 lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies',
 function ($http, ical, $cookies) {
-        var timetables = {};
         var DAY_IN_MILLISECONDS = 604800000;
 
         function formatDay(day) {
@@ -57,6 +56,7 @@ function ($http, ical, $cookies) {
                             date = vEvents[i].getFirstPropertyValue('dtend');
                             appointment.end = date.hour + ':' + date.minute;
                         }
+                        return appointments;
                     });
                 });
             }
