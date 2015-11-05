@@ -1,4 +1,4 @@
-/*jslint devel: true, sloppy: true*/
+/*eslint devel: true, sloppy: true*/
 /*global angular*/
 var lukkariControllers = angular.module('lukkari.controllers', ['ngCookies']);
 
