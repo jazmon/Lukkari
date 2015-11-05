@@ -1,5 +1,3 @@
-/*eslint devel: true, sloppy: true*/
-/*global angular*/
 var lukkariControllers = angular.module('lukkari.controllers', ['ngCookies']);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
@@ -70,10 +68,9 @@ https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewRep
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
 lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies',
-
-    function ($scope, $http, ical, $cookies) {
+function ($scope, $http, ical, $cookies) {
         $scope.groupInfo = {};
-        $scope.groupInfo.group = "14tikoot";
+        $scope.groupInfo.group = '14tikoot';
         $scope.appointments = [];
         $scope.responseData = '';
         $scope.today = getCurrentDay();
@@ -96,13 +93,13 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$c
                     $scope.appointments = [];
                     for (var i = 0; i < vEvents.length; i++) {
                         var appointment = {};
-                        appointment.summary = vEvents[i].getFirstPropertyValue("summary");
-                        appointment.location = vEvents[i].getFirstPropertyValue("location");
-                        appointment.description = vEvents[i].getFirstPropertyValue("description");
-                        var date = vEvents[i].getFirstPropertyValue("dtstart");
-                        appointment.start = date.hour + ":" + date.minute;
-                        date = vEvents[i].getFirstPropertyValue("dtend");
-                        appointment.end = date.hour + ":" + date.minute;
+                        appointment.summary = vEvents[i].getFirstPropertyValue('summary');
+                        appointment.location = vEvents[i].getFirstPropertyValue('location');
+                        appointment.description = vEvents[i].getFirstPropertyValue('description');
+                        var date = vEvents[i].getFirstPropertyValue('dtstart');
+                        appointment.start = date.hour + ':' + date.minute;
+                        date = vEvents[i].getFirstPropertyValue('dtend');
+                        appointment.end = date.hour + ':' + date.minute;
                         $scope.appointments.push(appointment);
                     }
                 });
