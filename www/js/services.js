@@ -29,6 +29,9 @@ function ($http, ical, $cookies) {
         return {
             get: function (groupName, dayCount, callback) {
                 var appointments = [];
+                // remove phpsessid cookie, because the server
+                // piles the groups into a "shopping basket"
+                $cookies.remove('PHPSESSID');
                 $http({
                     method: 'GET',
                     url: '/api/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
