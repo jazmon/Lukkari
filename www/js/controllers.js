@@ -79,12 +79,12 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
         $scope.getTimetable = function () {
             $http({
                 method: 'GET',
-                url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
+                url: '/api/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
                 withCredentials: true
             }).then(function (response) {
                 $http({
                     method: 'GET',
-                    url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
+                    url: '/api/icalcreator.php?startDate=' +
                         getCurrentDay() + '&endDate=' + getCurrentDay(7)
                 }).then(function (response) {
                     $scope.responseData = response;
