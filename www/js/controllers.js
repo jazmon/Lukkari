@@ -41,8 +41,8 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies', 'Timetables',
-function ($scope, $http, ical, $cookies, Timetables) {
+lukkariControllers.controller('TodayController', ['$scope', 'Timetables',
+function ($scope, Timetables) {
         $scope.groupInfo = {};
         $scope.appointments = [];
         $scope.groupInfo.group = '14tikoot';
@@ -52,3 +52,14 @@ function ($scope, $http, ical, $cookies, Timetables) {
             });
         };
     }]);
+
+lukkariControllers.controller('WeekController', ['$scope', 'Timetables',
+function ($scope, Timetables) {
+        $scope.groupInfo = {};
+        $scope.groupInfo.group = '14tikoot';
+        $scope.getTimetable = function () {
+            Timetables.get($scope.groupInfo.group, 6, function (result) {
+                $scope.appointments = result;
+            });
+        };
+}]);
