@@ -1,5 +1,3 @@
-/*eslint browser: true, devel: true, sloppy: true*/
-/*global angular, cordova*/
 var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'ngIcal']);
 
 lukkariApp.run(function ($ionicPlatform) {
@@ -11,10 +9,10 @@ lukkariApp.run(function ($ionicPlatform) {
             cordova.plugins.Keyboard.disableScroll(true);
 
         }
-        /*if (window.StatusBar) {
+        if (window.StatusBar) {
             // org.apache.cordova.statusbar required
             StatusBar.styleDefault();
-        }*/
+        }
     });
 });
 
