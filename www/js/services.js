@@ -1,8 +1,8 @@
 var lukkariServices = angular.module('lukkari.services', ['ngCookies', 'ngIcal']);
 
 
-lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies',
-function ($http, ical, $cookies) {
+lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint',
+function ($http, ical, $cookies, ApiEndpoint) {
         var DAY_IN_MILLISECONDS = 86400000;
 
         function formatDay(day) {
@@ -34,12 +34,12 @@ function ($http, ical, $cookies) {
                 $cookies.remove('PHPSESSID');
                 $http({
                     method: 'GET',
-                    url: '/api/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
+                    url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
                     withCredentials: true
                 }).then(function (response) {
                     $http({
                         method: 'GET',
-                        url: '/api/icalcreator.php?startDate=' +
+                        url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
                             getDay() + '&endDate=' + getDay(dayCount)
                     }).then(function (response) {
                         // parse ical to vCal format

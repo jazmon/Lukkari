@@ -8,7 +8,8 @@
     "gulp-minify-css": "^0.3.0",
     "gulp-rename": "^1.2.0",
     "gulp-sass": "^2.0.4",
-    "ical2json": "^0.2.0"
+    "ical2json": "^0.2.0",
+    "replace": "^0.3.0"
   },
   "devDependencies": {
     "bower": "^1.3.3",
