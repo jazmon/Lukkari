@@ -55,12 +55,11 @@ function formatDay(day) {
 }
 
 function getCurrentDay(daysToAdd) {
-    var today = new Date();
-    var day;
+    var today = Date.now();
     if (daysToAdd !== undefined || daysToAdd !== null) {
         today += (daysToAdd * 604800000);
     }
-    var todayString = formatDay(today);
+    var todayString = formatDay(new Date(today));
     return todayString;
 }
 
