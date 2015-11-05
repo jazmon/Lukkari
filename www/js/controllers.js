@@ -1,5 +1,3 @@
-/*jslint devel: true, sloppy: true*/
-/*global angular*/
 var lukkariControllers = angular.module('lukkari.controllers', []);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
@@ -43,68 +41,14 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-function formatDay(day) {
-    var dayString = '';
-    dayString += day.getDate();
-    dayString += '.';
-    dayString += (day.getMonth() + 1);
-    dayString += '.';
-    dayString += day.getFullYear();
-
-    return dayString;
-}
-
-function getCurrentDay(daysToAdd) {
-    var today = new Date();
-    var day;
-    if (daysToAdd !== undefined || daysToAdd !== null) {
-        today += (daysToAdd * 604800000);
-    }
-    var todayString = formatDay(today);
-    return todayString;
-}
-
-/*
-https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
-https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
-*/
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
-
-    function ($scope, $http, ical) {
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies', 'Timetables',
+function ($scope, $http, ical, $cookies, Timetables) {
         $scope.groupInfo = {};
-        $scope.groupInfo.group = "14tikoot";
         $scope.appointments = [];
-        $scope.responseData = '';
-        $scope.today = getCurrentDay();
-        $scope.endDate = getCurrentDay(7);
+        $scope.groupInfo.group = '14tikoot';
         $scope.getTimetable = function () {
-            $http({
-                method: 'GET',
-                url: 'https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=' + $scope.groupInfo.group.toUpperCase(),
-                withCredentials: true
-            }).then(function (response) {
-                $http({
-                    method: 'GET',
-                    url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
-                        getCurrentDay() + '&endDate=' + getCurrentDay(7)
-                }).then(function (response) {
-                    $scope.responseData = response;
-                    var vCal = ical.parse(response.data);
-                    var comp = new ical.Component(vCal);
-                    var vEvents = comp.getAllSubcomponents();
-                    $scope.appointments = [];
-                    for (var i = 0; i < vEvents.length; i++) {
-                        var appointment = {};
-                        appointment.summary = vEvents[i].getFirstPropertyValue("summary");
-                        appointment.location = vEvents[i].getFirstPropertyValue("location");
-                        appointment.description = vEvents[i].getFirstPropertyValue("description");
-                        var date = vEvents[i].getFirstPropertyValue("dtstart");
-                        appointment.start = date.hour + ":" + date.minute;
-                        date = vEvents[i].getFirstPropertyValue("dtend");
-                        appointment.end = date.hour + ":" + date.minute;
-                        $scope.appointments.push(appointment);
-                    }
-                });
+            Timetables.get($scope.groupInfo.group, 0, function (result) {
+                $scope.appointments = result;
             });
         };
     }]);
