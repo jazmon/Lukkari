@@ -1,6 +1,6 @@
 /*jslint devel: true, sloppy: true*/
 /*global angular*/
-var lukkariControllers = angular.module('lukkari.controllers', []);
+var lukkariControllers = angular.module('lukkari.controllers', ['ngCookies']);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -69,9 +69,9 @@ function getCurrentDay(daysToAdd) {
 https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
 https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
 */
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
+lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies',
 
-    function ($scope, $http, ical) {
+    function ($scope, $http, ical, $cookies) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = "14tikoot";
         $scope.appointments = [];
@@ -87,7 +87,7 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
                 $http({
                     method: 'GET',
                     url: '/api/icalcreator.php?startDate=' +
-                        getCurrentDay() + '&endDate=' + getCurrentDay(7)
+                        getCurrentDay() + '&endDate=' + getCurrentDay()
                 }).then(function (response) {
                     $scope.responseData = response;
                     var vCal = ical.parse(response.data);
