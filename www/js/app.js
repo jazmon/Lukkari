@@ -19,9 +19,6 @@ lukkariApp.run(function ($ionicPlatform) {
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
     url: 'http://localhost:8100/api'
-        // For the real endpoint, we'd use this
-        // .constant('ApiEndpoint', {
-        //  url: 'https://lukkarit.tamk.fi'
 });
 
 // menuContent-view is presented on the main view.

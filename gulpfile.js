@@ -58,7 +58,7 @@ gulp.task('git-check', function (done) {
 
 gulp.task('add-proxy', function () {
     return replace({
-        regex: 'http://cors.api.com/api',
+        regex: 'https://lukkarit.tamk.fi',
         replacement: 'http://localhost:8100/api',
         paths: replaceFiles,
         recursive: false,
@@ -69,7 +69,7 @@ gulp.task('add-proxy', function () {
 gulp.task('remove-proxy', function () {
     return replace({
         regex: 'http://localhost:8100/api',
-        replacement: 'http://cors.api.com/api',
+        replacement: 'https://lukkarit.tamk.fi',
         paths: replaceFiles,
         recursive: false,
         silent: false,
