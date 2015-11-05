@@ -54,20 +54,14 @@ function formatDay(day) {
     return dayString;
 }
 
-// TODO: merge this and the other getday, only give parameter offset to current day millis
-function getCurrentDay() {
+function getCurrentDay(daysToAdd) {
     var today = new Date();
+    var day;
+    if (daysToAdd !== undefined || daysToAdd !== null) {
+        today += (daysToAdd * 604800000);
+    }
     var todayString = formatDay(today);
     return todayString;
-}
-
-function getEndDate() {
-    var day = Date.now();
-    // add 7 weeks worth of millisecs
-    day += 4233600000;
-    var endDate = new Date(day);
-    var dayFormatted = formatDay(endDate);
-    return dayFormatted;
 }
 
 /*
@@ -82,7 +76,7 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
         $scope.appointments = [];
         $scope.responseData = '';
         $scope.today = getCurrentDay();
-        $scope.endDate = getEndDate();
+        $scope.endDate = getCurrentDay(7);
         $scope.getTimetable = function () {
             $http({
                 method: 'GET',
@@ -92,7 +86,7 @@ lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical',
                 $http({
                     method: 'GET',
                     url: 'https://lukkarit.tamk.fi/icalcreator.php?startDate=' +
-                        getCurrentDay() + '&endDate=' + getEndDate()
+                        getCurrentDay() + '&endDate=' + getCurrentDay(7)
                 }).then(function (response) {
                     $scope.responseData = response;
                     var vCal = ical.parse(response.data);
