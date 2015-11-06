@@ -5,7 +5,6 @@ lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint
 function ($http, ical, $cookies, ApiEndpoint) {
         var DAY_IN_MILLISECONDS = 86400000;
         var appointments = [];
-        var id = undefined
 
         function formatDay(day) {
             var dayString = '';
@@ -69,17 +68,12 @@ function ($http, ical, $cookies, ApiEndpoint) {
                 });
             }
     
-        function setId(id) {
-            this.id = id;
-        }
-    
-        function getAppointment() {
+        function getAppointment(id) {
             return appointments[id];
         }
     
         return {
             get: get,
-            setId: setId,
             getAppointment: getAppointment
         }
 }]);

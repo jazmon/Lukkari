@@ -57,9 +57,9 @@ function ($scope, Timetables, $ionicLoading) {
         };
 }]);
 
-lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', 
-function($scope, Timetables, $ionicLoading) {
-    $scope.appointment = Timetables.getAppointment();
+lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', '$stateParams',
+function($scope, Timetables, $ionicLoading, $stateParams) {
+    $scope.appointment = Timetables.getAppointment($stateParams.id);
 }]);
 
 lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading',

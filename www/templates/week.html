@@ -31,7 +31,7 @@
                     <div class="item item-divider">
                         {{appointment.start}} — {{appointment.end}}
                     </div>
-                    <a ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
                         <div class="item item-text-wrap">
                             {{appointment.summary}}
                             <br/> {{appointment.description}}
