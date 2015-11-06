@@ -57,8 +57,8 @@ function ($scope, Timetables, $ionicLoading) {
         };
     }]);
 
-lukkariControllers.controller('WeekController', ['$scope', 'Timetables',
-function ($scope, Timetables) {
+lukkariControllers.controller('WeekController', ['$scope', 'Timetables', '$ionicLoading',
+function ($scope, Timetables, $ionicLoading) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = '14tikoot';
 
