@@ -39,11 +39,11 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
                 }
             }
         })
-        .state('app.search', {
-            url: '/search',
+        .state('app.week', {
+            url: '/week',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/search.html'
+                    templateUrl: 'templates/week.html'
                 }
             }
         });

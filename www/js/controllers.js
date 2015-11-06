@@ -41,14 +41,18 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayController', ['$scope', 'Timetables',
-function ($scope, Timetables) {
+lukkariControllers.controller('TodayController', ['$scope', 'Timetables', '$ionicLoading',
+function ($scope, Timetables, $ionicLoading) {
         $scope.groupInfo = {};
         $scope.appointments = [];
         $scope.groupInfo.group = '14tikoot';
         $scope.getTimetable = function () {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
             Timetables.get($scope.groupInfo.group, 0, function (result) {
                 $scope.appointments = result;
+                $ionicLoading.hide();
             });
         };
     }]);
@@ -57,9 +61,14 @@ lukkariControllers.controller('WeekController', ['$scope', 'Timetables',
 function ($scope, Timetables) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = '14tikoot';
+
         $scope.getTimetable = function () {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
             Timetables.get($scope.groupInfo.group, 6, function (result) {
                 $scope.appointments = result;
+                $ionicLoading.hide();
             });
         };
 }]);
