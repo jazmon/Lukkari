@@ -56,6 +56,7 @@ function ($http, ical, $cookies, ApiEndpoint) {
                             appointment.summary = vEvents[i].getFirstPropertyValue('summary');
                             appointment.location = vEvents[i].getFirstPropertyValue('location');
                             appointment.description = vEvents[i].getFirstPropertyValue('description');
+                            appointment.id = i;
                             var date = vEvents[i].getFirstPropertyValue('dtstart');
                             appointment.start = date.hour + ':' + date.minute;
                             date = vEvents[i].getFirstPropertyValue('dtend');
