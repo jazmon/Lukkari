@@ -43,7 +43,8 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
             url: '/week',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/week.html'
+                    templateUrl: 'templates/week.html',
+                    controller: 'WeekController'
                 }
             }
         });
