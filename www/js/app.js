@@ -39,6 +39,15 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
                 }
             }
         })
+        .state('app.appointment', {
+            url: '/appointment/:id',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/appointment.html',
+                    controller: 'AppointmentCtrl'
+                }
+            }
+        })
         .state('app.week', {
             url: '/week',
             views: {

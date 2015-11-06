@@ -55,7 +55,12 @@ function ($scope, Timetables, $ionicLoading) {
                 $ionicLoading.hide();
             });
         };
-    }]);
+}]);
+
+lukkariControllers.controller('AppointmentController', ['$scope', 'Timetables', '$ionicLoading', 
+function($scope, Timetables, $ionicLoading) {
+    $scope.appointment = Timetables.getAppointment();
+}]);
 
 lukkariControllers.controller('WeekController', ['$scope', 'Timetables', '$ionicLoading',
 function ($scope, Timetables, $ionicLoading) {
@@ -71,4 +76,7 @@ function ($scope, Timetables, $ionicLoading) {
                 $ionicLoading.hide();
             });
         };
+        $scope.openAppointment = function(id) {
+            Timetables.setId(id);
+        }
 }]);

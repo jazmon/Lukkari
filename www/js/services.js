@@ -4,6 +4,8 @@ var lukkariServices = angular.module('lukkari.services', ['ngCookies', 'ngIcal']
 lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint',
 function ($http, ical, $cookies, ApiEndpoint) {
         var DAY_IN_MILLISECONDS = 86400000;
+        var appointments = [];
+        var id = undefined
 
         function formatDay(day) {
             var dayString = '';
@@ -26,9 +28,9 @@ function ($http, ical, $cookies, ApiEndpoint) {
             var todayString = formatDay(day);
             return todayString;
         }
-        return {
-            get: function (groupName, dayCount, callback) {
-                var appointments = [];
+    
+        function get(groupName, dayCount, callback) {
+                appointments = [];
                 // remove phpsessid cookie, because the server
                 // piles the groups into a "shopping basket"
                 $cookies.remove('PHPSESSID');
@@ -65,5 +67,18 @@ function ($http, ical, $cookies, ApiEndpoint) {
                     });
                 });
             }
+    
+        function setId(id) {
+            this.id = id;
+        }
+    
+        function getAppointment() {
+            return appointments[id];
+        }
+    
+        return {
+            get: get,
+            setId: setId,
+            getAppointment: getAppointment
         }
 }]);
