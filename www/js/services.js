@@ -1,5 +1,19 @@
 var lukkariServices = angular.module('lukkari.services', ['ngCookies', 'ngIcal']);
 
+lukkariServices.factory('LocalStorage', function() {
+    function get(name){
+        return window.localStorage.getItem(name);
+    }
+    
+    function set(name, value){
+        return window.localStorage.setItem(name, value);
+    }
+    
+    return{
+        get: get,
+        set: set
+    }; 
+});
 
 lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint',
 function ($http, ical, $cookies, ApiEndpoint) {

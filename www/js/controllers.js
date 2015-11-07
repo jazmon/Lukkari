@@ -41,11 +41,32 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoading',
-function ($scope, Timetables, $ionicLoading) {
+lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoading', 'LocalStorage', '$ionicModal',
+function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         $scope.groupInfo = {};
+        $scope.groupInfo.group = LocalStorage.get('groupName');
+
+        $ionicModal.fromTemplateUrl('templates/newgroup.html', {
+            scope: $scope
+        }).then(function (modal) {
+            $scope.modal = modal;
+            if (!$scope.groupInfo.group) {
+            // open modal to set group name
+            $scope.modal.show();
+        }
+        });
+
+        
+        $scope.closeGroupName = function () {
+            $scope.modal.hide();
+        }
+
+        $scope.setGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            $scope.modal.hide();
+        }
+
         $scope.appointments = [];
-        $scope.groupInfo.group = '14tikoot';
         $scope.getTimetable = function () {
             $ionicLoading.show({
                 template: 'Loading...'
@@ -58,8 +79,8 @@ function ($scope, Timetables, $ionicLoading) {
 }]);
 
 lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', '$stateParams',
-function($scope, Timetables, $ionicLoading, $stateParams) {
-    $scope.appointment = Timetables.getAppointment($stateParams.id);
+function ($scope, Timetables, $ionicLoading, $stateParams) {
+        $scope.appointment = Timetables.getAppointment($stateParams.id);
 }]);
 
 lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading',
@@ -76,7 +97,7 @@ function ($scope, Timetables, $ionicLoading) {
                 $ionicLoading.hide();
             });
         };
-        $scope.openAppointment = function(id) {
+        $scope.openAppointment = function (id) {
             Timetables.setId(id);
         }
 }]);
