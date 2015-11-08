@@ -81,7 +81,8 @@ function ($http, ical, $cookies, ApiEndpoint) {
                             appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice( appointment.summary.length);
                             appointment.summary = appointment.summary.split(/[0-9]+/)[0];
                             appointment.location = vEvents[i].getFirstPropertyValue('location').split(" - ")[0];
-                            appointment.locationInfo = vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2);
+                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[0];
+                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[1];
                             appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0]; 
                             appointment.groups =( vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
                             //appointment.description = "Teacher: " + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
