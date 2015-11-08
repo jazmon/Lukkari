@@ -147,8 +147,8 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
         }
 }]);
 
-lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform',
-function ($scope, LocalStorage, $cordovaToast, $ionicPlatform) {
+lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$cookies', '$timeout',
+function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeout) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
         if (!$scope.groupInfo.group) {
@@ -160,13 +160,22 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform) {
             // show toast that change was successfull
 
             $ionicPlatform.ready(function () {
-                //$cordovaPlugin.someFunction().then(success, error);
-                $cordovaToast.show('Group successfully changed!', 'long', 'center')
-                    .then(function (success) {
+                try {
+                    $cordovaToast.show('Group successfully changed!', 'long', 'center')
+                        .then(function (success) {
+                            $cookies.remove('PHPSESSID');
 
-                    }, function (error) {
+                        }, function (error) {
 
-                    });
+                        });
+                } catch (e) {
+                    // do nothing
+                } finally {
+                    $timeout(function () {
+                        window.location.href = '/';
+                    }, 2000);
+                }
+
             });
         };
 }]);

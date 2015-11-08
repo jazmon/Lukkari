@@ -56,7 +56,7 @@ function ($http, ical, $cookies, ApiEndpoint) {
         function get(groupName, dayCount, callback) {
             appointments = [];
             // remove phpsessid cookie, because the server
-            // piles the groups into a "shopping basket"
+            // piles the groups into a 'shopping basket'
             $cookies.remove('PHPSESSID');
             $http({
                 method: 'GET',
@@ -80,12 +80,26 @@ function ($http, ical, $cookies, ApiEndpoint) {
                         appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
                         appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice(appointment.summary.length);
                         appointment.summary = appointment.summary.split(/[0-9]+/)[0];
-                        appointment.location = vEvents[i].getFirstPropertyValue('location').split(" - ")[0];
-                        appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[0];
-                        appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[1];
-                        appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
-                        appointment.groups = (vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
-                        //appointment.description = "Teacher: " + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                        appointment.location = vEvents[i].getFirstPropertyValue('location').split(' - ')[0];
+                        try {
+                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(', ')[0];
+                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(', ')[1];
+                        } catch (e) {
+                            appointment.locationInfo = vEvents[i].getFirstPropertyValue('location');
+                        }
+                        try {
+                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                        } catch (e) {
+                            appointment.teacher = vEvents[i].getFirstPropertyValue('description');
+                        }
+
+                        try {
+                            appointment.groups = (vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
+                        } catch (e) {
+                            appointment.groups = vEvents.getFirstPropertyValue('description');
+                        }
+
+                        //appointment.description = 'Teacher: ' + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
                         appointment.id = i;
                         var date = vEvents[i].getFirstPropertyValue('dtstart');
                         appointment.date = date.day + '.' + date.month;
