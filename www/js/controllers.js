@@ -152,7 +152,17 @@ function ($scope) {
 
 }]);
 
-lukkariControllers.controller('SearchCtrl', ['$scope',
-function ($scope) {
+lukkariControllers.controller('SearchCtrl', ['$scope', 'LocalStorage',
+function ($scope, LocalStorage) {
+        $scope.groupInfo = {};
+        $scope.groupInfo.group = LocalStorage.get('groupName');
+        if (!$scope.groupInfo.group) {
+            $scope.groupInfo.group = '';
+        }
 
+        $scope.changeGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            // show toast that change was successfull
+
+        };
 }]);

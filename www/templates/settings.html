@@ -1,4 +1,15 @@
 <ion-view view-title="Settings">
     <ion-content>
+        <form ng-submit="changeGroup()">
+            <div class="list">
+                <label class="item item-input">
+                    <span class="input-label">Group name</span>
+                    <input type="text" ng-model="groupInfo.group">
+                </label>
+                <label class="item">
+                    <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+                </label>
+            </div>
+        </form>
     </ion-content>
 </ion-view>
