@@ -16,6 +16,11 @@ lukkariApp.run(function ($ionicPlatform) {
     });
 });
 
+// http://blog.ionic.io/handling-cors-issues-in-ionic/
+lukkariApp.constant('ApiEndpoint', {
+    url: 'http://localhost:8100/api'
+});
+
 // menuContent-view is presented on the main view.
 lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
     $stateProvider
@@ -25,20 +30,48 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'templates/menu.html',
             controller: 'LukkariCtrl'
         })
+        .state('app.search', {
+            url: '/search',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/search.html',
+                    controller: 'SearchCtrl'
+                }
+            }
+        })
+        .state('app.settings', {
+            url: '/settings',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/settings.html',
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
         .state('app.today', {
             url: '/today',
             views: {
                 'menuContent': {
                     templateUrl: 'templates/today.html',
-                    controller: 'TodayController'
+                    controller: 'TodayCtrl'
                 }
             }
         })
-        .state('app.search', {
-            url: '/search',
+        .state('app.appointment', {
+            url: '/week/:id',
             views: {
                 'menuContent': {
-                    templateUrl: 'templates/search.html'
+                    templateUrl: 'templates/appointment.html',
+                    controller: 'AppointmentCtrl'
+                }
+            }
+        })
+        .state('app.week', {
+            url: '/week',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/week.html',
+                    controller: 'WeekCtrl'
                 }
             }
         });

@@ -1,0 +1,4 @@
+- make getting a week worth of appointments get the ongoing week's appointments, instead of week ahead (it's how normal timetables work);
+- make weekly scrollable
+- improve how the timetable views look like
+- saving preference for group

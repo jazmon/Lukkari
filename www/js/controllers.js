@@ -1,4 +1,4 @@
-var lukkariControllers = angular.module('lukkari.controllers', []);
+var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -41,14 +41,137 @@ lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $tim
     };
 });
 
-lukkariControllers.controller('TodayController', ['$scope', '$http', 'ical', '$cookies', 'Timetables',
-function ($scope, $http, ical, $cookies, Timetables) {
+lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoading', 'LocalStorage', '$ionicModal',
+function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         $scope.groupInfo = {};
-        $scope.appointments = [];
-        $scope.groupInfo.group = '14tikoot';
-        $scope.getTimetable = function () {
+        $scope.groupInfo.group = LocalStorage.get('groupName');
+
+        $ionicModal.fromTemplateUrl('templates/newgroup.html', {
+            scope: $scope
+        }).then(function (modal) {
+            $scope.modal = modal;
+            if (!$scope.groupInfo.group) {
+                // open modal to set group name
+                $scope.modal.show();
+            }
+        });
+
+
+        $scope.closeGroupName = function () {
+            $scope.modal.hide();
+        }
+
+        $scope.setGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            $scope.modal.hide();
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
             Timetables.get($scope.groupInfo.group, 0, function (result) {
                 $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
+
+        $scope.appointments = [];
+        //$scope.getTimetable = function () {
+        if ($scope.groupInfo.group != undefined) {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.get($scope.groupInfo.group, 0, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
+        //};
+
+        $scope.moveDay = function (direction) {
+            if (direction === -1) {
+
+            } else if (direction === 1) {
+
+            } else {
+                throw new RangeError('Parameter out of range! Please use 1 or -1');
+            }
+        }
+}]);
+
+lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', '$stateParams',
+function ($scope, Timetables, $ionicLoading, $stateParams) {
+        $scope.appointment = Timetables.getAppointment($stateParams.id);
+}]);
+
+lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage',
+function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
+        $scope.groupInfo = {};
+        $scope.groupInfo.group = LocalStorage.get('groupName');
+
+        $ionicModal.fromTemplateUrl('templates/newgroup.html', {
+            scope: $scope
+        }).then(function (modal) {
+            $scope.modal = modal;
+            if (!$scope.groupInfo.group) {
+                // open modal to set group name
+                $scope.modal.show();
+            }
+        });
+
+
+        $scope.closeGroupName = function () {
+            $scope.modal.hide();
+        }
+
+        $scope.setGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            $scope.modal.hide();
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.get($scope.groupInfo.group, 6, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
+
+        $scope.appointments = [];
+        //$scope.getTimetable = function () {
+        if ($scope.groupInfo.group != undefined) {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.get($scope.groupInfo.group, 6, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
+}]);
+
+lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform',
+function ($scope, LocalStorage, $cordovaToast, $ionicPlatform) {
+        $scope.groupInfo = {};
+        $scope.groupInfo.group = LocalStorage.get('groupName');
+        if (!$scope.groupInfo.group) {
+            $scope.groupInfo.group = '';
+        }
+
+        $scope.changeGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            // show toast that change was successfull
+
+            $ionicPlatform.ready(function () {
+                //$cordovaPlugin.someFunction().then(success, error);
+                $cordovaToast.show('Group successfully changed!', 'long', 'center')
+                    .then(function (success) {
+
+                    }, function (error) {
+
+                    });
             });
         };
-    }]);
+}]);
+
+lukkariControllers.controller('SearchCtrl', ['$scope', 'LocalStorage',
+function ($scope, LocalStorage) {
+
+}]);
