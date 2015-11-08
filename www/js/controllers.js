@@ -67,7 +67,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         }
 
         $scope.appointments = [];
-        $scope.getTimetable = function () {
+        //$scope.getTimetable = function () {
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -75,7 +75,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
-        };
+        //};
 }]);
 
 lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', '$stateParams',
@@ -88,7 +88,7 @@ function ($scope, Timetables, $ionicLoading) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = '14tikoot';
 
-        $scope.getTimetable = function () {
+        //$scope.getTimetable = function () {
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -96,8 +96,8 @@ function ($scope, Timetables, $ionicLoading) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
-        };
+        //};
         $scope.openAppointment = function (id) {
-            Timetables.setId(id);
+            //Timetables.setId(id);
         }
 }]);

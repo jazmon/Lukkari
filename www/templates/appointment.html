@@ -1,6 +1,14 @@
 <ion-view view-title="{{appointment.summary}}">
     <ion-content>
-        <h1>Appointment</h1>
-        {{appointment.description}}
+        <ion-list>
+            <ion-item class="item-divider">{{appointment.summary}}</ion-item>
+            <ion-item>Teacher: {{appointment.teacher}}</ion-item>
+            <ion-item>Course: {{appointment.courseNumber}}</ion-item>
+            <ion-item>Groups: {{appointment.groups}}</ion-item>
+            <ion-item class="item-divider">Location</ion-item>
+            <ion-item>{{appointment.location}}</ion-item>
+            <ion-item>{{appointment.locationInfo}}</ion-item>
+            <ion-item>{{appointment.locationInfo2}}</ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

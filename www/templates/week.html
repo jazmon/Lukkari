@@ -1,7 +1,7 @@
 <ion-view view-title="Week">
     <!--Insert today's formatted timetable here-->
     <ion-content>
-        <div class="card">
+        <!--<div class="card">
             <div class="item item-divider">
                 Enter group name
             </div>
@@ -21,28 +21,28 @@
                     </div>
                 </form>
             </div>
-        </div>
-        <div class="card">
-            <div class="item item-divider">
+        </div>-->
+        <!--<div class="card">-->
+        <!--<div class="item item-divider">
                 Timetable in next 7 days
+            </div>-->
+        <!--<div class="item item-text-wrap">-->
+        <div class="card" ng-repeat="appointment in appointments">
+            <div class="item item-divider">
+                {{appointment.start}} — {{appointment.end}}
             </div>
-            <div class="item item-text-wrap">
-                <div class="card" ng-repeat="appointment in appointments">
-                    <div class="item item-divider">
-                        {{appointment.start}} — {{appointment.end}}
-                    </div>
-                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
-                        <div class="item item-text-wrap">
-                            {{appointment.summary}}
-                            <br/> {{appointment.description}}
-                        </div>
-                    </a>
-                    <div class="item item-divider">
-                        {{appointment.location}}
-
-                    </div>
+            <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                <div class="item item-text-wrap">
+                    {{appointment.summary}}
+                    <br/> {{appointment.description}}
                 </div>
+            </a>
+            <div class="item item-divider">
+                {{appointment.location}}
+
             </div>
         </div>
+        <!--</div>-->
+        <!--</div>-->
     </ion-content>
 </ion-view>

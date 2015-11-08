@@ -15,6 +15,17 @@ lukkariServices.factory('LocalStorage', function() {
     }; 
 });
 
+// POST: https://lukkarit.tamk.fi/teeHaku.php 
+// searches the db for matches
+// formdata:
+// hakukohde=&hakukohde=nimi_koodi&hakusana=k%C3%A4ytett%C3%A4vyys
+// https://lukkarit.tamk.fi/paivitaKori.php?toiminto=refresh&code=false&viewReply=true
+// response --> html
+// updates the basket with the results (html)
+// https://lukkarit.tamk.fi/toteutusInfo.php?code=4A00CN36-3004
+// response --> html
+// shows info about the course when one is clicked in the basket(html)
+
 lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint',
 function ($http, ical, $cookies, ApiEndpoint) {
         var DAY_IN_MILLISECONDS = 86400000;
@@ -66,9 +77,14 @@ function ($http, ical, $cookies, ApiEndpoint) {
                         // loop for each event
                         for (var i = 0; i < vEvents.length; i++) {
                             var appointment = {};
-                            appointment.summary = vEvents[i].getFirstPropertyValue('summary');
-                            appointment.location = vEvents[i].getFirstPropertyValue('location');
-                            appointment.description = vEvents[i].getFirstPropertyValue('description');
+                            appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
+                            appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice( appointment.summary.length);
+                            appointment.summary = appointment.summary.split(/[0-9]+/)[0];
+                            appointment.location = vEvents[i].getFirstPropertyValue('location').split(" - ")[0];
+                            appointment.locationInfo = vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2);
+                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0]; 
+                            appointment.groups =( vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
+                            //appointment.description = "Teacher: " + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
                             appointment.id = i;
                             var date = vEvents[i].getFirstPropertyValue('dtstart');
                             appointment.start = date.hour + ':' + date.minute;
