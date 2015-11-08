@@ -1,4 +1,4 @@
-var lukkariControllers = angular.module('lukkari.controllers', []);
+var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
 
 lukkariControllers.controller('LukkariCtrl', function ($scope, $ionicModal, $timeout) {
 
@@ -147,13 +147,8 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
         }
 }]);
 
-lukkariControllers.controller('SettingsCtrl', ['$scope',
-function ($scope) {
-
-}]);
-
-lukkariControllers.controller('SearchCtrl', ['$scope', 'LocalStorage',
-function ($scope, LocalStorage) {
+lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform',
+function ($scope, LocalStorage, $cordovaToast, $ionicPlatform) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
         if (!$scope.groupInfo.group) {
@@ -164,5 +159,19 @@ function ($scope, LocalStorage) {
             LocalStorage.set('groupName', $scope.groupInfo.group);
             // show toast that change was successfull
 
+            $ionicPlatform.ready(function () {
+                //$cordovaPlugin.someFunction().then(success, error);
+                $cordovaToast.show('Group successfully changed!', 'long', 'center')
+                    .then(function (success) {
+
+                    }, function (error) {
+
+                    });
+            });
         };
+}]);
+
+lukkariControllers.controller('SearchCtrl', ['$scope', 'LocalStorage',
+function ($scope, LocalStorage) {
+
 }]);
