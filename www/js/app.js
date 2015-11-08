@@ -30,6 +30,24 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
             templateUrl: 'templates/menu.html',
             controller: 'LukkariCtrl'
         })
+        .state('app.search', {
+            url: '/search',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/search.html',
+                    controller: 'SearchCtrl'
+                }
+            }
+        })
+        .state('app.settings', {
+            url: '/settings',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/settings.html',
+                    controller: 'SettingsCtrl'
+                }
+            }
+        })
         .state('app.today', {
             url: '/today',
             views: {

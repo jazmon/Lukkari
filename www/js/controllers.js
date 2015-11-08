@@ -51,12 +51,12 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         }).then(function (modal) {
             $scope.modal = modal;
             if (!$scope.groupInfo.group) {
-            // open modal to set group name
-            $scope.modal.show();
-        }
+                // open modal to set group name
+                $scope.modal.show();
+            }
         });
 
-        
+
         $scope.closeGroupName = function () {
             $scope.modal.hide();
         }
@@ -64,10 +64,6 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         $scope.setGroup = function () {
             LocalStorage.set('groupName', $scope.groupInfo.group);
             $scope.modal.hide();
-        }
-
-        $scope.appointments = [];
-        //$scope.getTimetable = function () {
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -75,7 +71,30 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
+        }
+
+        $scope.appointments = [];
+        //$scope.getTimetable = function () {
+        if ($scope.groupInfo.group != undefined) {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.get($scope.groupInfo.group, 0, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
         //};
+
+        $scope.moveDay = function (direction) {
+            if (direction === -1) {
+
+            } else if (direction === 1) {
+
+            } else {
+                throw new RangeError('Parameter out of range! Please use 1 or -1');
+            }
+        }
 }]);
 
 lukkariControllers.controller('AppointmentCtrl', ['$scope', 'Timetables', '$ionicLoading', '$stateParams',
@@ -83,12 +102,29 @@ function ($scope, Timetables, $ionicLoading, $stateParams) {
         $scope.appointment = Timetables.getAppointment($stateParams.id);
 }]);
 
-lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading',
-function ($scope, Timetables, $ionicLoading) {
+lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage',
+function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
         $scope.groupInfo = {};
-        $scope.groupInfo.group = '14tikoot';
+        $scope.groupInfo.group = LocalStorage.get('groupName');
 
-        //$scope.getTimetable = function () {
+        $ionicModal.fromTemplateUrl('templates/newgroup.html', {
+            scope: $scope
+        }).then(function (modal) {
+            $scope.modal = modal;
+            if (!$scope.groupInfo.group) {
+                // open modal to set group name
+                $scope.modal.show();
+            }
+        });
+
+
+        $scope.closeGroupName = function () {
+            $scope.modal.hide();
+        }
+
+        $scope.setGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            $scope.modal.hide();
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -96,8 +132,27 @@ function ($scope, Timetables, $ionicLoading) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
-        //};
-        $scope.openAppointment = function (id) {
-            //Timetables.setId(id);
         }
+
+        $scope.appointments = [];
+        //$scope.getTimetable = function () {
+        if ($scope.groupInfo.group != undefined) {
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.get($scope.groupInfo.group, 6, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
+        }
+}]);
+
+lukkariControllers.controller('SettingsCtrl', ['$scope',
+function ($scope) {
+
+}]);
+
+lukkariControllers.controller('SearchCtrl', ['$scope',
+function ($scope) {
+
 }]);

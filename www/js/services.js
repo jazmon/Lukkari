@@ -1,18 +1,18 @@
 var lukkariServices = angular.module('lukkari.services', ['ngCookies', 'ngIcal']);
 
-lukkariServices.factory('LocalStorage', function() {
-    function get(name){
+lukkariServices.factory('LocalStorage', function () {
+    function get(name) {
         return window.localStorage.getItem(name);
     }
-    
-    function set(name, value){
+
+    function set(name, value) {
         return window.localStorage.setItem(name, value);
     }
-    
-    return{
+
+    return {
         get: get,
         set: set
-    }; 
+    };
 });
 
 // POST: https://lukkarit.tamk.fi/teeHaku.php 
@@ -52,57 +52,58 @@ function ($http, ical, $cookies, ApiEndpoint) {
             var todayString = formatDay(day);
             return todayString;
         }
-    
+
         function get(groupName, dayCount, callback) {
-                appointments = [];
-                // remove phpsessid cookie, because the server
-                // piles the groups into a "shopping basket"
-                $cookies.remove('PHPSESSID');
+            appointments = [];
+            // remove phpsessid cookie, because the server
+            // piles the groups into a "shopping basket"
+            $cookies.remove('PHPSESSID');
+            $http({
+                method: 'GET',
+                url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
+                withCredentials: true
+            }).then(function (response) {
                 $http({
                     method: 'GET',
-                    url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
-                    withCredentials: true
+                    url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
+                        getDay() + '&endDate=' + getDay(dayCount)
                 }).then(function (response) {
-                    $http({
-                        method: 'GET',
-                        url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
-                            getDay() + '&endDate=' + getDay(dayCount)
-                    }).then(function (response) {
-                        // parse ical to vCal format
-                        var vCal = ical.parse(response.data);
-                        // extract the vcal (needed for this to work, lol)
-                        var comp = new ical.Component(vCal);
-                        // get all vevents
-                        var vEvents = comp.getAllSubcomponents();
-                        // loop for each event
-                        for (var i = 0; i < vEvents.length; i++) {
-                            var appointment = {};
-                            appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
-                            appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice( appointment.summary.length);
-                            appointment.summary = appointment.summary.split(/[0-9]+/)[0];
-                            appointment.location = vEvents[i].getFirstPropertyValue('location').split(" - ")[0];
-                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[0];
-                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[1];
-                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0]; 
-                            appointment.groups =( vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
-                            //appointment.description = "Teacher: " + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
-                            appointment.id = i;
-                            var date = vEvents[i].getFirstPropertyValue('dtstart');
-                            appointment.start = date.hour + ':' + date.minute;
-                            date = vEvents[i].getFirstPropertyValue('dtend');
-                            appointment.end = date.hour + ':' + date.minute;
-                            appointments.push(appointment);
-                        }
+                    // parse ical to vCal format
+                    var vCal = ical.parse(response.data);
+                    // extract the vcal (needed for this to work, lol)
+                    var comp = new ical.Component(vCal);
+                    // get all vevents
+                    var vEvents = comp.getAllSubcomponents();
+                    // loop for each event
+                    for (var i = 0; i < vEvents.length; i++) {
+                        var appointment = {};
+                        appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
+                        appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice(appointment.summary.length);
+                        appointment.summary = appointment.summary.split(/[0-9]+/)[0];
+                        appointment.location = vEvents[i].getFirstPropertyValue('location').split(" - ")[0];
+                        appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[0];
+                        appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(", ")[1];
+                        appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                        appointment.groups = (vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
+                        //appointment.description = "Teacher: " + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                        appointment.id = i;
+                        var date = vEvents[i].getFirstPropertyValue('dtstart');
+                        appointment.date = date.day + '.' + date.month;
+                        appointment.start = date.hour + ':' + date.minute;
+                        date = vEvents[i].getFirstPropertyValue('dtend');
+                        appointment.end = date.hour + ':' + date.minute;
+                        appointments.push(appointment);
+                    }
 
-                        callback(appointments);
-                    });
+                    callback(appointments);
                 });
-            }
-    
+            });
+        }
+
         function getAppointment(id) {
             return appointments[id];
         }
-    
+
         return {
             get: get,
             getAppointment: getAppointment

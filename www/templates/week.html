@@ -29,7 +29,7 @@
         <!--<div class="item item-text-wrap">-->
         <div class="card" ng-repeat="appointment in appointments">
             <div class="item item-divider">
-                {{appointment.start}} — {{appointment.end}}
+                {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
             </div>
             <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
                 <div class="item item-text-wrap">
