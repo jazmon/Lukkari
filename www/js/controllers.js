@@ -26,6 +26,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
             $scope.modal.hide();
         }
 
+        // sets the group 
         $scope.setGroup = function () {
             LocalStorage.set('groupName', $scope.groupInfo.group);
             $scope.modal.hide();
@@ -58,7 +59,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
             var date = MyDate.getDayFromToday($scope.dayOffset);
-            $scope.currentDay = MyDate.formatDay(date);
+            $scope.currentDay = MyDate.formatDay(date, false);
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -77,9 +78,10 @@ function ($scope, Timetables, $ionicLoading, $stateParams) {
 }]);
 
 // controller for weekly view
-lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage',
-function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
+lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate',
+function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) {
         $scope.groupInfo = {};
+        $scope.week = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
 
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
@@ -104,6 +106,8 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             });
             Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
+                $scope.week.start = $scope.appointments[0].date;
+                $scope.week.end = $scope.appointments[$scope.appointments.length - 1].date;
                 $ionicLoading.hide();
             });
         }
@@ -115,6 +119,8 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             });
             Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
+                $scope.week.start = $scope.appointments[0].date;
+                $scope.week.end = $scope.appointments[$scope.appointments.length - 1].date;
                 $ionicLoading.hide();
             });
         }

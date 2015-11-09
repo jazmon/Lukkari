@@ -29,17 +29,29 @@ lukkariServices.factory('MyDate', function () {
 
     // formats a Date object into a string
     // parameter: date object
+    // parameter2: return years boolean
     // return: date string
     // 11.02.2040
-    function formatDay(day) {
+    function formatDay(day, years) {
         var dayString = '';
         dayString += day.getDate();
         dayString += '.';
         dayString += (day.getMonth() + 1);
-        dayString += '.';
-        dayString += day.getFullYear();
+        if (typeof years === 'boolean' && years) {
+            dayString += '.';
+            dayString += day.getFullYear();
+        }
         return dayString;
     }
+
+    /*function getLocaleDay(day, years) {
+        var options = {
+          //weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        };
+    }*/
 
     // returns a day that is offset from today
     function getDayFromToday(offsetDays) {
@@ -93,7 +105,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
                 $http({
                     method: 'GET',
                     url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
-                        MyDate.formatDay(startDate) + '&endDate=' + MyDate.formatDay(endDate)
+                        MyDate.formatDay(startDate, true) + '&endDate=' + MyDate.formatDay(endDate, true)
                 }).then(function (response) {
                     // get the ical from the response and parse it
                     var events = getEvents(response.data);
@@ -154,10 +166,18 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             }
             appointment.id = index;
             var date = vEvent.getFirstPropertyValue('dtstart');
+
+            appointment.day = date.dayOfWeek() - 2;
             appointment.date = date.day + '.' + date.month;
             appointment.start = date.hour + ':' + date.minute;
+            if (date.minute === 0) {
+                appointment.start += '0';
+            }
             date = vEvent.getFirstPropertyValue('dtend');
             appointment.end = date.hour + ':' + date.minute;
+            if (date.minute === 0) {
+                appointment.end += '0';
+            }
             return appointment;
         }
 

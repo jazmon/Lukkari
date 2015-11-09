@@ -1,48 +1,136 @@
-<ion-view view-title="Week">
-    <!--Insert today's formatted timetable here-->
+<ion-view cache-view="false" view-title="Week {{week.start}} — {{week.end}}">
     <ion-content>
-        <!--<div class="card">
-            <div class="item item-divider">
-                Enter group name
-            </div>
-            <div class="item item-text-wrap">
-                <form ng-submit="getTimetable()">
-                    <div class="list">
-                        <label class="item item-input">
-                            <span class="input-label">Group name</span>
-                            <input type="text" ng-model="groupInfo.group">
-                        </label>
-                        <div class="item item-input">
-                            <button class="button button-calm" type="submit">
-                                Search
-                                <i class="icon ion-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>-->
-        <!--<div class="card">-->
-        <!--<div class="item item-divider">
-                Timetable in next 7 days
-            </div>-->
-        <!--<div class="item item-text-wrap">-->
-        <div class="card" ng-repeat="appointment in appointments">
-            <div class="item item-divider">
-                {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
-            </div>
-            <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
-                <div class="item item-text-wrap">
-                    {{appointment.summary}}
-                    <br/> {{appointment.description}}
-                </div>
-            </a>
-            <div class="item item-divider">
-                {{appointment.location}}
-
-            </div>
+        <div class="button-bar">
+            <a class="button button-calm icon-right ion-arrow-left-a" ng-click="moveWeek(-1)">Previous week</a>
+            <a class="button button-calm icon-left ion-arrow-right-a" ng-click="moveWeek(1)">Next week</a>
         </div>
-        <!--</div>-->
-        <!--</div>-->
+        <ion-list>
+            <ion-item class="item-divider">Monday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter: { day: 0 } ">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Tuesday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 1}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Wednesday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 3}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Thursday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 4}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Friday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 5}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Saturday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 6}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+            <ion-item class="item-divider">Sunday</ion-item>
+            <ion-item>
+                <div class="card" ng-repeat="appointment in appointments | filter:{day: 7}">
+                    <div class="item item-divider">
+                        {{appointment.date}} &nbsp;&nbsp;{{appointment.start}} — {{appointment.end}}
+                    </div>
+                    <a class="appointmentlink" ng-click="openAppointment(appointment.id)" href="#/app/week/{{appointment.id}}">
+                        <div class="item item-text-wrap">
+                            {{appointment.summary}}
+                            <br/> {{appointment.description}}
+                        </div>
+                    </a>
+                    <div class="item item-divider">
+                        {{appointment.location}}
+
+                    </div>
+                </div>
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>
