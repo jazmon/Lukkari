@@ -96,7 +96,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
                         MyDate.formatDay(startDate) + '&endDate=' + MyDate.formatDay(endDate)
                 }).then(function (response) {
                     // get the ical from the response and parse it
-                    var events = getEvents(reponse.data);
+                    var events = getEvents(response.data);
                     for (var i = 0; i < events.length; i++) {
                         var appointment = parseEvent(events[i], i);
                         appointments.push(appointment);

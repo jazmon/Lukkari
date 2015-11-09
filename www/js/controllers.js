@@ -4,13 +4,14 @@ var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
 lukkariControllers.controller('LukkariCtrl', function ($scope) {});
 
 // controller for today view
-lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoading', 'LocalStorage', '$ionicModal',
-function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
+lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate',
+function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
         $scope.dayOffset = 0;
         $scope.currentDay = 'Today';
 
+        // Show new group modal when no group is set
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
             scope: $scope
         }).then(function (modal) {
@@ -31,7 +32,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
+            Timetables.getDay($scope.groupInfo.group, $scope.dayOffset, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -42,7 +43,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
+            Timetables.getDay($scope.groupInfo.group, $scope.dayOffset, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -56,12 +57,13 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             } else {
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
-            $scope.currentDay = Timetables.getDay($scope.dayOffset);
+            var date = MyDate.getDayFromToday($scope.dayOffset);
+            $scope.currentDay = MyDate.formatDay(date);
             $ionicLoading.show({
                 template: 'Loading...'
             });
             $scope.appointments = [];
-            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
+            Timetables.getDay($scope.groupInfo.group, $scope.dayOffset, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -100,7 +102,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 0, 6, function (result) {
+            Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -111,7 +113,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 0, 6, function (result) {
+            Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
