@@ -75,18 +75,15 @@ lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint
 function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         var appointments = [];
 
-        function getWeek(groupName, callback) {
+        // make a http get request that adds the group to the shopping bin
+        //, using proxy if needed (in development)
+        // and use credentials so that cookies are used.
+        function makeRequest(groupName, startDate, endDate, callback) {
             // clear appointments
             appointments = [];
             // remove phpsessid cookie, because the server
             // piles the groups into a 'shopping basket'
             $cookies.remove('PHPSESSID');
-            var monday = MyDate.getMonday(new Date());
-            var sunday = MyDate.getDayFromToday(6);
-
-            // make a http get request that adds the group to the shopping bin
-            //, using proxy if needed (in development)
-            // and use credentials so that cookies are used.
             $http({
                 method: 'GET',
                 url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
@@ -96,7 +93,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
                 $http({
                     method: 'GET',
                     url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
-                        MyDate.formatDay(monday) + '&endDate=' + MyDate.formatDay(sunday)
+                        MyDate.formatDay(startDate) + '&endDate=' + MyDate.formatDay(endDate)
                 }).then(function (response) {
                     // get the ical from the response and parse it
                     var events = getEvents(reponse.data);
@@ -109,11 +106,18 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
                     callback(appointments);
                 });
             });
+        }
 
+        function getWeek(groupName, callback) {
+            var monday = MyDate.getMonday(new Date());
+            var sunday = MyDate.getDayFromToday(6);
+            makeRequest(groupName, monday, sunday, callback);
         }
 
         function getDay(groupName, dayOffset, callback) {
             var day = MyDate.getDayFromToday(dayOffset);
+            makeRequest(groupName, day, day, callback);
+
         }
 
         // returns appointment with properties
@@ -167,41 +171,14 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             return comp.getAllSubcomponents();
         }
 
-        function get(groupName, dayOffset, dayCount, callback) {
-            appointments = [];
-            // remove phpsessid cookie, because the server
-            // piles the groups into a 'shopping basket'
-            $cookies.remove('PHPSESSID');
-            $http({
-                method: 'GET',
-                url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
-                withCredentials: true
-            }).then(function (response) {
-                $http({
-                    method: 'GET',
-                    url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
-                        getDay(dayOffset) + '&endDate=' + getDay(dayOffset + dayCount)
-                }).then(function (response) {
-                    var events = getEvents(response.data);
-                    // loop for each event
-                    for (var i = 0; i < events.length; i++) {
-                        var appointment = parseEvent(events[i], i);
-                        appointments.push(appointment);
-                    }
-
-                    callback(appointments);
-                });
-            });
-        }
-
+        // returns an appointment with id
         function getAppointment(id) {
             return appointments[id];
         }
 
         return {
-            get: get,
+            getWeek: getWeek,
             getAppointment: getAppointment,
-            getDay: getDay,
-            formatDay: formatDay
+            getDay: getDay
         }
-                }]);
+}]);
