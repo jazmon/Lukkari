@@ -78,24 +78,32 @@ function ($http, ical, $cookies, ApiEndpoint) {
                     // loop for each event
                     for (var i = 0; i < vEvents.length; i++) {
                         var appointment = {};
+                        // try to parse the ical into logical components...
+                        // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
                         appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
-                        appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary').slice(appointment.summary.length);
+                        appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary')
+                            .slice(appointment.summary.length);
                         appointment.summary = appointment.summary.split(/[0-9]+/)[0];
                         appointment.location = vEvents[i].getFirstPropertyValue('location').split(' - ')[0];
                         try {
-                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(', ')[0];
-                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location').slice(appointment.location.length + 2)).split(', ')[1];
+                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location')
+                                .slice(appointment.location.length + 2)).split(', ')[0];
+                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location')
+                                .slice(appointment.location.length + 2)).split(', ')[1];
                         } catch (e) {
                             appointment.locationInfo = vEvents[i].getFirstPropertyValue('location');
                         }
                         try {
-                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description').split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description')
+                                .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
                         } catch (e) {
                             appointment.teacher = vEvents[i].getFirstPropertyValue('description');
                         }
 
                         try {
-                            appointment.groups = (vEvents[i].getFirstPropertyValue('description').slice((vEvents[i].getFirstPropertyValue('description').split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
+                            appointment.groups = (vEvents[i].getFirstPropertyValue('description')
+                                .slice((vEvents[i].getFirstPropertyValue('description')
+                                    .split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
                         } catch (e) {
                             appointment.groups = vEvents.getFirstPropertyValue('description');
                         }
