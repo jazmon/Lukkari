@@ -45,6 +45,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', 'Timetables', '$ionicLoadi
 function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
+        $scope.dayOffset = 0;
 
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
             scope: $scope
@@ -67,7 +68,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 0, function (result) {
+            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -79,7 +80,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 0, function (result) {
+            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -88,12 +89,21 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
 
         $scope.moveDay = function (direction) {
             if (direction === -1) {
-
+                $scope.dayOffset -= 1;
             } else if (direction === 1) {
-
+                $scope.dayOffset += 1;
             } else {
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
+            console.log('dayoffset: ' + $scope.dayOffset);
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            $scope.appointments = [];
+            Timetables.get($scope.groupInfo.group, $scope.dayOffset, 0, function (result) {
+                $scope.appointments = result;
+                $ionicLoading.hide();
+            });
         }
 }]);
 
@@ -128,7 +138,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 6, function (result) {
+            Timetables.get($scope.groupInfo.group, 0, 6, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
@@ -140,7 +150,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.get($scope.groupInfo.group, 6, function (result) {
+            Timetables.get($scope.groupInfo.group, 0, 6, function (result) {
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });

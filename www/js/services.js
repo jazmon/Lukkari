@@ -39,6 +39,7 @@ function ($http, ical, $cookies, ApiEndpoint) {
             dayString += '.';
             dayString += day.getFullYear();
 
+            console.log('day: ' + dayString);
             return dayString;
         }
 
@@ -53,7 +54,7 @@ function ($http, ical, $cookies, ApiEndpoint) {
             return todayString;
         }
 
-        function get(groupName, dayCount, callback) {
+        function get(groupName, dayOffset, dayCount, callback) {
             appointments = [];
             // remove phpsessid cookie, because the server
             // piles the groups into a 'shopping basket'
@@ -66,7 +67,7 @@ function ($http, ical, $cookies, ApiEndpoint) {
                 $http({
                     method: 'GET',
                     url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
-                        getDay() + '&endDate=' + getDay(dayCount)
+                        getDay(dayOffset) + '&endDate=' + getDay(dayOffset + dayCount)
                 }).then(function (response) {
                     // parse ical to vCal format
                     var vCal = ical.parse(response.data);
@@ -98,8 +99,6 @@ function ($http, ical, $cookies, ApiEndpoint) {
                         } catch (e) {
                             appointment.groups = vEvents.getFirstPropertyValue('description');
                         }
-
-                        //appointment.description = 'Teacher: ' + (appointment.description.split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
                         appointment.id = i;
                         var date = vEvents[i].getFirstPropertyValue('dtstart');
                         appointment.date = date.day + '.' + date.month;
