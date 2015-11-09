@@ -31,6 +31,31 @@ function ($http, ical, $cookies, ApiEndpoint) {
         var DAY_IN_MILLISECONDS = 86400000;
         var appointments = [];
 
+        function getMonday(d) {
+            d = new Date(d);
+            var day = d.getDay(),
+                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            return new Date(d.setDate(diff));
+        }
+
+        function getWeek(groupName, callback) {
+            appointments = [];
+            // remove phpsessid cookie, because the server
+            // piles the groups into a 'shopping basket'
+            $cookies.remove('PHPSESSID');
+            var monday = getMonday(new Date());
+            var sunday = getDayInTheFuture(6);
+
+        }
+
+        function getDay(groupName, dayOffset, callback) {
+
+        }
+
+        // formats a Date object into a string
+        // parameter: date object
+        // return: date string
+        // 11.02.2040
         function formatDay(day) {
             var dayString = '';
             dayString += day.getDate();
@@ -41,6 +66,18 @@ function ($http, ical, $cookies, ApiEndpoint) {
             return dayString;
         }
 
+        function getDayInTheFuture(days) {
+            // today in millisecs since the beginning of time (UNIX time)
+            var day = Date.now();
+            // add desired amount of days to the millisecs
+            day += days * DAY_IN_MILLISECONDS;
+            // create Date object and set it's time to the millisecs
+            var date = new Date();
+            date.setTime(day);
+            return date;
+        }
+
+        // returns a 
         function getDay(daysToAdd) {
             var today = Date.now();
             if (daysToAdd !== undefined && daysToAdd !== null) {
@@ -50,6 +87,57 @@ function ($http, ical, $cookies, ApiEndpoint) {
             day.setTime(today);
             var todayString = formatDay(day);
             return todayString;
+        }
+
+        // returns appointment with properties
+        function parseEvent(vEvent, index) {
+            var appointment = {};
+            // try to parse the ical into logical components...
+            // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
+            appointment.summary = vEvent.getFirstPropertyValue('summary').split(/[0-9]+/)[0];
+            appointment.courseNumber = vEvent.getFirstPropertyValue('summary')
+                .slice(appointment.summary.length);
+            appointment.summary = appointment.summary.split(/[0-9]+/)[0];
+            appointment.location = vEvent.getFirstPropertyValue('location').split(' - ')[0];
+            try {
+                appointment.locationInfo = (vEvent.getFirstPropertyValue('location')
+                    .slice(appointment.location.length + 2)).split(', ')[0];
+                appointment.locationInfo2 = (vEvent.getFirstPropertyValue('location')
+                    .slice(appointment.location.length + 2)).split(', ')[1];
+            } catch (e) {
+                appointment.locationInfo = vEvent.getFirstPropertyValue('location');
+            }
+            try {
+                appointment.teacher = (vEvent.getFirstPropertyValue('description')
+                    .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+            } catch (e) {
+                appointment.teacher = vEvent.getFirstPropertyValue('description');
+            }
+
+            try {
+                appointment.groups = (vEvent.getFirstPropertyValue('description')
+                    .slice((vEvent.getFirstPropertyValue('description')
+                        .split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
+            } catch (e) {
+                appointment.groups = vEvents.getFirstPropertyValue('description');
+            }
+            appointment.id = index;
+            var date = vEvent.getFirstPropertyValue('dtstart');
+            appointment.date = date.day + '.' + date.month;
+            appointment.start = date.hour + ':' + date.minute;
+            date = vEvent.getFirstPropertyValue('dtend');
+            appointment.end = date.hour + ':' + date.minute;
+            return appointment;
+        }
+
+        // returns array containing vEvents from the ical
+        function getEvents(icalData) {
+            // parse ical to vCal format
+            var vCal = ical.parse(icalData);
+            // extract the vcal (needed for this to work, lol)
+            var comp = new ical.Component(vCal);
+            // return all vevents
+            return comp.getAllSubcomponents();
         }
 
         function get(groupName, dayOffset, dayCount, callback) {
@@ -67,50 +155,10 @@ function ($http, ical, $cookies, ApiEndpoint) {
                     url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
                         getDay(dayOffset) + '&endDate=' + getDay(dayOffset + dayCount)
                 }).then(function (response) {
-                    // parse ical to vCal format
-                    var vCal = ical.parse(response.data);
-                    // extract the vcal (needed for this to work, lol)
-                    var comp = new ical.Component(vCal);
-                    // get all vevents
-                    var vEvents = comp.getAllSubcomponents();
+                    var events = getEvents(response.data);
                     // loop for each event
-                    for (var i = 0; i < vEvents.length; i++) {
-                        var appointment = {};
-                        // try to parse the ical into logical components...
-                        // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
-                        appointment.summary = vEvents[i].getFirstPropertyValue('summary').split(/[0-9]+/)[0];
-                        appointment.courseNumber = vEvents[i].getFirstPropertyValue('summary')
-                            .slice(appointment.summary.length);
-                        appointment.summary = appointment.summary.split(/[0-9]+/)[0];
-                        appointment.location = vEvents[i].getFirstPropertyValue('location').split(' - ')[0];
-                        try {
-                            appointment.locationInfo = (vEvents[i].getFirstPropertyValue('location')
-                                .slice(appointment.location.length + 2)).split(', ')[0];
-                            appointment.locationInfo2 = (vEvents[i].getFirstPropertyValue('location')
-                                .slice(appointment.location.length + 2)).split(', ')[1];
-                        } catch (e) {
-                            appointment.locationInfo = vEvents[i].getFirstPropertyValue('location');
-                        }
-                        try {
-                            appointment.teacher = (vEvents[i].getFirstPropertyValue('description')
-                                .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
-                        } catch (e) {
-                            appointment.teacher = vEvents[i].getFirstPropertyValue('description');
-                        }
-
-                        try {
-                            appointment.groups = (vEvents[i].getFirstPropertyValue('description')
-                                .slice((vEvents[i].getFirstPropertyValue('description')
-                                    .split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
-                        } catch (e) {
-                            appointment.groups = vEvents.getFirstPropertyValue('description');
-                        }
-                        appointment.id = i;
-                        var date = vEvents[i].getFirstPropertyValue('dtstart');
-                        appointment.date = date.day + '.' + date.month;
-                        appointment.start = date.hour + ':' + date.minute;
-                        date = vEvents[i].getFirstPropertyValue('dtend');
-                        appointment.end = date.hour + ':' + date.minute;
+                    for (var i = 0; i < events.length; i++) {
+                        var appointment = parseEvent(events[i], i);
                         appointments.push(appointment);
                     }
 
