@@ -38,8 +38,6 @@ function ($http, ical, $cookies, ApiEndpoint) {
             dayString += (day.getMonth() + 1);
             dayString += '.';
             dayString += day.getFullYear();
-
-            console.log('day: ' + dayString);
             return dayString;
         }
 
@@ -127,6 +125,8 @@ function ($http, ical, $cookies, ApiEndpoint) {
 
         return {
             get: get,
-            getAppointment: getAppointment
+            getAppointment: getAppointment,
+            getDay: getDay,
+            formatDay: formatDay
         }
 }]);

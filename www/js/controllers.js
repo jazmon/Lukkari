@@ -9,6 +9,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
         $scope.groupInfo = {};
         $scope.groupInfo.group = LocalStorage.get('groupName');
         $scope.dayOffset = 0;
+        $scope.currentDay = 'Today';
 
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
             scope: $scope
@@ -55,7 +56,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal) {
             } else {
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
-            console.log('dayoffset: ' + $scope.dayOffset);
+            $scope.currentDay = Timetables.getDay($scope.dayOffset);
             $ionicLoading.show({
                 template: 'Loading...'
             });
