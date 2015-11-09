@@ -44,19 +44,20 @@ lukkariServices.factory('MyDate', function () {
         return dayString;
     }
 
-    /*function getLocaleDay(day, years) {
+    function getLocaleDate(day, years) {
         var options = {
-          //weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+            //weekday: 'long',
+            month: 'numeric',
+            day: 'numeric'
         };
-    }*/
+        if (typeof years === 'boolean' && years) {
+            options.year = 'numeric';
+        }
+        return new Intl.DateTimeFormat('fi-FI', options).format(day);
+    }
 
-    // returns a day that is offset from today
-    function getDayFromToday(offsetDays) {
-        // today in millisecs since the beginning of time (UNIX time)
-        var day = Date.now();
+    function getDayFromDay(currentDay, offsetDays) {
+        var day = currentDay.getTime();
         // add desired amount of days to the millisecs
         day += offsetDays * DAY_IN_MILLISECONDS;
         // create Date object and set it's time to the millisecs
@@ -65,10 +66,22 @@ lukkariServices.factory('MyDate', function () {
         return date;
     }
 
+    // returns a day that is offset from today
+    function getDayFromToday(offsetDays) {
+        // today in millisecs since the beginning of time (UNIX time)
+        var day = Date.now();
+        // add desired amount of days to the millisecs
+        day += offsetDays * DAY_IN_MILLISECONDS;
+        // create Date object and set it's time to the millisecs
+        return new Date(day);
+    }
+
     return {
         getMonday: getMonday,
         formatDay: formatDay,
-        getDayFromToday: getDayFromToday
+        getDayFromToday: getDayFromToday,
+        getLocaleDate: getLocaleDate,
+        getDayFromDay: getDayFromDay
     };
 });
 
@@ -122,7 +135,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
 
         function getWeek(groupName, callback) {
             var monday = MyDate.getMonday(new Date());
-            var sunday = MyDate.getDayFromToday(6);
+            var sunday = MyDate.getDayFromDay(monday, 6);
             makeRequest(groupName, monday, sunday, callback);
         }
 
@@ -168,7 +181,9 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             var date = vEvent.getFirstPropertyValue('dtstart');
 
             appointment.day = date.dayOfWeek() - 2;
-            appointment.date = date.day + '.' + date.month;
+            appointment.localeDate = MyDate.getLocaleDate(new Date(date.toUnixTime() * 1000), false);
+            appointment.year = date.year;
+            appointment.date = date.day + '.' + date.month + '.';
             appointment.start = date.hour + ':' + date.minute;
             if (date.minute === 0) {
                 appointment.start += '0';

@@ -59,7 +59,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
             var date = MyDate.getDayFromToday($scope.dayOffset);
-            $scope.currentDay = MyDate.formatDay(date, false);
+            $scope.currentDay = MyDate.getLocaleDate(date, false);
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -107,7 +107,12 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
                 $scope.week.start = $scope.appointments[0].date;
-                $scope.week.end = $scope.appointments[$scope.appointments.length - 1].date;
+                var day = $scope.appointments[0].date.split('.')[0];
+                var month = $scope.appointments[0].date.split('.')[1] - 1;
+                var year = $scope.appointments[0].year;
+                var nowDate = new Date(year, month, day);
+                var date = MyDate.getDayFromDay(nowDate, 6);
+                $scope.week.end = MyDate.getLocaleDate(date, false);
                 $ionicLoading.hide();
             });
         }
@@ -120,7 +125,12 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             Timetables.getWeek($scope.groupInfo.group, function (result) {
                 $scope.appointments = result;
                 $scope.week.start = $scope.appointments[0].date;
-                $scope.week.end = $scope.appointments[$scope.appointments.length - 1].date;
+                var day = $scope.appointments[0].date.split('.')[0];
+                var month = $scope.appointments[0].date.split('.')[1] - 1;
+                var year = $scope.appointments[0].year;
+                var nowDate = new Date(year, month, day);
+                var date = MyDate.getDayFromDay(nowDate, 6);
+                $scope.week.end = MyDate.getLocaleDate(date, false);
                 $ionicLoading.hide();
             });
         }
