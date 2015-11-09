@@ -15,6 +15,51 @@ lukkariServices.factory('LocalStorage', function () {
     };
 });
 
+
+lukkariServices.factory('MyDate', function () {
+    var DAY_IN_MILLISECONDS = 86400000;
+
+    // returns the monday of the week date object of the given date
+    function getMonday(d) {
+        d = new Date(d);
+        var day = d.getDay(),
+            diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+        return new Date(d.setDate(diff));
+    }
+
+    // formats a Date object into a string
+    // parameter: date object
+    // return: date string
+    // 11.02.2040
+    function formatDay(day) {
+        var dayString = '';
+        dayString += day.getDate();
+        dayString += '.';
+        dayString += (day.getMonth() + 1);
+        dayString += '.';
+        dayString += day.getFullYear();
+        return dayString;
+    }
+
+    // returns a day that is offset from today
+    function getDayFromToday(offsetDays) {
+        // today in millisecs since the beginning of time (UNIX time)
+        var day = Date.now();
+        // add desired amount of days to the millisecs
+        day += offsetDays * DAY_IN_MILLISECONDS;
+        // create Date object and set it's time to the millisecs
+        var date = new Date();
+        date.setTime(day);
+        return date;
+    }
+
+    return {
+        getMonday: getMonday,
+        formatDay: formatDay,
+        getDayFromToday: getDayFromToday
+    };
+});
+
 // POST: https://lukkarit.tamk.fi/teeHaku.php 
 // searches the db for matches
 // formdata:
@@ -26,67 +71,49 @@ lukkariServices.factory('LocalStorage', function () {
 // response --> html
 // shows info about the course when one is clicked in the basket(html)
 
-lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint',
-function ($http, ical, $cookies, ApiEndpoint) {
-        var DAY_IN_MILLISECONDS = 86400000;
+lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint', 'MyDate',
+function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         var appointments = [];
 
-        function getMonday(d) {
-            d = new Date(d);
-            var day = d.getDay(),
-                diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
-            return new Date(d.setDate(diff));
-        }
-
         function getWeek(groupName, callback) {
+            // clear appointments
             appointments = [];
             // remove phpsessid cookie, because the server
             // piles the groups into a 'shopping basket'
             $cookies.remove('PHPSESSID');
-            var monday = getMonday(new Date());
-            var sunday = getDayInTheFuture(6);
+            var monday = MyDate.getMonday(new Date());
+            var sunday = MyDate.getDayFromToday(6);
+
+            // make a http get request that adds the group to the shopping bin
+            //, using proxy if needed (in development)
+            // and use credentials so that cookies are used.
+            $http({
+                method: 'GET',
+                url: ApiEndpoint.url + '/paivitaKori.php?toiminto=addGroup&code=' + groupName.toUpperCase(),
+                withCredentials: true
+            }).then(function (response) {
+                // after we get response do new query that gets the ical 
+                $http({
+                    method: 'GET',
+                    url: ApiEndpoint.url + '/icalcreator.php?startDate=' +
+                        MyDate.formatDay(monday) + '&endDate=' + MyDate.formatDay(sunday)
+                }).then(function (response) {
+                    // get the ical from the response and parse it
+                    var events = getEvents(reponse.data);
+                    for (var i = 0; i < events.length; i++) {
+                        var appointment = parseEvent(events[i], i);
+                        appointments.push(appointment);
+                    }
+
+                    // call callback function when finished
+                    callback(appointments);
+                });
+            });
 
         }
 
         function getDay(groupName, dayOffset, callback) {
-
-        }
-
-        // formats a Date object into a string
-        // parameter: date object
-        // return: date string
-        // 11.02.2040
-        function formatDay(day) {
-            var dayString = '';
-            dayString += day.getDate();
-            dayString += '.';
-            dayString += (day.getMonth() + 1);
-            dayString += '.';
-            dayString += day.getFullYear();
-            return dayString;
-        }
-
-        function getDayInTheFuture(days) {
-            // today in millisecs since the beginning of time (UNIX time)
-            var day = Date.now();
-            // add desired amount of days to the millisecs
-            day += days * DAY_IN_MILLISECONDS;
-            // create Date object and set it's time to the millisecs
-            var date = new Date();
-            date.setTime(day);
-            return date;
-        }
-
-        // returns a 
-        function getDay(daysToAdd) {
-            var today = Date.now();
-            if (daysToAdd !== undefined && daysToAdd !== null) {
-                today += (daysToAdd * DAY_IN_MILLISECONDS);
-            }
-            var day = new Date();
-            day.setTime(today);
-            var todayString = formatDay(day);
-            return todayString;
+            var day = MyDate.getDayFromToday(dayOffset);
         }
 
         // returns appointment with properties
@@ -177,4 +204,4 @@ function ($http, ical, $cookies, ApiEndpoint) {
             getDay: getDay,
             formatDay: formatDay
         }
-}]);
+                }]);
