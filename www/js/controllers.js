@@ -82,6 +82,7 @@ lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoadin
 function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) {
         $scope.groupInfo = {};
         $scope.week = {};
+        $scope.weekOffset = 0;
         $scope.groupInfo.group = LocalStorage.get('groupName');
 
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
@@ -104,15 +105,17 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.getWeek($scope.groupInfo.group, function (result) {
+            Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
                 $scope.appointments = result;
-                $scope.week.start = $scope.appointments[0].date;
-                var day = $scope.appointments[0].date.split('.')[0];
-                var month = $scope.appointments[0].date.split('.')[1] - 1;
-                var year = $scope.appointments[0].year;
-                var nowDate = new Date(year, month, day);
-                var date = MyDate.getDayFromDay(nowDate, 6);
-                $scope.week.end = MyDate.getLocaleDate(date, false);
+                if ($scope.appointments.length > 0) {
+                    $scope.week.start = $scope.appointments[0].date;
+                    var day = $scope.appointments[0].date.split('.')[0];
+                    var month = $scope.appointments[0].date.split('.')[1] - 1;
+                    var year = $scope.appointments[0].year;
+                    var nowDate = new Date(year, month, day);
+                    var date = MyDate.getDayFromDay(nowDate, 6);
+                    $scope.week.end = MyDate.getLocaleDate(date, false);
+                }
                 $ionicLoading.hide();
             });
         }
@@ -122,16 +125,47 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             $ionicLoading.show({
                 template: 'Loading...'
             });
-            Timetables.getWeek($scope.groupInfo.group, function (result) {
+            Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
                 $scope.appointments = result;
-                $scope.week.start = $scope.appointments[0].date;
-                var day = $scope.appointments[0].date.split('.')[0];
-                var month = $scope.appointments[0].date.split('.')[1] - 1;
-                var year = $scope.appointments[0].year;
-                var nowDate = new Date(year, month, day);
-                var date = MyDate.getDayFromDay(nowDate, 6);
-                $scope.week.end = MyDate.getLocaleDate(date, false);
+                if ($scope.appointments.length > 0) {
+                    $scope.week.start = $scope.appointments[0].date;
+                    var day = $scope.appointments[0].date.split('.')[0];
+                    var month = $scope.appointments[0].date.split('.')[1] - 1;
+                    var year = $scope.appointments[0].year;
+                    var nowDate = new Date(year, month, day);
+                    var date = MyDate.getDayFromDay(nowDate, 6);
+                    $scope.week.end = MyDate.getLocaleDate(date, false);
+                }
                 $ionicLoading.hide();
+            });
+        }
+
+        $scope.moveWeek = function (direction) {
+            if (direction === -1) {
+                $scope.weekOffset -= 1;
+            } else if (direction === 1) {
+                $scope.weekOffset += 1;
+            } else {
+                throw new RangeError('Parameter out of range! Please use 1 or -1');
+            }
+            //var date = MyDate.getDayFromToday($scope.weekOffset);
+            // $scope.currentDay = MyDate.getLocaleDate(date, false);
+            $ionicLoading.show({
+                template: 'Loading...'
+            });
+            Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
+                $scope.appointments = result;
+                if ($scope.appointments.length > 0) {
+                    $scope.week.start = $scope.appointments[0].date;
+                    var day = $scope.appointments[0].date.split('.')[0];
+                    var month = $scope.appointments[0].date.split('.')[1] - 1;
+                    var year = $scope.appointments[0].year;
+                    var nowDate = new Date(year, month, day);
+                    var date = MyDate.getDayFromDay(nowDate, 6);
+                    $scope.week.end = MyDate.getLocaleDate(date, false);
+                }
+                $ionicLoading.hide();
+
             });
         }
 }]);

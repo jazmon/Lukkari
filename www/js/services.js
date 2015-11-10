@@ -18,6 +18,7 @@ lukkariServices.factory('LocalStorage', function () {
 
 lukkariServices.factory('MyDate', function () {
     var DAY_IN_MILLISECONDS = 86400000;
+    //var WEEK_IN_MILLISECONDS = 604800000;
 
     // returns the monday of the week date object of the given date
     function getMonday(d) {
@@ -133,8 +134,9 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             });
         }
 
-        function getWeek(groupName, callback) {
-            var monday = MyDate.getMonday(new Date());
+        function getWeek(groupName, weekOffset, callback) {
+            var thisMonday = MyDate.getMonday(new Date());
+            var monday = MyDate.getDayFromDay(thisMonday, weekOffset * 6);
             var sunday = MyDate.getDayFromDay(monday, 6);
             makeRequest(groupName, monday, sunday, callback);
         }
