@@ -18,7 +18,7 @@ lukkariApp.run(function ($ionicPlatform) {
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
-    url: 'https://lukkarit.tamk.fi'
+    url: 'http://localhost:8100/api'
 });
 
 // menuContent-view is presented on the main view.
@@ -45,6 +45,15 @@ lukkariApp.config(function ($stateProvider, $urlRouterProvider) {
                 'menuContent': {
                     templateUrl: 'templates/settings.html',
                     controller: 'SettingsCtrl'
+                }
+            }
+        })
+        .state('app.todayAppointment', {
+            url: '/today/:id',
+            views: {
+                'menuContent': {
+                    templateUrl: 'templates/appointment.html',
+                    controller: 'AppointmentCtrl'
                 }
             }
         })

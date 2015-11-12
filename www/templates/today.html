@@ -8,10 +8,12 @@
             <div class="item item-divider">
                 {{appointment.startDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}} — {{appointment.endDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}}
             </div>
-            <div class="item item-text-wrap">
-                {{appointment.summary}}
-                <br/> {{appointment.description}}
-            </div>
+            <a class="appointmentlink" href="#/app/today/{{appointment.id}}">
+                <div class="item item-text-wrap">
+                    {{appointment.summary}}
+                    <br/> {{appointment.description}}
+                </div>
+            </a>
             <div class="item item-divider">
                 {{appointment.location}}
             </div>
