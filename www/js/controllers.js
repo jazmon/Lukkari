@@ -134,13 +134,12 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
 
         $scope.appointments = [];
         if ($scope.groupInfo.group != undefined) {
-
             getAppointments();
         }
 
         $scope.moveWeek = function (direction) {
             if (direction === -1) {
-                $scope.weekOffset -= 2;
+                $scope.weekOffset -= 1;
             } else if (direction === 1) {
                 $scope.weekOffset += 1;
             } else {
