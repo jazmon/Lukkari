@@ -50,7 +50,9 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
             });
         }
 
+        // Moves a day forwards/backwards
         $scope.moveDay = function (direction) {
+            // change the offset from current day
             if (direction === -1) {
                 $scope.dayOffset -= 1;
             } else if (direction === 1) {
@@ -85,20 +87,25 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
         $scope.weekOffset = 0;
         $scope.groupInfo.group = LocalStorage.get('groupName');
 
-        $ionicModal.fromTemplateUrl('templates/newgroup.html', {
-            scope: $scope
-        }).then(function (modal) {
-            $scope.modal = modal;
-            if (!$scope.groupInfo.group) {
+        // Create modal for new group if no group name is set
+        if (!$scope.groupInfo.group) {
+            $ionicModal.fromTemplateUrl('templates/newgroup.html', {
+                scope: $scope
+            }).then(function (modal) {
+                $scope.modal = modal;
+
                 // open modal to set group name
                 $scope.modal.show();
-            }
-        });
 
+            });
+        }
+
+        // closes the group name dialog
         $scope.closeGroupName = function () {
             $scope.modal.hide();
         }
 
+        // returns all of the appointments
         function getAppointments() {
             $ionicLoading.show({
                 template: 'Loading...'
@@ -126,6 +133,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             });
         };
 
+        // sets the group name
         $scope.setGroup = function () {
             LocalStorage.set('groupName', $scope.groupInfo.group);
             $scope.modal.hide();
@@ -137,6 +145,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             getAppointments();
         }
 
+        // moves a week forwards/backwards
         $scope.moveWeek = function (direction) {
             if (direction === -1) {
                 $scope.weekOffset -= 1;
