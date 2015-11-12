@@ -6,7 +6,7 @@
         </div>
         <div class="card" ng-repeat="appointment in appointments">
             <div class="item item-divider">
-                {{appointment.start}} — {{appointment.end}}
+                {{appointment.startDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}} — {{appointment.endDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}}
             </div>
             <div class="item item-text-wrap">
                 {{appointment.summary}}
