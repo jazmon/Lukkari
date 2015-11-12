@@ -1,9 +1,13 @@
 <ion-view cache-view="false" view-title="Week {{week.start}} — {{week.end}}">
-    <ion-content>
+    <ion-header-bar class="bar-subheader">
         <div class="button-bar">
             <a class="button button-calm icon-right ion-arrow-left-a" ng-click="moveWeek(-1)">Previous week</a>
             <a class="button button-calm icon-left ion-arrow-right-a" ng-click="moveWeek(1)">Next week</a>
         </div>
+    </ion-header-bar>
+
+    <ion-content>
+
         <ion-list>
             <div ng-repeat="day in days">
                 <ion-item class="item-divider">{{day.date.toLocaleDateString('fi-FI', {weekday: 'short', day: 'numeric', month:'numeric'})}}</ion-item>

@@ -99,43 +99,22 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             $scope.modal.hide();
         }
 
-        $scope.setGroup = function () {
-            LocalStorage.set('groupName', $scope.groupInfo.group);
-            $scope.modal.hide();
+        function getAppointments() {
             $ionicLoading.show({
                 template: 'Loading...'
             });
             Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
-                $scope.appointments = result;
-                if ($scope.appointments.length > 0) {
-                    // set week start date
-                    var startDate = MyDate.getMonday($scope.appointments[0].startDate);
-                    $scope.week.start = MyDate.getLocaleDate(date, false);
-                    // set week end date
-                    var date = MyDate.getDayFromDay(startDate, 6);
-                    $scope.week.end = MyDate.getLocaleDate(date, false);
-                }
-                $ionicLoading.hide();
-            });
-        }
-
-        $scope.appointments = [];
-        if ($scope.groupInfo.group != undefined) {
-            $ionicLoading.show({
-                template: 'Loading...'
-            });
-            Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
-                $scope.appointments = result;
+                var appointments = result;
                 $scope.days = [];
-                var startDate = MyDate.getMonday($scope.appointments[0].startDate);
+                var startDate = MyDate.getMonday(appointments[0].startDate);
                 // loop whole week
                 for (var i = 0; i < 7; i++) {
                     var day = {};
                     // get mon-sun day
                     day.date = MyDate.getDayFromDay(startDate, i);
                     day.appointments = [];
-                    for (var j = 0; j < $scope.appointments.length; j++) {
-                        var appointment = $scope.appointments[j];
+                    for (var j = 0; j < appointments.length; j++) {
+                        var appointment = appointments[j];
                         // if is the same day
                         if (appointment.startDate.toDateString() === day.date.toDateString()) {
                             day.appointments.push(appointment);
@@ -143,18 +122,20 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
                     }
                     $scope.days.push(day);
                 }
-
-
-                if ($scope.appointments.length > 0) {
-                    // set week start date
-                    var startDate = MyDate.getMonday($scope.appointments[0].startDate);
-                    $scope.week.start = MyDate.getLocaleDate(date, false);
-                    // set week end date
-                    var date = MyDate.getDayFromDay(startDate, 6);
-                    $scope.week.end = MyDate.getLocaleDate(date, false);
-                }
                 $ionicLoading.hide();
             });
+        };
+
+        $scope.setGroup = function () {
+            LocalStorage.set('groupName', $scope.groupInfo.group);
+            $scope.modal.hide();
+            getAppointments();
+        }
+
+        $scope.appointments = [];
+        if ($scope.groupInfo.group != undefined) {
+
+            getAppointments();
         }
 
         $scope.moveWeek = function (direction) {
@@ -165,24 +146,8 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
             } else {
                 throw new RangeError('Parameter out of range! Please use 1 or -1');
             }
-            //var date = MyDate.getDayFromToday($scope.weekOffset);
-            // $scope.currentDay = MyDate.getLocaleDate(date, false);
-            $ionicLoading.show({
-                template: 'Loading...'
-            });
-            Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
-                $scope.appointments = result;
-                if ($scope.appointments.length > 0) {
-                    // set week start date
-                    var startDate = MyDate.getMonday($scope.appointments[0].startDate);
-                    $scope.week.start = MyDate.getLocaleDate(date, false);
-                    // set week end date
-                    var date = MyDate.getDayFromDay(startDate, 6);
-                    $scope.week.end = MyDate.getLocaleDate(date, false);
-                }
-                $ionicLoading.hide();
 
-            });
+            getAppointments();
         }
 }]);
 

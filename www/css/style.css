@@ -1,3 +1,7 @@
-.appointmentlink{
+.appointmentlink {
     text-decoration: none;
+}
+
+.bar-header {
+    padding: 0;
 }
