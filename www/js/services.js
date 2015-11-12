@@ -144,57 +144,45 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         function getDay(groupName, dayOffset, callback) {
             var day = MyDate.getDayFromToday(dayOffset);
             makeRequest(groupName, day, day, callback);
-
         }
 
         // returns appointment with properties
         function parseEvent(vEvent, index) {
             var appointment = {};
+            var event = new ical.Event(vEvent);
             // try to parse the ical into logical components...
             // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
-            appointment.summary = vEvent.getFirstPropertyValue('summary').split(/[0-9]+/)[0];
-            appointment.courseNumber = vEvent.getFirstPropertyValue('summary')
-                .slice(appointment.summary.length);
+            appointment.summary = event.summary.split(/[0-9]+/)[0];
+            appointment.courseNumber = event.summary.slice(appointment.summary.length);
             appointment.summary = appointment.summary.split(/[0-9]+/)[0];
-            appointment.location = vEvent.getFirstPropertyValue('location').split(' - ')[0];
+            appointment.location = event.location.split(' - ')[0];
             try {
-                appointment.locationInfo = (vEvent.getFirstPropertyValue('location')
+                appointment.locationInfo = (event.location
                     .slice(appointment.location.length + 2)).split(', ')[0];
-                appointment.locationInfo2 = (vEvent.getFirstPropertyValue('location')
+                appointment.locationInfo2 = (event.location
                     .slice(appointment.location.length + 2)).split(', ')[1];
             } catch (e) {
-                appointment.locationInfo = vEvent.getFirstPropertyValue('location');
+                appointment.locationInfo = event.location;
             }
             try {
-                appointment.teacher = (vEvent.getFirstPropertyValue('description')
+                appointment.teacher = (event.description
                     .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
             } catch (e) {
-                appointment.teacher = vEvent.getFirstPropertyValue('description');
+                appointment.teacher = event.description;
             }
 
             try {
-                appointment.groups = (vEvent.getFirstPropertyValue('description')
-                    .slice((vEvent.getFirstPropertyValue('description')
+                appointment.groups = (event.description
+                    .slice((event.description
                         .split(/Ryhmä\(t\): /)[0]).length)).split(/Ryhmä\(t\): /)[1];
             } catch (e) {
-                appointment.groups = vEvents.getFirstPropertyValue('description');
+                appointment.groups = event.description;
             }
             appointment.id = index;
-            var date = vEvent.getFirstPropertyValue('dtstart');
-
-            appointment.day = date.dayOfWeek() - 2;
-            appointment.localeDate = MyDate.getLocaleDate(new Date(date.toUnixTime() * 1000), false);
-            appointment.year = date.year;
-            appointment.date = date.day + '.' + date.month + '.';
-            appointment.start = date.hour + ':' + date.minute;
-            if (date.minute === 0) {
-                appointment.start += '0';
-            }
-            date = vEvent.getFirstPropertyValue('dtend');
-            appointment.end = date.hour + ':' + date.minute;
-            if (date.minute === 0) {
-                appointment.end += '0';
-            }
+            // https://github.com/mozilla-comm/ical.js/wiki/Parsing-basic-iCalendar
+            appointment.startDate = event.startDate.toJSDate();
+            appointment.endDate = event.endDate.toJSDate();
+            appointment.day = event.startDate.dayOfWeek() - 2;
             return appointment;
         }
 
