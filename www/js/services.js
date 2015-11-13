@@ -101,6 +101,42 @@ lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint
 function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         var appointments = [];
 
+        function toICAL() {
+            var vCal = new ical.Component(['vcalendar', [], []]);
+            vCal.updatePropertyWithValue('prodid', '-//Lukkari generated calendar');
+            // create new component for each appointment
+            for (var i = 0; i < appointments.length; i++) {
+                var vEvent = new ical.Component('vevent');
+                var event = new ical.Event(vEvent);
+
+                // set properties
+                event.summary = appointments[i].summary + ' ' +
+                    appointments[i].courseNumber;
+                event.status = 'ACCEPTED';
+                event.organizer = appointments[i].teacher;
+                event.location = appointments[i].location;
+                vEvent.addPropertyWithValue('dtstart',
+                    ical.Time.fromJSDate(appointments[i].startDate));
+                vEvent.addPropertyWithValue('dtend',
+                    ical.Time.fromJSDate(appointments[i].endDate));
+
+                // create alarm 
+                var valarm = new ical.Component('valarm');
+                valarm.addPropertyWithValue('trigger', '-PT10M');
+                valarm.addPropertyWithValue('action', 'DISPLAY');
+                valarm.addPropertyWithValue('description', 'Reminder');
+
+                // add alarm to evenet
+                vEvent.addSubcomponent(valarm);
+
+                // add element to cal
+                vCal.addSubcomponent(vEvent);
+            }
+
+            //console.log(vCal.toString());
+            return vCal.toString();
+        }
+
         // make a http get request that adds the group to the shopping bin
         //, using proxy if needed (in development)
         // and use credentials so that cookies are used.
@@ -153,7 +189,9 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             // try to parse the ical into logical components...
             // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
             appointment.summary = event.summary.split(/[0-9]+/)[0];
+            appointment.summary = appointment.summary.replace(' ', '');
             appointment.courseNumber = event.summary.slice(appointment.summary.length);
+            appointment.courseNumber = appointment.courseNumber.replace(' ', '');
             appointment.summary = appointment.summary.split(/[0-9]+/)[0];
             appointment.location = event.location.split(' - ')[0];
             try {
@@ -167,8 +205,10 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             try {
                 appointment.teacher = (event.description
                     .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
+                appointment.teacher = appointment.teacher.replace(/(\r\n|\n|\r)/gm, '');
             } catch (e) {
                 appointment.teacher = event.description;
+                appointment.teacher = appointment.teacher.replace(/(\r\n|\n|\r)/gm, '');
             }
 
             try {
@@ -204,6 +244,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         return {
             getWeek: getWeek,
             getAppointment: getAppointment,
-            getDay: getDay
+            getDay: getDay,
+            toICAL: toICAL
         }
 }]);

@@ -7,7 +7,6 @@
     </ion-header-bar>
 
     <ion-content>
-
         <ion-list>
             <div ng-repeat="day in days">
                 <ion-item class="item-divider">{{day.date.toLocaleDateString('fi-FI', {weekday: 'short', day: 'numeric', month:'numeric'})}}</ion-item>
@@ -24,7 +23,6 @@
                         </a>
                         <div class="item item-divider">
                             {{appointment.location}}
-
                         </div>
                     </div>
                 </ion-item>

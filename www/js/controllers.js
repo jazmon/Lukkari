@@ -96,7 +96,6 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
 
                 // open modal to set group name
                 $scope.modal.show();
-
             });
         }
 
@@ -107,9 +106,11 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
 
         // returns all of the appointments
         function getAppointments() {
+            // show the loading window
             $ionicLoading.show({
                 template: 'Loading...'
             });
+            // get all the appointments
             Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset, function (result) {
                 var appointments = result;
                 $scope.days = [];
@@ -122,13 +123,17 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
                     day.appointments = [];
                     for (var j = 0; j < appointments.length; j++) {
                         var appointment = appointments[j];
-                        // if is the same day
+                        // if is the same day push into the array
                         if (appointment.startDate.toDateString() === day.date.toDateString()) {
                             day.appointments.push(appointment);
                         }
                     }
+                    // add the day into the array
                     $scope.days.push(day);
                 }
+                Timetables.toICAL();
+                console.log("ASDASD");
+                // hide the loading after done
                 $ionicLoading.hide();
             });
         };
@@ -147,14 +152,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
 
         // moves a week forwards/backwards
         $scope.moveWeek = function (direction) {
-            if (direction === -1) {
-                $scope.weekOffset -= 1;
-            } else if (direction === 1) {
-                $scope.weekOffset += 1;
-            } else {
-                throw new RangeError('Parameter out of range! Please use 1 or -1');
-            }
-
+            $scope.weekOffset += direction;
             getAppointments();
         }
 }]);
@@ -184,7 +182,6 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                         window.location.href = '/';
                     }, 2000);
                 }
-
             });
         };
 }]);
