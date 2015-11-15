@@ -1,15 +1,38 @@
 <ion-view view-title="Settings">
     <ion-content>
-        <form ng-submit="changeGroup()">
-            <div class="list">
-                <label class="item item-input">
-                    <span class="input-label">Group name</span>
-                    <input type="text" ng-model="groupInfo.group">
-                </label>
-                <label class="item">
-                    <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
-                </label>
+        <div class="card">
+            <div class="item item-divider">
+                Change your group
             </div>
-        </form>
+            <div class="item item-text-wrap">
+                <form ng-submit="changeGroup()">
+                    <div class="list">
+                        <label class="item item-input item-stacked-label">
+                            <span class="input-label">Group name</span>
+                            <input type="text" ng-model="groupInfo.group">
+                        </label>
+                        <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card">
+            <div class="item item-divider">Add to calendar</div>
+            <div class="item item-text-wrap">
+                <h2>Adds next week's timetable to your calendar</h2>
+                <form ng-submit="addToCalendar()">
+                    <label class="item item-input item-select item-stacked-label">
+                        <span class="input-label">Set reminder</span>
+                        <select ng-model="reminder.time" class="">
+                            <option value="null">No reminder</option>
+                            <option value="5">5 minutes</option>
+                            <option selected value="10">10 minutes</option>
+                            <option value="15">15 minutes</option>
+                        </select>
+                    </label>
+                    <button class="button button-block button-positive" type="submit">Save</button>
+                </form>
+            </div>
+        </div>
     </ion-content>
 </ion-view>

@@ -18,7 +18,6 @@ lukkariServices.factory('LocalStorage', function () {
 
 lukkariServices.factory('MyDate', function () {
     var DAY_IN_MILLISECONDS = 86400000;
-    //var WEEK_IN_MILLISECONDS = 604800000;
 
     // returns the monday of the week date object of the given date
     function getMonday(d) {
@@ -101,6 +100,8 @@ lukkariServices.factory('Timetables', ['$http', 'ical', '$cookies', 'ApiEndpoint
 function ($http, ical, $cookies, ApiEndpoint, MyDate) {
         var appointments = [];
 
+        // Generates perfect ical, BUT at least android doesn't support adding a calendar
+        // so it's unused.
         function toICAL() {
             var vCal = new ical.Component(['vcalendar', [], []]);
             vCal.updatePropertyWithValue('prodid', '-//Lukkari generated calendar');
@@ -170,6 +171,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             });
         }
 
+        // returns weeks appointments
         function getWeek(groupName, weekOffset, callback) {
             var thisMonday = MyDate.getMonday(new Date());
             var monday = MyDate.getDayFromDay(thisMonday, weekOffset * 6);
@@ -177,6 +179,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             makeRequest(groupName, monday, sunday, callback);
         }
 
+        // returns days appointments
         function getDay(groupName, dayOffset, callback) {
             var day = MyDate.getDayFromToday(dayOffset);
             makeRequest(groupName, day, day, callback);
@@ -187,13 +190,12 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             var appointment = {};
             var event = new ical.Event(vEvent);
             // try to parse the ical into logical components...
-            // ical recieved is not standardized, so try catch is used to avoid errors when splitting with regex
-            appointment.summary = event.summary.split(/[0-9]+/)[0];
-            appointment.summary = appointment.summary.replace(' ', '');
-            appointment.courseNumber = event.summary.slice(appointment.summary.length);
-            appointment.courseNumber = appointment.courseNumber.replace(' ', '');
-            appointment.summary = appointment.summary.split(/[0-9]+/)[0];
-            appointment.location = event.location.split(' - ')[0];
+            appointment.summary = (event.summary.split(/[0-9]+/)[0]);
+            appointment.courseNumber = (event.summary.slice(appointment.summary.length));
+            // TODO could make this into array, and loop in views for each piece...
+            appointment.location = (event.location.split(' - ')[0]);
+            // try to split location into nicer bits, might fail
+            // it's not standardized..
             try {
                 appointment.locationInfo = (event.location
                     .slice(appointment.location.length + 2)).split(', ')[0];
@@ -202,15 +204,19 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             } catch (e) {
                 appointment.locationInfo = event.location;
             }
+
+            // try to get teacher from description
+            // might fail, it isn't standardized ...
             try {
                 appointment.teacher = (event.description
                     .split(/Henkilö\(t\): /)[1]).split(/Ryhmä\(t\): /)[0];
-                appointment.teacher = appointment.teacher.replace(/(\r\n|\n|\r)/gm, '');
+                appointment.teacher = appointment.teacher;
             } catch (e) {
                 appointment.teacher = event.description;
-                appointment.teacher = appointment.teacher.replace(/(\r\n|\n|\r)/gm, '');
             }
 
+            // try to parse group name, but it may fail.
+            // this field isn't standardized for some reason..
             try {
                 appointment.groups = (event.description
                     .slice((event.description
@@ -218,6 +224,13 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             } catch (e) {
                 appointment.groups = event.description;
             }
+            appointment.groups = appointment.groups;
+
+            // trim all fields (they are messy as fuck)
+            for (var key in appointment) {
+                appointment[key] = appointment[key].trim();
+            }
+
             appointment.id = index;
             // https://github.com/mozilla-comm/ical.js/wiki/Parsing-basic-iCalendar
             appointment.startDate = event.startDate.toJSDate();
@@ -236,7 +249,7 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             return comp.getAllSubcomponents();
         }
 
-        // returns an appointment with id
+        // returns an appointment with id (for the single appointment view)
         function getAppointment(id) {
             return appointments[id];
         }

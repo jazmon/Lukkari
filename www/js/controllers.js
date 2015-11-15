@@ -132,7 +132,6 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
                     $scope.days.push(day);
                 }
                 Timetables.toICAL();
-                console.log("ASDASD");
                 // hide the loading after done
                 $ionicLoading.hide();
             });
@@ -157,9 +156,15 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
         }
 }]);
 
-lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$cookies', '$timeout',
-function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeout) {
+lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$cookies', '$timeout', '$cordovaCalendar', 'Timetables',
+function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeout, $cordovaCalendar, Timetables) {
         $scope.groupInfo = {};
+        $scope.reminder = {};
+        var toastOptions = {
+            duration: 'long',
+            position: 'center'
+        };
+        $scope.reminder.time = 'null';
         $scope.groupInfo.group = LocalStorage.get('groupName');
         if (!$scope.groupInfo.group) {
             $scope.groupInfo.group = '';
@@ -170,10 +175,12 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
             // show toast that change was successful
             $ionicPlatform.ready(function () {
                 try {
-                    $cordovaToast.show('Group successfully changed!', 'long', 'center')
+                    $cordovaToast.show('Group successfully changed!',
+                            toastOptions.duration,
+                            toastOptions.position)
                         .then(function (success) {
                             $cookies.remove('PHPSESSID');
-                        }, function (error) {});
+                        });
                 } catch (e) {
                     // do nothing
                 } finally {
@@ -183,6 +190,57 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                     }, 2000);
                 }
             });
+        };
+
+        $scope.addToCalendar = function () {
+            var appointments = [];
+            var calOptions = {};
+            // works on iOS only
+            calOptions.calendarName = 'Lukkari app calendar';
+            // android has id but no fucking idea what it does (1 is default)
+            // so great documentation 5/5 
+            // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
+            calOptions.calendarId = 1;
+
+            if ($scope.reminder.time !== 'null') {
+                calOptions.firstReminderMinutes = $scope.reminder.time;
+            } else {
+                calOptions.firstReminderMinutes = null;
+            }
+            calOptions.secondReminderMinutes = null;
+
+            // get next weeks appointments
+            Timetables.getWeek($scope.groupInfo.group, 1, function (result) {
+                appointments = result;
+                $ionicPlatform.ready(function () {
+                    appointments.forEach(function (element, index, array) {
+                        $cordovaCalendar.createEventWithOptions({
+                            title: element.summary,
+                            location: element.location,
+                            notes: 'Teacher(s): ' + element.teacher +
+                                '\nGroup(s): ' + element.groups +
+                                '\nCourse: ' + element.courseNumber,
+                            startDate: element.startDate,
+                            endDate: element.endDate,
+                            firstReminderMinutes: calOptions.firstReminderMinutes,
+                            secondReminderMinutes: calOptions.secondReminderMinutes,
+                            calendarName: calOptions.calendarName,
+                            calendarId: calOptions.calendarId
+                                //calOptions: calOptions
+                        }).then(function (result) {
+                            $cordovaToast.show('Calendar events successfully added!',
+                                toastOptions.duration,
+                                toastOptions.position);
+                            console.log('successfully added to calendar');
+                        }, function (err) {
+                            $cordovaToast.show('Failed to add calendar events!',
+                                toastOptions.duration,
+                                toastOptions.position);
+                        });
+
+                    });
+                });
+            })
         };
 }]);
 

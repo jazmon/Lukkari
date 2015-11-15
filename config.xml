@@ -2,13 +2,14 @@
 <widget id="fi.tamk.tiko.lukkari" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>lukkari</name>
     <description>
-        An Ionic Framework and Cordova project.
+        A timetable app for TAMK students.
     </description>
     <author email="atte.huhtakangas@cs.tamk.fi" href="http://ionicframework.com/">
       Atte Huhtakangas
     </author>
     <content src="index.html" />
     <access origin="*" />
+    <allow-navigation href="data:*" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
@@ -40,4 +41,5 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <plugin name="cordova-plugin-x-toast" spec="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git" />
+    <plugin name="cordova-plugin-calendar" spec="https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git" />
 </widget>
