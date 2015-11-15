@@ -7,6 +7,70 @@
 }
 
 .bar-subheader .button-bar a {
-    height: 42px;
+    height: 47px;
     font-size: 1.2em;
 }
+
+
+/*https://docs.angularjs.org/api/ngAnimate*/
+
+@-webkit-keyframes slideIn {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 0;
+    }
+}
+
+@-webkit-keyframes slideInSmooth {
+    0% {
+        -webkit-transform: translate3d(-100%, 0, 0);
+    }
+    100% {
+        -webkit-transform: translate3d(0, 0, 0);
+    }
+}
+
+.slide-in {
+    -webkit-animation: slideInSmooth ease-in 1;
+    animation: slideInSmooth ease-in 1;
+    -webkit-animation-fill-mode: forwards;
+    animation-fill-mode: forwards;
+    -webkit-animation-duration: 450ms;
+    animation-duration: 450ms;
+}
+
+.fade.ng-enter {
+    transition: 0.5s linear all;
+    opacity: 0;
+}
+
+
+/* The finishing CSS styles for the enter animation */
+
+.fade.ng-enter.ng-enter-active {
+    opacity: 1;
+}
+
+
+/*
+.slide-in.ng-move,
+.slide-in.ng-enter,
+.slide-in.ng-leave {
+    transition: all linear 0.5s;
+}
+
+.slide-in.ng-leave.ng-leave-active,
+.slide-in.ng-move,
+.slide-in.ng-enter {
+    opacity: 0;
+    max-height: 0;
+}
+
+.slide-in.ng-leave,
+.slide-in.ng-move.ng-move-active,
+.slide-in.ng-enter.ng-enter-active {
+    opacity: 1;
+    max-height: 40px;
+}*/

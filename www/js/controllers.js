@@ -202,6 +202,8 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
             // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
             calOptions.calendarId = 1;
 
+            // google may set some default reminders depending on settings
+            // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin/issues/201
             if ($scope.reminder.time !== 'null') {
                 calOptions.firstReminderMinutes = $scope.reminder.time;
             } else {
@@ -237,7 +239,6 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                                 toastOptions.duration,
                                 toastOptions.position);
                         });
-
                     });
                 });
             })

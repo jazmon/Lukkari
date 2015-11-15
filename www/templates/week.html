@@ -1,8 +1,8 @@
 <ion-view cache-view="false" view-title="Week {{ days[0].date.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }} — {{ days[days.length - 1].date.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }}">
     <ion-header-bar class="bar-subheader">
         <div class="button-bar">
-            <a class="button button-calm icon-right ion-arrow-left-a" ng-click="moveWeek(-1)">Previous week</a>
-            <a class="button button-calm icon-left ion-arrow-right-a" ng-click="moveWeek(1)">Next week</a>
+            <a class="button button-calm icon-right ion-android-arrow-back" ng-click="moveWeek(-1)">Previous week</a>
+            <a class="button button-calm icon-left ion-android-arrow-forward" ng-click="moveWeek(1)">Next week</a>
         </div>
     </ion-header-bar>
 
@@ -11,7 +11,7 @@
             <div ng-repeat="day in days">
                 <ion-item class="item-divider">{{day.date.toLocaleDateString('fi-FI', {weekday: 'short', day: 'numeric', month:'numeric'})}}</ion-item>
                 <ion-item>
-                    <div class="card" ng-repeat="appointment in day.appointments">
+                    <div class="card fade" ng-repeat="appointment in day.appointments">
                         <div class="item item-divider">
                             {{appointment.startDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}} — {{appointment.endDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}}
                         </div>

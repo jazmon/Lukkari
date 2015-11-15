@@ -11,7 +11,7 @@
                             <span class="input-label">Group name</span>
                             <input type="text" ng-model="groupInfo.group">
                         </label>
-                        <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+                        <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-android-send"></i></button>
                     </div>
                 </form>
             </div>
@@ -20,8 +20,26 @@
             <div class="item item-divider">Add to calendar</div>
             <div class="item item-text-wrap">
                 <h2>Adds next week's timetable to your calendar</h2>
+                <p><i class="icon ion-android-alert"></i> If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!</p>
+                <p>Also currently this adds a reminder to when the event starts (at 0 mins)</p>
                 <form ng-submit="addToCalendar()">
                     <label class="item item-input item-select item-stacked-label">
+                        <span class="input-label">Set start date</span>
+                        <select ng-model="" class="">
+                            <option selected value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="monday">Next monday</option>
+                        </select>
+                    </label>
+                    <label class="item item-input ">
+                        <span class="input-label">How many weeks?</span>
+                        <input type="number" ng-model="">
+                    </label>
+                    <label class="item item-input ">
+                        <span class="input-label">How many weeks 2?</span>
+                        <input type="date" ng-model="">
+                    </label>
+                    <label class="item item-input item-select">
                         <span class="input-label">Set reminder</span>
                         <select ng-model="reminder.time" class="">
                             <option value="null">No reminder</option>
