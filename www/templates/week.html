@@ -8,10 +8,10 @@
 
     <ion-content>
         <ion-list>
-            <div ng-repeat="day in days">
+            <div ng-repeat="day in days" class="repeat-animation">
                 <ion-item class="item-divider">{{day.date.toLocaleDateString('fi-FI', {weekday: 'short', day: 'numeric', month:'numeric'})}}</ion-item>
                 <ion-item>
-                    <div class="card fade" ng-repeat="appointment in day.appointments">
+                    <div ng-repeat="appointment in day.appointments" class="card" ng-if="day.appointments.length > 0">
                         <div class="item item-divider">
                             {{appointment.startDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}} — {{appointment.endDate.toLocaleTimeString('fi-FI', {hour:'numeric', minute:'numeric'})}}
                         </div>
@@ -23,6 +23,11 @@
                         </a>
                         <div class="item item-divider">
                             {{appointment.location}}
+                        </div>
+                    </div>
+                    <div class="card" ng-if="day.appointments.length === 0">
+                        <div class="item item-text-wrap">
+                            No appointments
                         </div>
                     </div>
                 </ion-item>
