@@ -1,7 +1,7 @@
 PRODUCT BACKLOG
 
     File       : PRODUCTBACKLOG.txt
-    Time-stamp : 2015-11-02T14:20 Atte Huhtakangas
+    Time-stamp : 2015-11-09T15:58 Atte Huhtakangas
     Description: Product Backlog is the master list of all functionality desired in 
                  the product. 
 
@@ -9,7 +9,7 @@ PRODUCT BACKLOG WITH RELEASES
 
     RELEASE 1: 2015-11-09
 
-    - Ability to view courses by their name or by group name
+    - Ability to view courses by group name
     - Saving own timetable to preferences
     - View that shows one day's timetable
 
@@ -25,5 +25,6 @@ PRODUCT BACKLOG WITH RELEASES
     - Lunch list
     - push notifications
     - Language preferences and localization (fi/eng)
+    - Ability to view courses by the course name/id
 
 End of file.
