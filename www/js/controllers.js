@@ -116,7 +116,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
                 $scope.days = [];
                 var startDate = MyDate.getMonday(appointments[0].startDate);
                 // loop whole week
-                for (var i = 0; i < 7; i++) {
+                for (var i = 0; i < 5; i++) {
                     var day = {};
                     // get mon-sun day
                     day.date = MyDate.getDayFromDay(startDate, i);
