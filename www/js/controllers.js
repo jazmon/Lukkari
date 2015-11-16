@@ -227,7 +227,7 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                 } finally {
                     // change to today view after 2 seconds
                     $timeout(function () {
-                        window.location.href = '/';
+                        window.location.href = '#/app/today';
                     }, 2000);
                 }
             });
@@ -256,6 +256,9 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
             var success = true;
             console.log('$scope.reminder.weeks: ' + $scope.reminder.weeks);
             console.log('$scope.reminder.startDay: ' + $scope.reminder.startDay);
+            // TODO create a service method that can get days from a day to a day.
+            // and use it here.
+
             // loop all weeks
             for (var i = 1; i < $scope.reminder.weeks; i++) {
                 // get next weeks appointments
@@ -282,6 +285,7 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                             }, function (err) {
                                 success = false;
                             });*/
+                            console.log('Added ' + element.summary + ', ' + element.startDate.toLocaleDateString());
                         });
                     });
                 });
