@@ -160,10 +160,51 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
 function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeout, $cordovaCalendar, Timetables) {
         $scope.groupInfo = {};
         $scope.reminder = {};
+        $scope.reminder.startDay = new Date();
+        $scope.reminder.weeks = 1;
+
         var toastOptions = {
             duration: 'long',
             position: 'center'
         };
+
+        function datePickerCallback(val) {
+            // do something 
+            if (typeof (val) === 'undefined') {
+                console.log('No date selected');
+            } else {
+                console.log('Selected date is : ', val);
+                $scope.reminder.startDay = val;
+            }
+        };
+
+        // https://github.com/rajeshwarpatlolla/ionic-datepicker
+        $scope.datepickerObject = {
+            titleLabel: 'Select Date', //Optional
+            todayLabel: 'Today', //Optional
+            closeLabel: 'Close', //Optional
+            setLabel: 'Set', //Optional
+            setButtonType: 'button-positive', //Optional
+            todayButtonType: 'button-stable', //Optional
+            closeButtonType: 'button-stable', //Optional
+            inputDate: new Date(), //Optional
+            mondayFirst: true, //Optional
+            //disabledDates: disabledDates, //Optional
+            //weekDaysList: weekDaysList, //Optional
+            //monthList: monthList, //Optional
+            templateType: 'popup', //Optional
+            showTodayButton: 'true', //Optional
+            modalHeaderColor: 'bar-stable', //Optional
+            modalFooterColor: 'bar-stable', //Optional
+            from: new Date(), //Optional
+            //to: new Date(2018, 8, 25), //Optional
+            callback: function (val) { //Mandatory
+                datePickerCallback(val);
+            },
+            dateFormat: 'dd-MM-yyyy', //Optional
+            closeOnSelect: false, //Optional
+        };
+
         $scope.reminder.time = 'null';
         $scope.groupInfo.group = LocalStorage.get('groupName');
         if (!$scope.groupInfo.group) {
@@ -211,37 +252,51 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
             }
             calOptions.secondReminderMinutes = null;
 
-            // get next weeks appointments
-            Timetables.getWeek($scope.groupInfo.group, 1, function (result) {
-                appointments = result;
-                $ionicPlatform.ready(function () {
-                    appointments.forEach(function (element, index, array) {
-                        $cordovaCalendar.createEventWithOptions({
-                            title: element.summary,
-                            location: element.location,
-                            notes: 'Teacher(s): ' + element.teacher +
-                                '\nGroup(s): ' + element.groups +
-                                '\nCourse: ' + element.courseNumber,
-                            startDate: element.startDate,
-                            endDate: element.endDate,
-                            firstReminderMinutes: calOptions.firstReminderMinutes,
-                            secondReminderMinutes: calOptions.secondReminderMinutes,
-                            calendarName: calOptions.calendarName,
-                            calendarId: calOptions.calendarId
-                                //calOptions: calOptions
-                        }).then(function (result) {
-                            $cordovaToast.show('Calendar events successfully added!',
-                                toastOptions.duration,
-                                toastOptions.position);
-                            console.log('successfully added to calendar');
-                        }, function (err) {
-                            $cordovaToast.show('Failed to add calendar events!',
-                                toastOptions.duration,
-                                toastOptions.position);
+
+            var success = true;
+            console.log('$scope.reminder.weeks: ' + $scope.reminder.weeks);
+            console.log('$scope.reminder.startDay: ' + $scope.reminder.startDay);
+            // loop all weeks
+            for (var i = 1; i < $scope.reminder.weeks; i++) {
+                // get next weeks appointments
+                Timetables.getWeek($scope.groupInfo.group, i, function (result) {
+                    appointments = result;
+                    $ionicPlatform.ready(function () {
+                        appointments.forEach(function (element, index, array) {
+                            /*$cordovaCalendar.createEventWithOptions({
+                                title: element.summary,
+                                location: element.location,
+                                notes: 'Teacher(s): ' + element.teacher +
+                                    '\nGroup(s): ' + element.groups +
+                                    '\nCourse: ' + element.courseNumber,
+                                startDate: element.startDate,
+                                endDate: element.endDate,
+                                firstReminderMinutes: calOptions.firstReminderMinutes,
+                                secondReminderMinutes: calOptions.secondReminderMinutes,
+                                calendarName: calOptions.calendarName,
+                                calendarId: calOptions.calendarId
+                                    //calOptions: calOptions
+                            }).then(function (result) {
+
+                                console.log('successfully added week to calendar');
+                            }, function (err) {
+                                success = false;
+                            });*/
                         });
                     });
                 });
-            })
+            }
+
+            if (success) {
+                $cordovaToast.show('Calendar events successfully added!',
+                    toastOptions.duration,
+                    toastOptions.position);
+            } else {
+                $cordovaToast.show('Failed to add calendar events!',
+                    toastOptions.duration,
+                    toastOptions.position);
+            }
+
         };
 }]);
 

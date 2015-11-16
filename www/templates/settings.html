@@ -7,11 +7,15 @@
             <div class="item item-text-wrap">
                 <form ng-submit="changeGroup()">
                     <div class="list">
-                        <label class="item item-input item-stacked-label">
+                        <label class="item item-input ">
                             <span class="input-label">Group name</span>
                             <input type="text" ng-model="groupInfo.group">
                         </label>
-                        <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-android-send"></i></button>
+                        <div class="row">
+                            <div class="col col-33 col-offset-67">
+                                <button class="button button-block button-positive icon-right ion-android-send" type="submit">Change</button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -32,16 +36,14 @@
                         </select>
                     </label>
                     <label class="item item-input ">
+                        <span class="input-label">Select start date</span>
+                        <ionic-datepicker input-obj="datepickerObject">
+                            <button class="button button-positive icon-right ion-android-calendar">{{datepickerObject.inputDate | date:'dd.MM.yy'}}</button>
+                        </ionic-datepicker>
+                    </label>
+                    <label class="item item-input ">
                         <span class="input-label">How many weeks?</span>
-                        <input type="number">
-                    </label>
-                    <label class="item item-input ">
-                        <span class="input-label">How many weeks 2?</span>
-                        <input type="date">
-                    </label>
-                    <label class="item item-input ">
-                        <span class="input-label">How many weeks 3?</span>
-                        <input type="datetime-local">
+                        <input type="number" min="1" ng-model="reminder.weeks">
                     </label>
                     <label class="item item-input item-select">
                         <span class="input-label">Set reminder</span>
@@ -52,7 +54,11 @@
                             <option value="15">15 minutes</option>
                         </select>
                     </label>
-                    <button class="button button-block button-positive" type="submit">Save</button>
+                    <div class="row">
+                        <div class="col col-33 col-offset-67">
+                            <button class="button button-block button-positive icon-right ion-android-send" type="submit">Add</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
