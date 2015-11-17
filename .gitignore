@@ -6,3 +6,4 @@ platforms/
 plugins/
 *.log
 *.keystore
+apikey.txt
