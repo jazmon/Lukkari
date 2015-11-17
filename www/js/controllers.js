@@ -80,8 +80,8 @@ function ($scope, Timetables, $ionicLoading, $stateParams) {
 }]);
 
 // controller for weekly view
-lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate',
-function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) {
+lukkariControllers.controller('WeekCtrl', ['$scope', 'Timetables', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons',
+function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate, Lessons) {
         $scope.groupInfo = {};
         $scope.week = {};
         $scope.weekOffset = 0;
@@ -131,11 +131,19 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate) 
                     // add the day into the array
                     $scope.days.push(day);
                 }
-                Timetables.toICAL();
                 // hide the loading after done
                 $ionicLoading.hide();
             });
         };
+
+        Lessons.get($scope.groupInfo.group, function (lessons) {
+            if (lessons.hasOwnProperty(success) && lessons.success != false) {
+                console.log('FAILED');
+            } else {
+
+                $scope.lessons = lessons;
+            }
+        })
 
         // sets the group name
         $scope.setGroup = function () {

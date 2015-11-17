@@ -85,6 +85,82 @@ lukkariServices.factory('MyDate', function () {
     };
 });
 
+
+lukkariServices.factory('Lessons', ['$http',
+   function ($http) {
+        var lessons = [];
+        var savedGroupName = '';
+
+
+        function get(groupName, callback) {
+            if (savedGroupName === groupName) {
+                callback(lessons);
+            } else {
+                var data = {
+                    studentGroup: [groupName.toUpperCase()]
+                }
+                console.log(JSON.stringify(data));
+                var apiKey = 'Wu47zzKEPa7agvin47f5';
+                var url = 'https://opendata.tamk.fi/r1/reservation/search' + '?apiKey=' + apiKey;
+                $http({
+                    method: 'POST',
+                    url: url,
+                    data: data,
+                    withCredentials: true,
+                    headers: {
+                        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
+                        'accept-language': 'fi',
+                        'content-type': 'application/json',
+                        'cache-control': 'no-cache'
+                    }
+                }).success(function (data, status, headers, config) {
+                    console.log(data);
+                }).error(function (data, status, headers, config) {
+
+                });
+
+                /*var data = JSON.stringify({
+                    "studentGroup": [
+    "14TIKOOT"
+  ]
+                });
+
+                var xhr = new XMLHttpRequest();
+                xhr.withCredentials = true;
+
+                xhr.addEventListener("readystatechange", function () {
+                    if (this.readyState === this.DONE) {
+                        console.log(this.responseText);
+                    }
+                });
+
+                xhr.open("POST", "https://opendata.tamk.fi/r1/reservation/search");
+                //xhr.setRequestHeader("authorization", "Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6");
+                xhr.setRequestHeader("accept-language", "fi");
+                xhr.setRequestHeader("content-type", "application/json");
+                xhr.setRequestHeader("cache-control", "no-cache");
+                xhr.setRequestHeader("postman-token", "58568748-e93d-0b6d-f701-6b9268b03938");
+
+                xhr.send(data);*/
+
+                /*$http.post(url, data).then(function (response) {
+                    console.log(response.data);
+                    console.log(typeof response.data);
+                    callback(response.data);
+                });
+
+                $http.get('https://opendata.tamk.fi/r1/reservation/building' + '?apiKey=' + apiKey).then(function (response) {
+                    console.log(response.data);
+                });*/
+            }
+        }
+
+        return {
+            get: get
+        }
+   }
+]);
+
 // POST: https://lukkarit.tamk.fi/teeHaku.php 
 // searches the db for matches
 // formdata:
