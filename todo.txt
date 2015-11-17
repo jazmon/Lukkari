@@ -1,3 +1,29 @@
 - create a service method that can get days from a day to a day.
 - search course view
 - lunch list view
+
+- http://avoindata.tamk.fi/rajapinnat/
+- http://avoindata.tamk.fi/esimerkit/
+
+
+## SEARCH VIEW ##
+// get by course id
+POST | https://opendata.tamk.fi/r1/realization/search
+            DATA: { "codes": ["4-AOT5-3002"]}
+            (can also be array)
+            
+            
+// get by student groups
+POST | https://opendata.tamk.fi/r1/realization/search
+            DATA: { "studentGroup":["13TIKOOT"]}
+            (can also be array)
+
+
+
+## APPOINTMENT VIEW ##
+in appointment view, get info about:
+- the course
+QUERY
+
+- the classroom
+QUERY
