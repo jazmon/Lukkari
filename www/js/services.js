@@ -85,7 +85,6 @@ lukkariServices.factory('MyDate', function () {
     };
 });
 
-
 lukkariServices.factory('Lessons', ['$http',
    function ($http) {
         var lessons = [];
@@ -122,6 +121,29 @@ lukkariServices.factory('Lessons', ['$http',
                 });
             }
         }
+
+        // private get method that just saves lessons
+        // change group name method that changes group anme and uses private get method
+        function changeGroup(groupName) {
+            //savedGroupName = groupName;
+            get();
+        }
+        // get week method that returns one week's lessons using startDate and week offset
+        function getWeek() {
+
+        }
+        // get day method that returns one day's lessons using date
+        function getDay() {
+
+        }
+
+        //get day to day method that returns all appointments from day a to day b
+
+
+
+
+
+
 
         return {
             get: get
