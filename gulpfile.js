@@ -9,6 +9,7 @@ var sass = require('gulp-sass');
 var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
+var sourcemaps = require('gulp-sourcemaps');
 
 // `npm install --save replace`
 var replace = require('replace');
@@ -18,8 +19,10 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['watch']);
+// default task to be run when gulp is run
+gulp.task('default', ['lint', 'babel','watch']);
 
+// generates css files from sass
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
     .pipe(sass())
@@ -42,11 +45,32 @@ gulp.task('jshint', function() {
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
+gulp.task('build-js', function() {
+  return gulp.src('www/js/**/*.js')
+    .pipe(sourcemaps.init())
+    .pipe(concat('bundle.js'))
+    // only uglify if gulp is ran with '--type production'
+    .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('public/assets/javascript'));
+});
+
+gulp.task('babel', function() {
+  return gulp.src('www/js/**/*.js')
+    .pipe(sourcemaps.init())
+    .pipe(babel())
+    .pipe(concat('bundle.js'))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('dist'));
+});
+
+// watches for changes and then runs these
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
   gulp.watch('www/js/**/*.js', ['jshint']);
 });
 
+// runs install bower
 gulp.task('install', ['git-check'], function() {
   return bower.commands.install()
     .on('log', function(data) {
@@ -54,6 +78,7 @@ gulp.task('install', ['git-check'], function() {
     });
 });
 
+// checks if git is installed
 gulp.task('git-check', function(done) {
   if (!sh.which('git')) {
     console.log(
@@ -69,6 +94,7 @@ gulp.task('git-check', function(done) {
   done();
 });
 
+// adds a proxy for http://localhost:3000 hosting
 gulp.task('add-proxy', function() {
   return replace({
     regex: 'https://lukkarit.tamk.fi',
@@ -79,6 +105,7 @@ gulp.task('add-proxy', function() {
   });
 });
 
+// removes proxy for file:// hosting
 gulp.task('remove-proxy', function() {
   return replace({
     regex: 'http://localhost:8100/api',
