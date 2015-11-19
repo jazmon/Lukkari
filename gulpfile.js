@@ -39,7 +39,7 @@ gulp.task('sass', function(done) {
 });
 
 // Configure the jshint task (checks for errors when saving)
-gulp.task('jshint', function() {
+gulp.task('lint', function() {
   return gulp.src('www/js/**/*.js')
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
