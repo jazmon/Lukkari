@@ -3,6 +3,7 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var babel = require('gulp-babel');
 var jshint = require('gulp-jshint');
+var uglify = require('gulp-uglify');
 var bower = require('bower');
 var concat = require('gulp-concat');
 var sass = require('gulp-sass');
@@ -48,20 +49,30 @@ gulp.task('lint', function() {
 gulp.task('build-js', function() {
   return gulp.src('www/js/**/*.js')
     .pipe(sourcemaps.init())
-    .pipe(concat('bundle.js'))
-    // only uglify if gulp is ran with '--type production'
-    .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('public/assets/javascript'));
+        .pipe(concat('bundle.js'))
+        // only uglify if gulp is ran with '--type production'
+        .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest('dist/js'));
 });
 
+// builds js
 gulp.task('babel', function() {
   return gulp.src('www/js/**/*.js')
+    // initializes sourcemaps
     .pipe(sourcemaps.init())
-    .pipe(babel())
-    .pipe(concat('bundle.js'))
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('dist'));
+        // babels js
+        .pipe(babel())
+        // dumps all js into same file
+        .pipe(concat('bundle.js'))
+        // sets destination folder
+        .pipe(gulp.dest('dist'))
+        // renames file
+        .pipe(rename('bundle.min.js'))
+        .pipe(uglify())
+        .pipe(gulp.dest('dist/js'))
+    // write sourcemaps
+    .pipe(sourcemaps.write('.'));
 });
 
 // watches for changes and then runs these
