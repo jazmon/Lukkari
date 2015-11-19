@@ -24,7 +24,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
 
         $scope.closeGroupName = function () {
             $scope.modal.hide();
-        }
+        };
 
         // sets the group 
         $scope.setGroup = function () {
@@ -37,10 +37,10 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
-        }
+        };
 
         $scope.appointments = [];
-        if ($scope.groupInfo.group != undefined) {
+        if ($scope.groupInfo.group !== undefined) {
             $ionicLoading.show({
                 template: 'Loading...'
             });
@@ -70,7 +70,7 @@ function ($scope, Timetables, $ionicLoading, LocalStorage, $ionicModal, MyDate) 
                 $scope.appointments = result;
                 $ionicLoading.hide();
             });
-        }
+        };
 }]);
 
 // controller for single appointment view
@@ -102,7 +102,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate, 
         // closes the group name dialog
         $scope.closeGroupName = function () {
             $scope.modal.hide();
-        }
+        };
 
         // returns all of the appointments
         function getAppointments() {
@@ -134,26 +134,26 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate, 
                 // hide the loading after done
                 $ionicLoading.hide();
             });
-        };
+        }
 
         Lessons.get($scope.groupInfo.group, function (lessons) {
-            if (lessons.hasOwnProperty(success) && lessons.success != false) {
+            if (lessons.hasOwnProperty(success) && lessons.success !== false) {
                 console.log('FAILED');
             } else {
 
                 $scope.lessons = lessons;
             }
-        })
+        });
 
         // sets the group name
         $scope.setGroup = function () {
             LocalStorage.set('groupName', $scope.groupInfo.group);
             $scope.modal.hide();
             getAppointments();
-        }
+        };
 
         $scope.appointments = [];
-        if ($scope.groupInfo.group != undefined) {
+        if ($scope.groupInfo.group !== undefined) {
             getAppointments();
         }
 
@@ -161,7 +161,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate, 
         $scope.moveWeek = function (direction) {
             $scope.weekOffset += direction;
             getAppointments();
-        }
+        };
 }]);
 
 lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$cookies', '$timeout', '$cordovaCalendar', 'Timetables',
@@ -184,7 +184,7 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                 console.log('Selected date is : ', val);
                 $scope.reminder.startDay = val;
             }
-        };
+        }
 
         // https://github.com/rajeshwarpatlolla/ionic-datepicker
         $scope.datepickerObject = {
@@ -267,14 +267,15 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
             // TODO create a service method that can get days from a day to a day.
             // and use it here.
 
-            // loop all weeks
-            for (var i = 1; i < $scope.reminder.weeks; i++) {
-                // get next weeks appointments
-                Timetables.getWeek($scope.groupInfo.group, i, function (result) {
-                    appointments = result;
-                    $ionicPlatform.ready(function () {
-                        appointments.forEach(function (element, index, array) {
-                            /*$cordovaCalendar.createEventWithOptions({
+            function getAppointments(result) {
+                appointments = result;
+                $ionicPlatform.ready(function () {
+                    appointments.forEach(createEvent(elment, index, array));
+                });
+            }
+
+            function createEvent(element, index, array) {
+                /*$cordovaCalendar.createEventWithOptions({
                                 title: element.summary,
                                 location: element.location,
                                 notes: 'Teacher(s): ' + element.teacher +
@@ -293,10 +294,14 @@ function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeou
                             }, function (err) {
                                 success = false;
                             });*/
-                            console.log('Added ' + element.summary + ', ' + element.startDate.toLocaleDateString());
-                        });
-                    });
-                });
+                console.log('Added ' + element.summary + ', ' +
+                    element.startDate.toLocaleDateString());
+            }
+
+            // loop all weeks
+            for (var i = 1; i < $scope.reminder.weeks; i++) {
+                // get next weeks appointments
+                Timetables.getWeek($scope.groupInfo.group, i, getAppointments(result));
             }
 
             if (success) {

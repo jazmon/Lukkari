@@ -23,7 +23,7 @@ lukkariServices.factory('MyDate', function () {
     function getMonday(d) {
         d = new Date(d);
         var day = d.getDay(),
-            diff = d.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+            diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
         return new Date(d.setDate(diff));
     }
 
@@ -98,7 +98,7 @@ lukkariServices.factory('Lessons', ['$http',
                 savedGroupName = groupName;
                 var data = {
                     studentGroup: [groupName.toUpperCase()]
-                }
+                };
                 var apiKey = 'Wu47zzKEPa7agvin47f5';
                 var url = 'https://opendata.tamk.fi/r1/reservation/search' + '?apiKey=' + apiKey;
                 $http({
@@ -125,7 +125,7 @@ lukkariServices.factory('Lessons', ['$http',
 
         return {
             get: get
-        }
+        };
    }
 ]);
 
@@ -303,5 +303,5 @@ function ($http, ical, $cookies, ApiEndpoint, MyDate) {
             getAppointment: getAppointment,
             getDay: getDay,
             toICAL: toICAL
-        }
+        };
 }]);
