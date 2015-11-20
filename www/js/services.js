@@ -170,7 +170,6 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
           dayLessons
         });
       }
-
     }
 
     // get week method that returns one week's lessons using startDate and week offset
@@ -184,12 +183,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
         currentDay: day,
         offsetDays: 5
       });
-
-      //console.log('startDate: ' + startDate);
-      //console.log('endDate: ' + endDate);
       lessons.forEach(function(lesson, index, array) {
-        //console.log("one lesson");
-        //console.log('lesson.startDay: ' + lesson.startDay);
         if (lesson.startDay >= startDate && lesson.startDay <= endDate) {
           weekLessons.push(lesson);
         }
@@ -198,7 +192,6 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
         success: true,
         weekLessons
       });
-
     }
 
     //get day to day method that returns all appointments from day a to day b
