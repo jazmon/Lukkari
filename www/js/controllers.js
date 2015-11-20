@@ -137,7 +137,7 @@ function ($scope, Timetables, $ionicLoading, $ionicModal, LocalStorage, MyDate, 
         }
 
         Lessons.get($scope.groupInfo.group, function (lessons) {
-            if (lessons.hasOwnProperty(success) && lessons.success !== false) {
+            if (lessons.hasOwnProperty('success') && lessons.success !== false) {
                 console.log('FAILED');
             } else {
 

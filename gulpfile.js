@@ -11,21 +11,36 @@ var minifyCss = require('gulp-minify-css');
 var rename = require('gulp-rename');
 var sh = require('shelljs');
 var sourcemaps = require('gulp-sourcemaps');
+var clean = require('gulp-clean');
 
 // `npm install --save replace`
 var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
 
+var bases = {
+  dist: 'dist/',
+  app: 'www/'
+};
+// https://gist.github.com/justinmc/9149719
 var paths = {
-  sass: ['./scss/**/*.scss']
+  sass: ['./scss/**/*.scss'],
+  scripts: ['www/js/**/*.js'],
+  libs: ['www/lib/ionic/js/ionic.bundle.js',
+    'www/lib/ngCordova/dist/ng-cordova.js', 'cordova.js',
+    'www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js'
+  ],
+  styles: ['www/css/**/*.css'],
+  html: ['www/index.html', 'www/templates/**/*.html']
+  //images: [],
+  //extras: ['favicon.ico']
 };
 
 // default task to be run when gulp is run
-gulp.task('default', ['lint', 'babel','watch']);
+gulp.task('default', ['clean', 'scripts', 'sass', 'copy']);
 
 // generates css files from sass
 gulp.task('sass', function(done) {
-  gulp.src('./scss/ionic.app.scss')
+  gulp.src(['./scss/ionic.app.scss', './scss/mystyle.app.scss'])
     .pipe(sass())
     .on('error', sass.logError)
     .pipe(gulp.dest('./www/css/'))
@@ -49,28 +64,28 @@ gulp.task('lint', function() {
 gulp.task('build-js', function() {
   return gulp.src('www/js/**/*.js')
     .pipe(sourcemaps.init())
-        .pipe(concat('bundle.js'))
-        // only uglify if gulp is ran with '--type production'
-        .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
+    .pipe(concat('bundle.js'))
+    // only uglify if gulp is ran with '--type production'
+    .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('dist/js'));
+    .pipe(gulp.dest('www/js'));
 });
 
 // builds js
-gulp.task('babel', function() {
-  return gulp.src('www/js/**/*.js')
+gulp.task('scripts', ['clean'], function() {
+  gulp.src('www/js/**/*.js')
     // initializes sourcemaps
     .pipe(sourcemaps.init())
-        // babels js
-        .pipe(babel())
-        // dumps all js into same file
-        .pipe(concat('bundle.js'))
-        // sets destination folder
-        .pipe(gulp.dest('dist'))
-        // renames file
-        .pipe(rename('bundle.min.js'))
-        .pipe(uglify())
-        .pipe(gulp.dest('dist/js'))
+    // babels js
+    .pipe(babel())
+    // dumps all js into same file
+    .pipe(concat('bundle.js'))
+    // sets destination folder
+    .pipe(gulp.dest('www/js'))
+    // renames file
+    .pipe(rename('bundle.min.js'))
+    .pipe(uglify())
+    .pipe(gulp.dest('www/js'))
     // write sourcemaps
     .pipe(sourcemaps.write('.'));
 });
@@ -80,6 +95,33 @@ gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
   gulp.watch('www/js/**/*.js', ['jshint']);
 });
+
+gulp.task('clean', function() {
+  return gulp.src(bases.dist, {
+      read: false
+    })
+    .pipe(clean());
+});
+
+gulp.task('copy', ['clean'], function() {
+  // copy html
+  gulp.src(paths.html, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist));
+
+  // copy styles
+  gulp.src(path.styles, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'styles'));
+
+  // copy lib scripts
+  gulp.src(path.libs, {cwd: 'app/**'})
+  .pipe(gulp.dest(bases.dist));
+
+  // copy extra files
+  gulp.src(path.extras, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist));
+});
+
+gulp.task('release', ['clean', 'sass', 'scripts', 'styles', 'copy']);
 
 // runs install bower
 gulp.task('install', ['git-check'], function() {

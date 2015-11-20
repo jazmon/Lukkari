@@ -1,10 +1,11 @@
 {
   "name": "lukkari",
   "app_id": "",
-  "proxies": [
-    {
-        "path": "/api",
-        "proxyUrl": "https://lukkarit.tamk.fi/"
-    }
+  "proxies": [{
+    "path": "/api",
+    "proxyUrl": "https://lukkarit.tamk.fi/"
+  }],
+  "gulpStartupTasks": [
+    "release"
   ]
 }
