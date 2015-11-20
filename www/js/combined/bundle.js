@@ -19,7 +19,7 @@ lukkariApp.run(['$ionicPlatform', function ($ionicPlatform) {
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 });
 
 // menuContent-view is presented on the main view.
@@ -136,7 +136,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
         if (success) {
-          console.log('successfully changed group name');
           getAppointments();
         } else {
           console.log('failed to change group name');
@@ -151,7 +150,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
         if (success) {
-          console.log('successfully changed group name');
           getAppointments();
         } else {
           console.log('failed to change group name');
@@ -173,7 +171,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
 
 // controller for single appointment view
 lukkariControllers.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', function ($scope, $ionicLoading, $stateParams, Lessons) {
-  //$scope.appointment = Timetables.getAppointment($stateParams.id);
   $scope.lesson = Lessons.getLesson($stateParams.id);
 }]);
 
@@ -217,7 +214,6 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicMod
         if (!response.success) {
           console.log('ERROR');
         } else {
-          //$scope.lessons = response.weekLessons;
           var allLessons = response.weekLessons;
           console.log(allLessons.length);
           $scope.days = [];
@@ -238,7 +234,6 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicMod
               }
             }
             $scope.days.push(day);
-            //console.log('day.lessons.length: ' + day.lessons.length);
           }
         }
       }
@@ -424,8 +419,6 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
     calOptions.secondReminderMinutes = null;
 
     var success = true;
-    console.log('$scope.reminder.startDay: ' + $scope.reminder.startDay);
-    console.log('$scope.reminder.endDay: ' + $scope.reminder.endDay);
 
     function createEvent(element, index, array) {
       var groups = '';
@@ -433,33 +426,25 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
         groups += element.groups[i] + ', ';
       }
 
-      /*$cordovaCalendar.createEventWithOptions({
+      $cordovaCalendar.createEventWithOptions({
         title: element.name,
         location: element.room,
-        notes: 'Teacher(s): ' + element.teacher +
-          '\nGroup(s): ' + groups +
-          '\nCourse: ' + element.code,
-        startDate: MyDate.getLocaleDate({
-          day: element.startDay,
-          years: false
-        }),
-        endDate: MyDate.getLocaleDate({
-          day: element.endDay,
-          years: false
-        }),
+        notes: 'Teacher(s): ' + element.teacher + '\nGroup(s): ' + groups + '\nCourse: ' + element.code,
+        startDate: element.startDay,
+        endDate: element.endDay,
         firstReminderMinutes: calOptions.firstReminderMinutes,
         secondReminderMinutes: calOptions.secondReminderMinutes,
         calendarName: calOptions.calendarName,
         calendarId: calOptions.calendarId
-          //calOptions: calOptions
-      }).then(function(result) {
+        //calOptions: calOptions
+      }).then(function (result) {
         console.log('successfully added week to calendar');
-      }, function(err) {
+      }, function (err) {
         success = false;
-      });*/
-
-      console.log('Added ' + element.name + ', ' + element.startDay);
+        console.log('failed to add to calendar');
+      });
     }
+
     Lessons.getDayToDay({
       startDate: $scope.reminder.startDay,
       endDate: $scope.reminder.endDay,
@@ -475,11 +460,9 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
     } else {
       msg = 'Failed to add calendar events!';
     }
-    if ($cordovaToast) {
-      $cordovaToast.show('Failed to add calendar events!', toastOptions.duration, toastOptions.position);
-    } else {
-      console.log(msg);
-    }
+
+    $cordovaToast.show(msg, toastOptions.duration, toastOptions.position);
+    console.log(msg);
   };
 }]);
 
@@ -687,12 +670,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
       currentDay: day,
       offsetDays: 5
     });
-
-    //console.log('startDate: ' + startDate);
-    //console.log('endDate: ' + endDate);
     lessons.forEach(function (lesson, index, array) {
-      //console.log("one lesson");
-      //console.log('lesson.startDay: ' + lesson.startDay);
       if (lesson.startDay >= startDate && lesson.startDay <= endDate) {
         weekLessons.push(lesson);
       }

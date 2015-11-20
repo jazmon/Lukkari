@@ -352,6 +352,7 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
       calOptions.secondReminderMinutes = null;
 
       var success = true;
+
       function createEvent(element, index, array) {
         var groups = '';
         for (var i = 0; i < element.groups.length; i++) {
@@ -364,25 +365,19 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
           notes: 'Teacher(s): ' + element.teacher +
             '\nGroup(s): ' + groups +
             '\nCourse: ' + element.code,
-          startDate: MyDate.getLocaleDate({
-            day: element.startDay,
-            years: false
-          }),
-          endDate: MyDate.getLocaleDate({
-            day: element.endDay,
-            years: false
-          }),
+          startDate: element.startDay,
+          endDate: element.endDay,
           firstReminderMinutes: calOptions.firstReminderMinutes,
           secondReminderMinutes: calOptions.secondReminderMinutes,
           calendarName: calOptions.calendarName,
           calendarId: calOptions.calendarId
             //calOptions: calOptions
         }).then(function(result) {
-          console.log('successfully added week to calendar');
         }, function(err) {
           success = false;
         });
       }
+
       Lessons.getDayToDay({
         startDate: $scope.reminder.startDay,
         endDate: $scope.reminder.endDay,
@@ -398,13 +393,11 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
       } else {
         msg = 'Failed to add calendar events!';
       }
-      if ($cordovaToast) {
-        $cordovaToast.show('Failed to add calendar events!',
-          toastOptions.duration,
-          toastOptions.position);
-      } else {
-        console.log(msg);
-      }
+
+      $cordovaToast.show(msg,
+        toastOptions.duration,
+        toastOptions.position);
+      console.log(msg);
     };
   }
 ]);
