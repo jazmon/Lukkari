@@ -3,16 +3,16 @@
   "app_id": "",
   "proxies": [{
     "path": "/api",
-    "proxyUrl": "https://lukkarit.tamk.fi/"
+    "proxyUrl": "https://opendata.tamk.fi/r1"
   }],
   "gulpStartupTasks": [
-    "build", 
-    "watch"
+    "clean",
+    "release"
   ],
   "documentRoot": "dist",
   "createDocumentRoot": "dist",
   "watchPatterns": [
-    "dist/js/*",
-    "!dist/css/**/*"
+    "www/js/*",
+    "!www/css/**/*"
   ]
 }

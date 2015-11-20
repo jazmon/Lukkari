@@ -24,7 +24,7 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['js/**/*.js'],
+  scripts: ['js/*.js'],
   libs: [''],
   styles: ['css/**/*.css'],
   html: ['index.html'],
@@ -71,7 +71,7 @@ gulp.task('build-js', function() {
 
 // builds js
 gulp.task('scripts', ['clean'], function() {
-  gulp.src(bases.app + 'js/**/*.js')
+  gulp.src(bases.app + 'js/*.js')
     // initializes sourcemaps
     .pipe(sourcemaps.init())
     // babels js
@@ -79,11 +79,11 @@ gulp.task('scripts', ['clean'], function() {
     // dumps all js into same file
     .pipe(concat('bundle.js'))
     // sets destination folder
-    .pipe(gulp.dest(bases.dist + 'js'))
+    .pipe(gulp.dest(bases.app + 'js/combined'))
     // renames file
     .pipe(rename('bundle.min.js'))
-    .pipe(uglify())
-    .pipe(gulp.dest(bases.dist + 'js'))
+    .pipe(uglify({mangle: false}))
+    .pipe(gulp.dest(bases.app + 'js/combined'))
     // write sourcemaps
     .pipe(sourcemaps.write('.'));
 });
@@ -92,7 +92,7 @@ gulp.task('scripts', ['clean'], function() {
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
   //gulp.watch(paths.scripts, ['jshint']);
-  gulp.watch('www/**/*', ['scripts', 'sass', 'copy']);
+  gulp.watch('www/**/*', ['scripts', 'copy']);
 });
 
 gulp.task('clean', function() {
@@ -116,7 +116,7 @@ gulp.task('copy', ['clean'], function() {
   // copy styles
   console.log('copying styles...');
   gulp.src(paths.styles, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'styles'));
+  .pipe(gulp.dest(bases.dist + 'css'));
 
   // copy images
   console.log('copying images...');
@@ -125,8 +125,13 @@ gulp.task('copy', ['clean'], function() {
 
   // copy lib scripts
   console.log('copying libs...');
-  gulp.src(paths.libs, {cwd: 'dev/**'})
+  gulp.src(paths.libs, {cwd: 'www/**'})
   .pipe(gulp.dest(bases.dist));
+
+  // copy scripts
+  console.log('copying scripts...');
+  gulp.src(bases.app + 'js/combined/*', {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'js/combined'));
 
   // copy extra files
   //console.log('copying extras...');
@@ -163,7 +168,7 @@ gulp.task('git-check', function(done) {
 // adds a proxy for http://localhost:3000 hosting
 gulp.task('add-proxy', function() {
   return replace({
-    regex: 'https://lukkarit.tamk.fi',
+    regex: 'https://opendata.tamk.fi/r1',
     replacement: 'http://localhost:8100/api',
     paths: replaceFiles,
     recursive: false,
@@ -175,7 +180,7 @@ gulp.task('add-proxy', function() {
 gulp.task('remove-proxy', function() {
   return replace({
     regex: 'http://localhost:8100/api',
-    replacement: 'https://lukkarit.tamk.fi',
+    replacement: 'https://opendata.tamk.fi/r1',
     paths: replaceFiles,
     recursive: false,
     silent: false,
