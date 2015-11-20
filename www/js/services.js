@@ -93,6 +93,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
             break;
           case 'room':
             lesson.room = resource.code;
+            lesson.roomInfo = resource.parent.name;
             break;
           case 'student_group':
             lesson.groups.push(resource.code);
@@ -180,7 +181,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
       var startDate = day;
       var endDate = MyDate.getDayFromDay({
         currentDay: day,
-        offsetDays: 4
+        offsetDays: 5
       });
 
       //console.log('startDate: ' + startDate);
@@ -206,11 +207,16 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
 
     }
 
+    function getLesson(id) {
+      return lessons[id];
+    }
+
     return {
       changeGroup: changeGroup,
       getDay: getDay,
       getWeek: getWeek,
-      getDayToDay: getDayToDay
+      getDayToDay: getDayToDay,
+      getLesson: getLesson
     };
   }
 ]);

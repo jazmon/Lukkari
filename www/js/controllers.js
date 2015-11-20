@@ -93,10 +93,11 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
 ]);
 
 // controller for single appointment view
-lukkariControllers.controller('AppointmentCtrl', ['$scope', '$ionicLoading',
-  '$stateParams',
-  function($scope, $ionicLoading, $stateParams) {
+lukkariControllers.controller('LessonCtrl', ['$scope', '$ionicLoading',
+  '$stateParams', 'Lessons',
+  function($scope, $ionicLoading, $stateParams, Lessons) {
     //$scope.appointment = Timetables.getAppointment($stateParams.id);
+    $scope.lesson = Lessons.getLesson($stateParams.id);
   }
 ]);
 

@@ -45,12 +45,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProvi
         controller: 'SettingsCtrl'
       }
     }
-  }).state('app.todayAppointment', {
+  }).state('app.todayLesson', {
     url: '/today/:id',
     views: {
       'menuContent': {
-        templateUrl: 'templates/appointment.html',
-        controller: 'AppointmentCtrl'
+        templateUrl: 'templates/lesson.html',
+        controller: 'LessonCtrl'
       }
     }
   }).state('app.today', {
@@ -61,12 +61,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProvi
         controller: 'TodayCtrl'
       }
     }
-  }).state('app.appointment', {
+  }).state('app.lesson', {
     url: '/week/:id',
     views: {
       'menuContent': {
-        templateUrl: 'templates/appointment.html',
-        controller: 'AppointmentCtrl'
+        templateUrl: 'templates/lesson.html',
+        controller: 'LessonCtrl'
       }
     }
   }).state('app.week', {
@@ -172,8 +172,9 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
 }]);
 
 // controller for single appointment view
-lukkariControllers.controller('AppointmentCtrl', ['$scope', '$ionicLoading', '$stateParams', function ($scope, $ionicLoading, $stateParams) {
+lukkariControllers.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', function ($scope, $ionicLoading, $stateParams, Lessons) {
   //$scope.appointment = Timetables.getAppointment($stateParams.id);
+  $scope.lesson = Lessons.getLesson($stateParams.id);
 }]);
 
 // controller for weekly view
@@ -550,6 +551,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
           break;
         case 'room':
           lesson.room = resource.code;
+          lesson.roomInfo = resource.parent.name;
           break;
         case 'student_group':
           lesson.groups.push(resource.code);
@@ -637,7 +639,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
     var startDate = day;
     var endDate = MyDate.getDayFromDay({
       currentDay: day,
-      offsetDays: 4
+      offsetDays: 5
     });
 
     //console.log('startDate: ' + startDate);
@@ -662,10 +664,15 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
     var endDate = _ref6.endDate;
   }
 
+  function getLesson(id) {
+    return lessons[id];
+  }
+
   return {
     changeGroup: changeGroup,
     getDay: getDay,
     getWeek: getWeek,
-    getDayToDay: getDayToDay
+    getDayToDay: getDayToDay,
+    getLesson: getLesson
   };
 }]);

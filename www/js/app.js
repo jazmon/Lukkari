@@ -52,12 +52,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider',
         }
       }
     })
-    .state('app.todayAppointment', {
+    .state('app.todayLesson', {
       url: '/today/:id',
       views: {
         'menuContent': {
-          templateUrl: 'templates/appointment.html',
-          controller: 'AppointmentCtrl'
+          templateUrl: 'templates/lesson.html',
+          controller: 'LessonCtrl'
         }
       }
     })
@@ -70,12 +70,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider',
         }
       }
     })
-    .state('app.appointment', {
+    .state('app.lesson', {
       url: '/week/:id',
       views: {
         'menuContent': {
-          templateUrl: 'templates/appointment.html',
-          controller: 'AppointmentCtrl'
+          templateUrl: 'templates/lesson.html',
+          controller: 'LessonCtrl'
         }
       }
     })
