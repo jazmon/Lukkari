@@ -1,6 +1,6 @@
 'use strict';
 
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'ionic-datepicker']);
+var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker']);
 
 lukkariApp.run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
@@ -89,11 +89,11 @@ var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
 lukkariControllers.controller('LukkariCtrl', [function ($scope) {}]);
 
 // controller for today view
-lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate) {
+lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons) {
   $scope.groupInfo = {};
   $scope.groupInfo.group = LocalStorage.get('groupName');
   $scope.dayOffset = 0;
-  $scope.currentDay = 'Today';
+  $scope.currentDay = new Date();
 
   // Show new group modal when no group is set
   $ionicModal.fromTemplateUrl('templates/newgroup.html', {
@@ -114,48 +114,83 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
   $scope.setGroup = function () {
     LocalStorage.set('groupName', $scope.groupInfo.group);
     $scope.modal.hide();
-    /*$ionicLoading.show({
+    $ionicLoading.show({
       template: 'Loading...'
-    });*/
-    /*Timetables.getDay($scope.groupInfo.group, $scope.dayOffset,
-      function(result) {
-        $scope.appointments = result;
-        $ionicLoading.hide();
-      });*/
+    });
+
+    Lessons.changeGroup({
+      groupName: $scope.groupInfo.group,
+      callback: function callback(success) {
+        if (success) {
+          console.log('successfully changed group name');
+          Lessons.getDay({
+            day: $scope.currentDay,
+            callback: function callback(response) {
+              if (!response.success) {
+                console.log('ERROR');
+              } else {
+                $scope.lessons = response.dayLessons;
+              }
+            }
+          });
+        } else {
+          console.log('failed to change group name');
+        }
+      }
+    });
   };
 
-  $scope.appointments = [];
-  if ($scope.groupInfo.group !== undefined) {}
-  /*$ionicLoading.show({
-    template: 'Loading...'
-  });*/
-  /*Timetables.getDay($scope.groupInfo.group, $scope.dayOffset,
-    function(result) {
-      $scope.appointments = result;
-      $ionicLoading.hide();
-    });*/
+  $scope.lessons = [];
+  if ($scope.groupInfo.group !== undefined) {
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
+    Lessons.changeGroup({
+      groupName: $scope.groupInfo.group,
+      callback: function callback(success) {
+        if (success) {
+          console.log('successfully changed group name');
+
+          Lessons.getDay({
+            day: $scope.currentDay,
+            callback: function callback(response) {
+              $ionicLoading.hide();
+              if (!response.success) {
+                console.log('ERROR');
+              } else {
+                $scope.lessons = response.dayLessons;
+              }
+            }
+          });
+        } else {
+          console.log('failed to change group name');
+        }
+      }
+    });
+  }
 
   // Moves a day forwards/backwards
   $scope.moveDay = function (direction) {
-    // change the offset from current day
-    if (direction === -1) {
-      $scope.dayOffset -= 1;
-    } else if (direction === 1) {
-      $scope.dayOffset += 1;
-    } else {
-      throw new RangeError('Parameter out of range! Please use 1 or -1');
-    }
-    var date = MyDate.getDayFromToday($scope.dayOffset);
-    $scope.currentDay = MyDate.getLocaleDate(date, false);
-    /*$ionicLoading.show({
+    $ionicLoading.show({
       template: 'Loading...'
-    });*/
-    $scope.appointments = [];
-    /*Timetables.getDay($scope.groupInfo.group, $scope.dayOffset,
-      function(result) {
-        $scope.appointments = result;
+    });
+
+    $scope.currentDay = MyDate.getDayFromDay({
+      currentDay: $scope.currentDay,
+      offsetDays: direction
+    });
+
+    Lessons.getDay({
+      day: $scope.currentDay,
+      callback: function callback(response) {
         $ionicLoading.hide();
-      });*/
+        if (!response.success) {
+          console.log('ERROR');
+        } else {
+          $scope.lessons = response.dayLessons;
+        }
+      }
+    });
   };
 }]);
 
@@ -371,7 +406,7 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
                       calendarId: calOptions.calendarId
                           //calOptions: calOptions
                   }).then(function (result) {
-                        console.log('successfully added week to calendar');
+                       console.log('successfully added week to calendar');
                   }, function (err) {
                       success = false;
                   });*/
@@ -394,6 +429,15 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
 
 // TODO
 lukkariControllers.controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
+'use strict';
+
+var lukkariDirectives = angular.module('lukkari.directives', []);
+
+lukkariDirectives.directive('dayRange', function () {
+  return {
+    template: '{{lesson.startDay.toLocaleTimeString' + '("fi-FI", {hour:"numeric", minute:"numeric"})}}' + ' — ' + '{{lesson.endDay.toLocaleTimeString' + '("fi-FI", {hour:"numeric", minute:"numeric"})}}'
+  };
+});
 'use strict';
 
 var lukkariServices = angular.module('lukkari.services', []);
@@ -429,7 +473,10 @@ lukkariServices.factory('MyDate', [function () {
   // parameter2: return years boolean
   // return: date string
   // 11.02.2040
-  function formatDay(day, years) {
+  function formatDay(_ref) {
+    var day = _ref.day;
+    var years = _ref.years;
+
     var dayString = '';
     dayString += day.getDate();
     dayString += '.';
@@ -441,7 +488,10 @@ lukkariServices.factory('MyDate', [function () {
     return dayString;
   }
 
-  function getLocaleDate(day, years) {
+  function getLocaleDate(_ref2) {
+    var day = _ref2.day;
+    var years = _ref2.years;
+
     var options = {
       //weekday: 'long',
       month: 'numeric',
@@ -453,7 +503,10 @@ lukkariServices.factory('MyDate', [function () {
     return new Intl.DateTimeFormat('fi-FI', options).format(day);
   }
 
-  function getDayFromDay(currentDay, offsetDays) {
+  function getDayFromDay(_ref3) {
+    var currentDay = _ref3.currentDay;
+    var offsetDays = _ref3.offsetDays;
+
     var day = currentDay.getTime();
     // add desired amount of days to the millisecs
     day += offsetDays * DAY_IN_MILLISECONDS;
@@ -486,39 +539,125 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', function ($http, Api
   var lessons = [];
   var savedGroupName = '';
 
-  function get(groupName, callback) {
-    if (savedGroupName === groupName) {
-      callback(lessons);
+  function parseLesson(element, index, array) {
+    var lesson = {};
+    lesson.id = index;
+    lesson.startDay = new Date(element.startDate);
+    lesson.endDay = new Date(element.endDate);
+    lesson.groups = [];
+    // parse the resources array
+    var resources = element.resources;
+
+    resources.forEach(function (resource, index, array) {
+      switch (resource.type) {
+        case 'realization':
+          lesson.code = resource.code;
+          lesson.name = resource.name;
+          break;
+        case 'room':
+          lesson.room = resource.code;
+          break;
+        case 'student_group':
+          lesson.groups.push(resource.code);
+          break;
+      }
+    });
+    lessons.push(lesson);
+  }
+
+  function get(callback) {
+    var data = {
+      studentGroup: [savedGroupName]
+    };
+    var apiKey = 'Wu47zzKEPa7agvin47f5';
+    var url = ApiEndpoint.url + '/reservation/search' + '?apiKey=' + apiKey;
+    $http({
+      method: 'POST',
+      url: url,
+      data: data,
+      withCredentials: true,
+      headers: {
+        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
+        'accept-language': 'fi',
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+    }).success(function (data, status, headers, config) {
+      //console.log(data.reservations);
+      console.log('success');
+      //console.log(data.reservations);
+      //console.log(data);
+      lessons = [];
+      data.reservations.forEach(parseLesson);
+      callback({
+        success: false
+      });
+    }).error(function (data, status, headers, config) {
+      console.log('failure');
+      callback({
+        success: false
+      });
+    });
+  }
+
+  // private get method that just saves lessons
+  // change group name method that changes group anme and uses private get method
+  function changeGroup(_ref4) {
+    var groupName = _ref4.groupName;
+    var callback = _ref4.callback;
+
+    savedGroupName = groupName.toUpperCase();
+    get(function (result) {
+      callback(result);
+    });
+  }
+
+  // get day method that returns one day's lessons using date
+  function getDay(_ref5) {
+    var callback = _ref5.callback;
+    var day = _ref5.day;
+
+    if (!day || !day instanceof Date) {
+      console.error('Error in date!');
+      callback({
+        success: false
+      });
     } else {
-      savedGroupName = groupName;
-      var data = {
-        studentGroup: [groupName.toUpperCase()]
-      };
-      var apiKey = 'Wu47zzKEPa7agvin47f5';
-      var url = ApiEndpoint.url + '/reservation/search' + '?apiKey=' + apiKey;
-      $http({
-        method: 'POST',
-        url: url,
-        data: data,
-        withCredentials: true,
-        headers: {
-          'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-          'accept-language': 'fi',
-          'content-type': 'application/json',
-          'cache-control': 'no-cache'
+      var dayLessons = [];
+
+      //  console.log('lessons: ' + lessons.length);
+      lessons.forEach(function (lesson, index, array) {
+        var date = lesson.startDay;
+        if (date.getDate() === day.getDate() && date.getMonth() === day.getMonth()) {
+          dayLessons.push(lesson);
         }
-      }).success(function (data, status, headers, config) {
-        console.log(data.reservations);
-        callback(data.reservations);
-      }).error(function (data, status, headers, config) {
-        callback({
-          success: false
-        });
+      });
+      //console.log('matching lesson: ' + dayLessons);
+      //console.log('matching lesson amount: ' + dayLessons.length);
+      callback({
+        success: true,
+        dayLessons: dayLessons
       });
     }
   }
 
+  // get week method that returns one week's lessons using startDate and week offset
+  function getWeek(_ref6) {
+    var callback = _ref6.callback;
+    var day = _ref6.day;
+  }
+
+  //get day to day method that returns all appointments from day a to day b
+  function getDayToDay(_ref7) {
+    var callback = _ref7.callback;
+    var startDate = _ref7.startDate;
+    var endDate = _ref7.endDate;
+  }
+
   return {
-    get: get
+    changeGroup: changeGroup,
+    getDay: getDay,
+    getWeek: getWeek,
+    getDayToDay: getDayToDay
   };
 }]);
