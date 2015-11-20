@@ -107,8 +107,11 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
     Lessons) {
     $scope.groupInfo = {};
     $scope.groupInfo.group = LocalStorage.get('groupName');
-    $scope.week = {};
-    $scope.weekOffset = 0;
+    $scope.currentDate = MyDate.getMonday(new Date());
+    $scope.endDate = MyDate.getDayFromDay({
+      currentDay: $scope.currentDate,
+      offsetDays: 4
+    });
 
     // Create modal for new group if no group name is set
     if (!$scope.groupInfo.group) {
@@ -116,7 +119,6 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
         scope: $scope
       }).then(function(modal) {
         $scope.modal = modal;
-
         // open modal to set group name
         $scope.modal.show();
       });
@@ -130,62 +132,92 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
     // returns all of the appointments
     function getAppointments() {
       // show the loading window
-      /*$ionicLoading.show({
+      $ionicLoading.show({
         template: 'Loading...'
-      });*/
+      });
       // get all the appointments
-      /*Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset,
-        function(result) {
-          var appointments = result;
-          $scope.days = [];
-          var startDate = MyDate.getMonday(appointments[0].startDate);
-          // loop whole week
-          for (var i = 0; i < 5; i++) {
-            var day = {};
-            // get mon-sun day
-            day.date = MyDate.getDayFromDay(startDate, i);
-            day.appointments = [];
-            for (var j = 0; j < appointments.length; j++) {
-              var appointment = appointments[j];
-              // if is the same day push into the array
-              if (appointment.startDate.toDateString() ===
-                day.date.toDateString()) {
-                day.appointments.push(appointment);
-              }
-            }
-            // add the day into the array
-            $scope.days.push(day);
-          }
-          // hide the loading after done
+      Lessons.getWeek({
+        day: $scope.currentDate,
+        callback: function(response) {
           $ionicLoading.hide();
-        });*/
+          if (!response.success) {
+            console.log('ERROR');
+          } else {
+            //$scope.lessons = response.weekLessons;
+            var allLessons = response.weekLessons;
+            console.log(allLessons.length);
+            $scope.days = [];
+            for (var i = 0; i < 5; i++) {
+              var day = {};
+              // get mon-fri
+              day.date = MyDate.getDayFromDay({
+                currentDay: $scope.currentDate,
+                offsetDays: i
+              });
+              day.lessons = [];
+              var lessonsLength = allLessons.length;
+              for (var j = 0; j < lessonsLength; j++) {
+                var lesson = allLessons[j];
+                // if same day push into the day array
+                if (lesson.startDay.toDateString() ===
+                  day.date.toDateString()) {
+                  day.lessons.push(lesson);
+                }
+              }
+              $scope.days.push(day);
+              //console.log('day.lessons.length: ' + day.lessons.length);
+            }
+          }
+        }
+      });
+      // hide the loading after done
+      $ionicLoading.hide();
     }
-
-    Lessons.get($scope.groupInfo.group, function(lessons) {
-      if (lessons.hasOwnProperty('success') && lessons.success !==
-        false) {
-        console.log('FAILED');
-      } else {
-
-        $scope.lessons = lessons;
-      }
-    });
 
     // sets the group name
     $scope.setGroup = function() {
       LocalStorage.set('groupName', $scope.groupInfo.group);
       $scope.modal.hide();
-      getAppointments();
+
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
     };
 
-    $scope.appointments = [];
+    $scope.lessons = [];
     if ($scope.groupInfo.group !== undefined) {
-      getAppointments();
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
     }
 
     // moves a week forwards/backwards
     $scope.moveWeek = function(direction) {
-      $scope.weekOffset += direction;
+      $scope.currentDate = MyDate.getDayFromDay({
+        currentDay: $scope.currentDate,
+        offsetDays: (7 * direction)
+      });
+      $scope.endDate = MyDate.getDayFromDay({
+        currentDay: $scope.currentDate,
+        offsetDays: 4
+      });
+
       getAppointments();
     };
   }

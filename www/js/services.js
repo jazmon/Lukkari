@@ -26,25 +26,6 @@ lukkariServices.factory('MyDate', [function() {
     return new Date(d.setDate(diff));
   }
 
-  // formats a Date object into a string
-  // parameter: date object
-  // parameter2: return years boolean
-  // return: date string
-  // 11.02.2040
-  function formatDay({
-    day, years
-  }) {
-    var dayString = '';
-    dayString += day.getDate();
-    dayString += '.';
-    dayString += (day.getMonth() + 1);
-    if (typeof years === 'boolean' && years) {
-      dayString += '.';
-      dayString += day.getFullYear();
-    }
-    return dayString;
-  }
-
   function getLocaleDate({
     day, years
   }) {
@@ -83,15 +64,14 @@ lukkariServices.factory('MyDate', [function() {
 
   return {
     getMonday: getMonday,
-    formatDay: formatDay,
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
     getDayFromDay: getDayFromDay
   };
 }]);
 
-lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
-  function($http, ApiEndpoint) {
+lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
+  function($http, ApiEndpoint, MyDate) {
     var lessons = [];
     var savedGroupName = '';
 
@@ -102,7 +82,9 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
       lesson.endDay = new Date(element.endDate);
       lesson.groups = [];
       // parse the resources array
-      var {resources} = element;
+      var {
+        resources
+      } = element;
       resources.forEach(function(resource, index, array) {
         switch (resource.type) {
           case 'realization':
@@ -139,10 +121,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
           'cache-control': 'no-cache'
         }
       }).success(function(data, status, headers, config) {
-        //console.log(data.reservations);
         console.log('success');
-        //console.log(data.reservations);
-        //console.log(data);
         lessons = [];
         data.reservations.forEach(parseLesson);
         callback({
@@ -178,8 +157,6 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
         });
       } else {
         var dayLessons = [];
-
-        //  console.log('lessons: ' + lessons.length);
         lessons.forEach(function(lesson, index, array) {
           var date = lesson.startDay;
           if (date.getDate() === day.getDate() &&
@@ -187,8 +164,6 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
             dayLessons.push(lesson);
           }
         });
-        //console.log('matching lesson: ' + dayLessons);
-        //console.log('matching lesson amount: ' + dayLessons.length);
         callback({
           success: true,
           dayLessons
@@ -201,6 +176,26 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint',
     function getWeek({
       callback, day
     }) {
+      var weekLessons = [];
+      var startDate = day;
+      var endDate = MyDate.getDayFromDay({
+        currentDay: day,
+        offsetDays: 4
+      });
+
+      //console.log('startDate: ' + startDate);
+      //console.log('endDate: ' + endDate);
+      lessons.forEach(function(lesson, index, array) {
+        //console.log("one lesson");
+        //console.log('lesson.startDay: ' + lesson.startDay);
+        if (lesson.startDay >= startDate && lesson.startDay <= endDate) {
+          weekLessons.push(lesson);
+        }
+      });
+      callback({
+        success: true,
+        weekLessons
+      });
 
     }
 
