@@ -18,8 +18,8 @@ var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
 
 var bases = {
-  dist: 'dist/',
-  app: 'www/'
+  dist: 'www/',
+  app: 'dev/'
 };
 // https://gist.github.com/justinmc/9149719
 var paths = {
@@ -32,7 +32,7 @@ var paths = {
   styles: ['css/**/*.css'],
   html: ['index.html'],
   templates: ['templates/**/*.html']
-  //images: [],
+  images: ['img/**/*'],
   //extras: ['favicon.ico']
 };
 
@@ -119,6 +119,11 @@ gulp.task('copy', ['clean'], function() {
   console.log('copying styles...');
   gulp.src(paths.styles, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'styles'));
+
+  // copy images
+  console.log('copying images...');
+  gulp.src(paths.images, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'img'));
 
   // copy lib scripts
   console.log('copying libs...');
