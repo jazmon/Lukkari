@@ -21,7 +21,7 @@ function($ionicPlatform) {
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 });
 
 // menuContent-view is presented on the main view.

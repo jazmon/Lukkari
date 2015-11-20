@@ -21,7 +21,7 @@ function($ionicPlatform) {
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 });
 
 // menuContent-view is presented on the main view.
@@ -52,12 +52,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider',
         }
       }
     })
-    .state('app.todayAppointment', {
+    .state('app.todayLesson', {
       url: '/today/:id',
       views: {
         'menuContent': {
-          templateUrl: 'templates/appointment.html',
-          controller: 'AppointmentCtrl'
+          templateUrl: 'templates/lesson.html',
+          controller: 'LessonCtrl'
         }
       }
     })
@@ -70,12 +70,12 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider',
         }
       }
     })
-    .state('app.appointment', {
+    .state('app.lesson', {
       url: '/week/:id',
       views: {
         'menuContent': {
-          templateUrl: 'templates/appointment.html',
-          controller: 'AppointmentCtrl'
+          templateUrl: 'templates/lesson.html',
+          controller: 'LessonCtrl'
         }
       }
     })
