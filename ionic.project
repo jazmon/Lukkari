@@ -4,5 +4,15 @@
   "proxies": [{
     "path": "/api",
     "proxyUrl": "https://lukkarit.tamk.fi/"
-  }]
+  }],
+  "gulpStartupTasks": [
+    "build", 
+    "watch"
+  ],
+  "documentRoot": "dist",
+  "createDocumentRoot": "dist",
+  "watchPatterns": [
+    "dist/js/*",
+    "!dist/css/**/*"
+  ]
 }

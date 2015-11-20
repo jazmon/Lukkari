@@ -18,8 +18,8 @@ var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
 
 var bases = {
-  dist: 'www/',
-  app: 'dev/'
+  dist: 'dist/',
+  app: 'www/'
 };
 // https://gist.github.com/justinmc/9149719
 var paths = {
@@ -91,7 +91,8 @@ gulp.task('scripts', ['clean'], function() {
 // watches for changes and then runs these
 gulp.task('watch', function() {
   gulp.watch(paths.sass, ['sass']);
-  gulp.watch('www/js/**/*.js', ['jshint']);
+  //gulp.watch(paths.scripts, ['jshint']);
+  gulp.watch('www/**/*', ['scripts', 'sass', 'copy']);
 });
 
 gulp.task('clean', function() {
