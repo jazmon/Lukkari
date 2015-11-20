@@ -4,8 +4,5 @@
   "proxies": [{
     "path": "/api",
     "proxyUrl": "https://lukkarit.tamk.fi/"
-  }],
-  "gulpStartupTasks": [
-    "release"
-  ]
+  }]
 }

@@ -25,13 +25,10 @@ var bases = {
 var paths = {
   sass: ['./scss/**/*.scss'],
   scripts: ['js/**/*.js'],
-  libs: ['lib/ionic/js/ionic.bundle.js',
-    'lib/ngCordova/dist/ng-cordova.js', 'cordova.js',
-    'lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js'
-  ],
+  libs: [''],
   styles: ['css/**/*.css'],
   html: ['index.html'],
-  templates: ['templates/**/*.html']
+  templates: ['templates/**/*.html'],
   images: ['img/**/*'],
   //extras: ['favicon.ico']
 };
@@ -74,7 +71,7 @@ gulp.task('build-js', function() {
 
 // builds js
 gulp.task('scripts', ['clean'], function() {
-  gulp.src('www/js/**/*.js')
+  gulp.src(bases.app + 'js/**/*.js')
     // initializes sourcemaps
     .pipe(sourcemaps.init())
     // babels js
@@ -127,8 +124,8 @@ gulp.task('copy', ['clean'], function() {
 
   // copy lib scripts
   console.log('copying libs...');
-  gulp.src(paths.libs, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'libs'));
+  gulp.src(paths.libs, {cwd: 'dev/**'})
+  .pipe(gulp.dest(bases.dist));
 
   // copy extra files
   //console.log('copying extras...');
