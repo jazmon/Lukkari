@@ -24,13 +24,14 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['www/js/**/*.js'],
-  libs: ['www/lib/ionic/js/ionic.bundle.js',
-    'www/lib/ngCordova/dist/ng-cordova.js', 'cordova.js',
-    'www/lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js'
+  scripts: ['js/**/*.js'],
+  libs: ['lib/ionic/js/ionic.bundle.js',
+    'lib/ngCordova/dist/ng-cordova.js', 'cordova.js',
+    'lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js'
   ],
-  styles: ['www/css/**/*.css'],
-  html: ['www/index.html', 'www/templates/**/*.html']
+  styles: ['css/**/*.css'],
+  html: ['index.html'],
+  templates: ['templates/**/*.html']
   //images: [],
   //extras: ['favicon.ico']
 };
@@ -39,7 +40,7 @@ var paths = {
 gulp.task('default', ['clean', 'scripts', 'sass', 'copy']);
 
 // generates css files from sass
-gulp.task('sass', function(done) {
+gulp.task('sass',['clean'], function(done) {
   gulp.src(['./scss/ionic.app.scss', './scss/mystyle.app.scss'])
     .pipe(sass())
     .on('error', sass.logError)
@@ -81,11 +82,11 @@ gulp.task('scripts', ['clean'], function() {
     // dumps all js into same file
     .pipe(concat('bundle.js'))
     // sets destination folder
-    .pipe(gulp.dest('www/js'))
+    .pipe(gulp.dest(bases.dist + 'js'))
     // renames file
     .pipe(rename('bundle.min.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('www/js'))
+    .pipe(gulp.dest(bases.dist + 'js'))
     // write sourcemaps
     .pipe(sourcemaps.write('.'));
 });
@@ -105,23 +106,32 @@ gulp.task('clean', function() {
 
 gulp.task('copy', ['clean'], function() {
   // copy html
+  console.log('html');
   gulp.src(paths.html, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist));
 
+  // copy templates
+  console.log('templates');
+  gulp.src(paths.templates, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'templates'));
+
   // copy styles
-  gulp.src(path.styles, {cwd: bases.app})
+  console.log('styles');
+  gulp.src(paths.styles, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'styles'));
 
   // copy lib scripts
-  gulp.src(path.libs, {cwd: 'app/**'})
-  .pipe(gulp.dest(bases.dist));
+  console.log('libs');
+  gulp.src(paths.libs, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'libs'));
 
   // copy extra files
-  gulp.src(path.extras, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist));
+  console.log('extras');
+  /*gulp.src(paths.extras, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist));*/
 });
 
-gulp.task('release', ['clean', 'sass', 'scripts', 'styles', 'copy']);
+gulp.task('release', ['clean', 'sass', 'scripts', 'copy']);
 
 // runs install bower
 gulp.task('install', ['git-check'], function() {
