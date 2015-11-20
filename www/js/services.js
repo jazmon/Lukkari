@@ -178,7 +178,8 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
       callback, day
     }) {
       var weekLessons = [];
-      var startDate = day;
+      var startDate = new Date(day.getFullYear(), day.getMonth(),
+      day.getDate());
       var endDate = MyDate.getDayFromDay({
         currentDay: day,
         offsetDays: 5
@@ -204,7 +205,20 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint','MyDate',
     function getDayToDay({
       callback, startDate, endDate
     }) {
-
+      var correctEndDate = MyDate.getDayFromDay({
+        currentDay: endDate,
+        offsetDays: 1
+      });
+      var retLessons = [];
+      lessons.forEach(function(lesson, index, array) {
+        if (lesson.startDay >= startDate && lesson.startDay <= correctEndDate) {
+          retLessons.push(lesson);
+        }
+      });
+      callback({
+        success: true,
+        lessons: retLessons
+      });
     }
 
     function getLesson(id) {

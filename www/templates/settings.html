@@ -27,23 +27,17 @@
         <p><i class="icon ion-android-alert"></i> If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!</p>
         <p>Also currently this adds a reminder to when the event starts (at 0 mins)</p>
         <form ng-submit="addToCalendar()">
-          <label class="item item-input item-select item-stacked-label">
-            <span class="input-label">Set start date</span>
-            <select class="">
-              <option selected value="today">Today</option>
-              <option value="tomorrow">Tomorrow</option>
-              <option value="monday">Next monday</option>
-            </select>
-          </label>
-          <label class="item item-input ">
+          <label class="item item-input">
             <span class="input-label">Select start date</span>
             <ionic-datepicker input-obj="datepickerObject">
               <button type="button" class="button button-positive icon-right ion-android-calendar">{{datepickerObject.inputDate | date:'dd.MM.yy'}}</button>
             </ionic-datepicker>
           </label>
-          <label class="item item-input ">
-            <span class="input-label">How many weeks?</span>
-            <input type="number" min="1" ng-model="reminder.weeks">
+          <label class="item item-input">
+            <span class="input-label">Select end date</span>
+            <ionic-datepicker input-obj="datepickerObject2">
+              <button type="button" class="button button-positive icon-right ion-android-calendar">{{datepickerObject2.inputDate | date:'dd.MM.yy'}}</button>
+            </ionic-datepicker>
           </label>
           <label class="item item-input item-select">
             <span class="input-label">Set reminder</span>

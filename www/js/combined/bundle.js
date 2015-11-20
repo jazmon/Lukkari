@@ -295,11 +295,11 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicMod
   };
 }]);
 
-lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$cookies', '$timeout', '$cordovaCalendar', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $cookies, $timeout, $cordovaCalendar) {
+lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate) {
   $scope.groupInfo = {};
   $scope.reminder = {};
   $scope.reminder.startDay = new Date();
-  $scope.reminder.weeks = 1;
+  $scope.reminder.endDay = new Date();
 
   var toastOptions = {
     duration: 'long',
@@ -307,25 +307,35 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
   };
 
   function datePickerCallback(val) {
-    // do something
     if (typeof val === 'undefined') {
       console.log('No date selected');
     } else {
       console.log('Selected date is : ', val);
       $scope.reminder.startDay = val;
+      $scope.datepickerObject.inputDate = val;
+    }
+  }
+
+  function datePickerCallback2(val) {
+    if (typeof val === 'undefined') {
+      console.log('No date selected');
+    } else {
+      console.log('Selected date is : ', val);
+      $scope.reminder.endDay = val;
+      $scope.datepickerObject2.inputDate = val;
     }
   }
 
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
-    titleLabel: 'Select Date', //Optional
+    titleLabel: 'Select Start Date', //Optional
     todayLabel: 'Today', //Optional
     closeLabel: 'Close', //Optional
     setLabel: 'Set', //Optional
     setButtonType: 'button-positive', //Optional
     todayButtonType: 'button-stable', //Optional
     closeButtonType: 'button-stable', //Optional
-    inputDate: new Date(), //Optional
+    inputDate: $scope.reminder.startDay, //Optional
     mondayFirst: true, //Optional
     //disabledDates: disabledDates, //Optional
     //weekDaysList: weekDaysList, //Optional
@@ -341,7 +351,34 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
       datePickerCallback(val);
     },
     dateFormat: 'dd-MM-yyyy', //Optional
-    closeOnSelect: false };
+    closeOnSelect: true };
+
+  //Optional
+  $scope.datepickerObject2 = {
+    titleLabel: 'Select End Date', //Optional
+    todayLabel: 'Today', //Optional
+    closeLabel: 'Close', //Optional
+    setLabel: 'Set', //Optional
+    setButtonType: 'button-positive', //Optional
+    todayButtonType: 'button-stable', //Optional
+    closeButtonType: 'button-stable', //Optional
+    inputDate: $scope.reminder.endDay, //Optional
+    mondayFirst: true, //Optional
+    //disabledDates: disabledDates, //Optional
+    //weekDaysList: weekDaysList, //Optional
+    //monthList: monthList, //Optional
+    templateType: 'popup', //Optional
+    showTodayButton: 'true', //Optional
+    modalHeaderColor: 'bar-stable', //Optional
+    modalFooterColor: 'bar-stable', //Optional
+    from: new Date(), //Optional
+    //to: new Date(2018, 8, 25), //Optional
+    callback: function callback(val) {
+      //Mandatory
+      datePickerCallback2(val);
+    },
+    dateFormat: 'dd-MM-yyyy', //Optional
+    closeOnSelect: true };
 
   //Optional
   $scope.reminder.time = 'null';
@@ -355,11 +392,9 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
     // show toast that change was successful
     $ionicPlatform.ready(function () {
       try {
-        $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position).then(function (success) {
-          $cookies.remove('PHPSESSID');
-        });
+        $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
       } catch (e) {
-        // do nothing
+        // do nothing because it fails on browser
       } finally {
         // change to today view after 2 seconds
         $timeout(function () {
@@ -389,50 +424,61 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
     calOptions.secondReminderMinutes = null;
 
     var success = true;
-    console.log('$scope.reminder.weeks: ' + $scope.reminder.weeks);
     console.log('$scope.reminder.startDay: ' + $scope.reminder.startDay);
-    // TODO create a service method that can get days from a day to a day.
-    // and use it here.
-
-    function getAppointments(result) {
-      appointments = result;
-      $ionicPlatform.ready(function () {
-        appointments.forEach(createEvent(elment, index, array));
-      });
-    }
+    console.log('$scope.reminder.endDay: ' + $scope.reminder.endDay);
 
     function createEvent(element, index, array) {
+      var groups = '';
+      for (var i = 0; i < element.groups.length; i++) {
+        groups += element.groups[i] + ', ';
+      }
+
       /*$cordovaCalendar.createEventWithOptions({
-                      title: element.summary,
-                      location: element.location,
-                      notes: 'Teacher(s): ' + element.teacher +
-                          '\nGroup(s): ' + element.groups +
-                          '\nCourse: ' + element.courseNumber,
-                      startDate: element.startDate,
-                      endDate: element.endDate,
-                      firstReminderMinutes: calOptions.firstReminderMinutes,
-                      secondReminderMinutes: calOptions.secondReminderMinutes,
-                      calendarName: calOptions.calendarName,
-                      calendarId: calOptions.calendarId
-                          //calOptions: calOptions
-                  }).then(function (result) {
-                       console.log('successfully added week to calendar');
-                  }, function (err) {
-                      success = false;
-                  });*/
-      console.log('Added ' + element.summary + ', ' + element.startDate.toLocaleDateString());
-    }
+        title: element.name,
+        location: element.room,
+        notes: 'Teacher(s): ' + element.teacher +
+          '\nGroup(s): ' + groups +
+          '\nCourse: ' + element.code,
+        startDate: MyDate.getLocaleDate({
+          day: element.startDay,
+          years: false
+        }),
+        endDate: MyDate.getLocaleDate({
+          day: element.endDay,
+          years: false
+        }),
+        firstReminderMinutes: calOptions.firstReminderMinutes,
+        secondReminderMinutes: calOptions.secondReminderMinutes,
+        calendarName: calOptions.calendarName,
+        calendarId: calOptions.calendarId
+          //calOptions: calOptions
+      }).then(function(result) {
+        console.log('successfully added week to calendar');
+      }, function(err) {
+        success = false;
+      });*/
 
-    // loop all weeks
-    for (var i = 1; i < $scope.reminder.weeks; i++) {
-      // get next weeks appointments
-      //Timetables.getWeek($scope.groupInfo.group, i, getAppointments(result));
+      console.log('Added ' + element.name + ', ' + element.startDay);
     }
-
+    Lessons.getDayToDay({
+      startDate: $scope.reminder.startDay,
+      endDate: $scope.reminder.endDay,
+      callback: function callback(response) {
+        $ionicPlatform.ready(function () {
+          response.lessons.forEach(createEvent);
+        });
+      }
+    });
+    var msg = '';
     if (success) {
-      $cordovaToast.show('Calendar events successfully added!', toastOptions.duration, toastOptions.position);
+      msg = 'Calendar events successfully added!';
     } else {
+      msg = 'Failed to add calendar events!';
+    }
+    if ($cordovaToast) {
       $cordovaToast.show('Failed to add calendar events!', toastOptions.duration, toastOptions.position);
+    } else {
+      console.log(msg);
     }
   };
 }]);
@@ -636,7 +682,7 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
     var day = _ref5.day;
 
     var weekLessons = [];
-    var startDate = day;
+    var startDate = new Date(day.getFullYear(), day.getMonth(), day.getDate());
     var endDate = MyDate.getDayFromDay({
       currentDay: day,
       offsetDays: 5
@@ -662,6 +708,21 @@ lukkariServices.factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function (
     var callback = _ref6.callback;
     var startDate = _ref6.startDate;
     var endDate = _ref6.endDate;
+
+    var correctEndDate = MyDate.getDayFromDay({
+      currentDay: endDate,
+      offsetDays: 1
+    });
+    var retLessons = [];
+    lessons.forEach(function (lesson, index, array) {
+      if (lesson.startDay >= startDate && lesson.startDay <= correctEndDate) {
+        retLessons.push(lesson);
+      }
+    });
+    callback({
+      success: true,
+      lessons: retLessons
+    });
   }
 
   function getLesson(id) {
