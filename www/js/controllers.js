@@ -30,6 +30,10 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
     };
 
     function getAppointments() {
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
+
       Lessons.getDay({
         day: $scope.currentDay,
         callback: function(response) {
@@ -47,9 +51,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
     $scope.setGroup = function() {
       LocalStorage.set('groupName', $scope.groupInfo.group);
       $scope.modal.hide();
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
 
       Lessons.changeGroup({
         groupName: $scope.groupInfo.group,
@@ -66,9 +67,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
 
     $scope.lessons = [];
     if ($scope.groupInfo.group !== undefined) {
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
       Lessons.changeGroup({
         groupName: $scope.groupInfo.group,
         callback: function(success) {
@@ -84,10 +82,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
 
     // Moves a day forwards/backwards
     $scope.moveDay = function(direction) {
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
-
       $scope.currentDay = MyDate.getDayFromDay({
         currentDay: $scope.currentDay,
         offsetDays: direction
