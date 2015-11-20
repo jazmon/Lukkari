@@ -106,27 +106,27 @@ gulp.task('clean', function() {
 
 gulp.task('copy', ['clean'], function() {
   // copy html
-  console.log('html');
+  console.log('copying html...');
   gulp.src(paths.html, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist));
 
   // copy templates
-  console.log('templates');
+  console.log('copying templates...');
   gulp.src(paths.templates, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'templates'));
 
   // copy styles
-  console.log('styles');
+  console.log('copying styles...');
   gulp.src(paths.styles, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'styles'));
 
   // copy lib scripts
-  console.log('libs');
+  console.log('copying libs...');
   gulp.src(paths.libs, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'libs'));
 
   // copy extra files
-  console.log('extras');
+  //console.log('copying extras...');
   /*gulp.src(paths.extras, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist));*/
 });
