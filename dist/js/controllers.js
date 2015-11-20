@@ -12,7 +12,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
     Lessons) {
     $scope.groupInfo = {};
     $scope.groupInfo.group = LocalStorage.get('groupName');
-    $scope.dayOffset = 0;
     $scope.currentDay = new Date();
 
     // Show new group modal when no group is set
@@ -30,74 +29,9 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
       $scope.modal.hide();
     };
 
-    // sets the group
-    $scope.setGroup = function() {
-      LocalStorage.set('groupName', $scope.groupInfo.group);
-      $scope.modal.hide();
+    function getAppointments() {
       $ionicLoading.show({
         template: 'Loading...'
-      });
-
-      Lessons.changeGroup({
-        groupName: $scope.groupInfo.group,
-        callback: function(success) {
-          if (success) {
-            console.log('successfully changed group name');
-            Lessons.getDay({
-              day: $scope.currentDay,
-              callback: function(response) {
-                if (!response.success) {
-                  console.log('ERROR');
-                } else {
-                  $scope.lessons = response.dayLessons;
-                }
-              }
-            });
-          } else {
-            console.log('failed to change group name');
-          }
-        }
-      });
-    };
-
-    $scope.lessons = [];
-    if ($scope.groupInfo.group !== undefined) {
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
-      Lessons.changeGroup({
-        groupName: $scope.groupInfo.group,
-        callback: function(success) {
-          if (success) {
-            console.log('successfully changed group name');
-
-            Lessons.getDay({
-              day: $scope.currentDay,
-              callback: function(response) {
-                $ionicLoading.hide();
-                if (!response.success) {
-                  console.log('ERROR');
-                } else {
-                  $scope.lessons = response.dayLessons;
-                }
-              }
-            });
-          } else {
-            console.log('failed to change group name');
-          }
-        }
-      });
-    }
-
-    // Moves a day forwards/backwards
-    $scope.moveDay = function(direction) {
-      $ionicLoading.show({
-        template: 'Loading...'
-      });
-
-      $scope.currentDay = MyDate.getDayFromDay({
-        currentDay: $scope.currentDay,
-        offsetDays: direction
       });
 
       Lessons.getDay({
@@ -111,15 +45,59 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
           }
         }
       });
+    }
+
+    // sets the group
+    $scope.setGroup = function() {
+      LocalStorage.set('groupName', $scope.groupInfo.group);
+      $scope.modal.hide();
+
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
+    };
+
+    $scope.lessons = [];
+    if ($scope.groupInfo.group !== undefined) {
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
+    }
+
+    // Moves a day forwards/backwards
+    $scope.moveDay = function(direction) {
+      $scope.currentDay = MyDate.getDayFromDay({
+        currentDay: $scope.currentDay,
+        offsetDays: direction
+      });
+
+      getAppointments();
     };
   }
 ]);
 
 // controller for single appointment view
-lukkariControllers.controller('AppointmentCtrl', ['$scope', '$ionicLoading',
-  '$stateParams',
-  function($scope, $ionicLoading, $stateParams) {
+lukkariControllers.controller('LessonCtrl', ['$scope', '$ionicLoading',
+  '$stateParams', 'Lessons',
+  function($scope, $ionicLoading, $stateParams, Lessons) {
     //$scope.appointment = Timetables.getAppointment($stateParams.id);
+    $scope.lesson = Lessons.getLesson($stateParams.id);
   }
 ]);
 
@@ -129,9 +107,12 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
   function($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate,
     Lessons) {
     $scope.groupInfo = {};
-    $scope.week = {};
-    $scope.weekOffset = 0;
     $scope.groupInfo.group = LocalStorage.get('groupName');
+    $scope.currentDate = MyDate.getMonday(new Date());
+    $scope.endDate = MyDate.getDayFromDay({
+      currentDay: $scope.currentDate,
+      offsetDays: 4
+    });
 
     // Create modal for new group if no group name is set
     if (!$scope.groupInfo.group) {
@@ -139,7 +120,6 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
         scope: $scope
       }).then(function(modal) {
         $scope.modal = modal;
-
         // open modal to set group name
         $scope.modal.show();
       });
@@ -153,76 +133,106 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
     // returns all of the appointments
     function getAppointments() {
       // show the loading window
-      /*$ionicLoading.show({
+      $ionicLoading.show({
         template: 'Loading...'
-      });*/
+      });
       // get all the appointments
-      /*Timetables.getWeek($scope.groupInfo.group, $scope.weekOffset,
-        function(result) {
-          var appointments = result;
-          $scope.days = [];
-          var startDate = MyDate.getMonday(appointments[0].startDate);
-          // loop whole week
-          for (var i = 0; i < 5; i++) {
-            var day = {};
-            // get mon-sun day
-            day.date = MyDate.getDayFromDay(startDate, i);
-            day.appointments = [];
-            for (var j = 0; j < appointments.length; j++) {
-              var appointment = appointments[j];
-              // if is the same day push into the array
-              if (appointment.startDate.toDateString() ===
-                day.date.toDateString()) {
-                day.appointments.push(appointment);
-              }
-            }
-            // add the day into the array
-            $scope.days.push(day);
-          }
-          // hide the loading after done
+      Lessons.getWeek({
+        day: $scope.currentDate,
+        callback: function(response) {
           $ionicLoading.hide();
-        });*/
+          if (!response.success) {
+            console.log('ERROR');
+          } else {
+            //$scope.lessons = response.weekLessons;
+            var allLessons = response.weekLessons;
+            console.log(allLessons.length);
+            $scope.days = [];
+            for (var i = 0; i < 5; i++) {
+              var day = {};
+              // get mon-fri
+              day.date = MyDate.getDayFromDay({
+                currentDay: $scope.currentDate,
+                offsetDays: i
+              });
+              day.lessons = [];
+              var lessonsLength = allLessons.length;
+              for (var j = 0; j < lessonsLength; j++) {
+                var lesson = allLessons[j];
+                // if same day push into the day array
+                if (lesson.startDay.toDateString() ===
+                  day.date.toDateString()) {
+                  day.lessons.push(lesson);
+                }
+              }
+              $scope.days.push(day);
+              //console.log('day.lessons.length: ' + day.lessons.length);
+            }
+          }
+        }
+      });
+      // hide the loading after done
+      $ionicLoading.hide();
     }
-
-    Lessons.get($scope.groupInfo.group, function(lessons) {
-      if (lessons.hasOwnProperty('success') && lessons.success !==
-        false) {
-        console.log('FAILED');
-      } else {
-
-        $scope.lessons = lessons;
-      }
-    });
 
     // sets the group name
     $scope.setGroup = function() {
       LocalStorage.set('groupName', $scope.groupInfo.group);
       $scope.modal.hide();
-      getAppointments();
+
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
     };
 
-    $scope.appointments = [];
+    $scope.lessons = [];
     if ($scope.groupInfo.group !== undefined) {
-      getAppointments();
+      Lessons.changeGroup({
+        groupName: $scope.groupInfo.group,
+        callback: function(success) {
+          if (success) {
+            console.log('successfully changed group name');
+            getAppointments();
+          } else {
+            console.log('failed to change group name');
+          }
+        }
+      });
     }
 
     // moves a week forwards/backwards
     $scope.moveWeek = function(direction) {
-      $scope.weekOffset += direction;
+      $scope.currentDate = MyDate.getDayFromDay({
+        currentDay: $scope.currentDate,
+        offsetDays: (7 * direction)
+      });
+      $scope.endDate = MyDate.getDayFromDay({
+        currentDay: $scope.currentDate,
+        offsetDays: 4
+      });
+
       getAppointments();
     };
   }
 ]);
 
 lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
-  '$cordovaToast', '$ionicPlatform',
-  '$cookies', '$timeout', '$cordovaCalendar',
+  '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar',
+  'Lessons', 'MyDate',
   function($scope, LocalStorage, $cordovaToast, $ionicPlatform,
-    $cookies, $timeout, $cordovaCalendar) {
+    $timeout, $cordovaCalendar, Lessons, MyDate) {
     $scope.groupInfo = {};
     $scope.reminder = {};
     $scope.reminder.startDay = new Date();
-    $scope.reminder.weeks = 1;
+    $scope.reminder.endDay = new Date();
 
     var toastOptions = {
       duration: 'long',
@@ -230,25 +240,35 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
     };
 
     function datePickerCallback(val) {
-      // do something
       if (typeof(val) === 'undefined') {
         console.log('No date selected');
       } else {
         console.log('Selected date is : ', val);
         $scope.reminder.startDay = val;
+        $scope.datepickerObject.inputDate = val;
+      }
+    }
+
+    function datePickerCallback2(val) {
+      if (typeof(val) === 'undefined') {
+        console.log('No date selected');
+      } else {
+        console.log('Selected date is : ', val);
+        $scope.reminder.endDay = val;
+        $scope.datepickerObject2.inputDate = val;
       }
     }
 
     // https://github.com/rajeshwarpatlolla/ionic-datepicker
     $scope.datepickerObject = {
-      titleLabel: 'Select Date', //Optional
+      titleLabel: 'Select Start Date', //Optional
       todayLabel: 'Today', //Optional
       closeLabel: 'Close', //Optional
       setLabel: 'Set', //Optional
       setButtonType: 'button-positive', //Optional
       todayButtonType: 'button-stable', //Optional
       closeButtonType: 'button-stable', //Optional
-      inputDate: new Date(), //Optional
+      inputDate: $scope.reminder.startDay, //Optional
       mondayFirst: true, //Optional
       //disabledDates: disabledDates, //Optional
       //weekDaysList: weekDaysList, //Optional
@@ -263,7 +283,33 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
         datePickerCallback(val);
       },
       dateFormat: 'dd-MM-yyyy', //Optional
-      closeOnSelect: false, //Optional
+      closeOnSelect: true, //Optional
+    };
+
+    $scope.datepickerObject2 = {
+      titleLabel: 'Select End Date', //Optional
+      todayLabel: 'Today', //Optional
+      closeLabel: 'Close', //Optional
+      setLabel: 'Set', //Optional
+      setButtonType: 'button-positive', //Optional
+      todayButtonType: 'button-stable', //Optional
+      closeButtonType: 'button-stable', //Optional
+      inputDate: $scope.reminder.endDay, //Optional
+      mondayFirst: true, //Optional
+      //disabledDates: disabledDates, //Optional
+      //weekDaysList: weekDaysList, //Optional
+      //monthList: monthList, //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-stable', //Optional
+      modalFooterColor: 'bar-stable', //Optional
+      from: new Date(), //Optional
+      //to: new Date(2018, 8, 25), //Optional
+      callback: function(val) { //Mandatory
+        datePickerCallback2(val);
+      },
+      dateFormat: 'dd-MM-yyyy', //Optional
+      closeOnSelect: true, //Optional
     };
 
     $scope.reminder.time = 'null';
@@ -278,13 +324,10 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
       $ionicPlatform.ready(function() {
         try {
           $cordovaToast.show('Group successfully changed!',
-              toastOptions.duration,
-              toastOptions.position)
-            .then(function(success) {
-              $cookies.remove('PHPSESSID');
-            });
+            toastOptions.duration,
+            toastOptions.position);
         } catch (e) {
-          // do nothing
+          // do nothing because it fails on browser
         } finally {
           // change to today view after 2 seconds
           $timeout(function() {
@@ -314,58 +357,65 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
       calOptions.secondReminderMinutes = null;
 
       var success = true;
-      console.log('$scope.reminder.weeks: ' + $scope.reminder.weeks);
       console.log('$scope.reminder.startDay: ' + $scope.reminder.startDay);
-      // TODO create a service method that can get days from a day to a day.
-      // and use it here.
-
-      function getAppointments(result) {
-        appointments = result;
-        $ionicPlatform.ready(function() {
-          appointments.forEach(createEvent(elment, index, array));
-        });
-      }
+      console.log('$scope.reminder.endDay: ' + $scope.reminder.endDay);
 
       function createEvent(element, index, array) {
+        var groups = '';
+        for (var i = 0; i < element.groups.length; i++) {
+          groups += element.groups[i] + ', ';
+        }
+
         /*$cordovaCalendar.createEventWithOptions({
-                        title: element.summary,
-                        location: element.location,
-                        notes: 'Teacher(s): ' + element.teacher +
-                            '\nGroup(s): ' + element.groups +
-                            '\nCourse: ' + element.courseNumber,
-                        startDate: element.startDate,
-                        endDate: element.endDate,
-                        firstReminderMinutes: calOptions.firstReminderMinutes,
-                        secondReminderMinutes: calOptions.secondReminderMinutes,
-                        calendarName: calOptions.calendarName,
-                        calendarId: calOptions.calendarId
-                            //calOptions: calOptions
-                    }).then(function (result) {
+          title: element.name,
+          location: element.room,
+          notes: 'Teacher(s): ' + element.teacher +
+            '\nGroup(s): ' + groups +
+            '\nCourse: ' + element.code,
+          startDate: MyDate.getLocaleDate({
+            day: element.startDay,
+            years: false
+          }),
+          endDate: MyDate.getLocaleDate({
+            day: element.endDay,
+            years: false
+          }),
+          firstReminderMinutes: calOptions.firstReminderMinutes,
+          secondReminderMinutes: calOptions.secondReminderMinutes,
+          calendarName: calOptions.calendarName,
+          calendarId: calOptions.calendarId
+            //calOptions: calOptions
+        }).then(function(result) {
+          console.log('successfully added week to calendar');
+        }, function(err) {
+          success = false;
+        });*/
 
-                        console.log('successfully added week to calendar');
-                    }, function (err) {
-                        success = false;
-                    });*/
-        console.log('Added ' + element.summary + ', ' +
-          element.startDate.toLocaleDateString());
+        console.log('Added ' + element.name + ', ' +
+          element.startDay);
       }
-
-      // loop all weeks
-      for (var i = 1; i < $scope.reminder.weeks; i++) {
-        // get next weeks appointments
-        //Timetables.getWeek($scope.groupInfo.group, i, getAppointments(result));
-      }
-
+      Lessons.getDayToDay({
+        startDate: $scope.reminder.startDay,
+        endDate: $scope.reminder.endDay,
+        callback: function(response) {
+          $ionicPlatform.ready(function() {
+            response.lessons.forEach(createEvent);
+          });
+        }
+      });
+      var msg = '';
       if (success) {
-        $cordovaToast.show('Calendar events successfully added!',
-          toastOptions.duration,
-          toastOptions.position);
+        msg = 'Calendar events successfully added!';
       } else {
+        msg = 'Failed to add calendar events!';
+      }
+      if ($cordovaToast) {
         $cordovaToast.show('Failed to add calendar events!',
           toastOptions.duration,
           toastOptions.position);
+      } else {
+        console.log(msg);
       }
-
     };
   }
 ]);
