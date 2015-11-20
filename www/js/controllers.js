@@ -12,7 +12,6 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
     Lessons) {
     $scope.groupInfo = {};
     $scope.groupInfo.group = LocalStorage.get('groupName');
-    $scope.dayOffset = 0;
     $scope.currentDay = new Date();
 
     // Show new group modal when no group is set
@@ -30,6 +29,20 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
       $scope.modal.hide();
     };
 
+    function getAppointments() {
+      Lessons.getDay({
+        day: $scope.currentDay,
+        callback: function(response) {
+          $ionicLoading.hide();
+          if (!response.success) {
+            console.log('ERROR');
+          } else {
+            $scope.lessons = response.dayLessons;
+          }
+        }
+      });
+    }
+
     // sets the group
     $scope.setGroup = function() {
       LocalStorage.set('groupName', $scope.groupInfo.group);
@@ -43,16 +56,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
         callback: function(success) {
           if (success) {
             console.log('successfully changed group name');
-            Lessons.getDay({
-              day: $scope.currentDay,
-              callback: function(response) {
-                if (!response.success) {
-                  console.log('ERROR');
-                } else {
-                  $scope.lessons = response.dayLessons;
-                }
-              }
-            });
+            getAppointments();
           } else {
             console.log('failed to change group name');
           }
@@ -70,18 +74,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
         callback: function(success) {
           if (success) {
             console.log('successfully changed group name');
-
-            Lessons.getDay({
-              day: $scope.currentDay,
-              callback: function(response) {
-                $ionicLoading.hide();
-                if (!response.success) {
-                  console.log('ERROR');
-                } else {
-                  $scope.lessons = response.dayLessons;
-                }
-              }
-            });
+            getAppointments();
           } else {
             console.log('failed to change group name');
           }
@@ -100,17 +93,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
         offsetDays: direction
       });
 
-      Lessons.getDay({
-        day: $scope.currentDay,
-        callback: function(response) {
-          $ionicLoading.hide();
-          if (!response.success) {
-            console.log('ERROR');
-          } else {
-            $scope.lessons = response.dayLessons;
-          }
-        }
-      });
+      getAppointments();
     };
   }
 ]);
@@ -129,9 +112,9 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
   function($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate,
     Lessons) {
     $scope.groupInfo = {};
+    $scope.groupInfo.group = LocalStorage.get('groupName');
     $scope.week = {};
     $scope.weekOffset = 0;
-    $scope.groupInfo.group = LocalStorage.get('groupName');
 
     // Create modal for new group if no group name is set
     if (!$scope.groupInfo.group) {
