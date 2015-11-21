@@ -7,4 +7,3 @@ plugins/
 *.log
 *.keystore
 apikey.txt
-dist/

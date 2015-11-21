@@ -6,13 +6,12 @@
     "proxyUrl": "https://opendata.tamk.fi/r1"
   }],
   "gulpStartupTasks": [
-    "clean",
     "release"
   ],
   "documentRoot": "dist",
   "createDocumentRoot": "dist",
   "watchPatterns": [
-    "www/js/*",
-    "!www/css/**/*"
+    "www/**/*",
+    "!www/lib/**/*"
   ]
 }
