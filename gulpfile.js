@@ -1,4 +1,3 @@
-// npm install --global gulp
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var babel = require('gulp-babel');
@@ -12,10 +11,10 @@ var rename = require('gulp-rename');
 var sh = require('shelljs');
 var sourcemaps = require('gulp-sourcemaps');
 var clean = require('gulp-clean');
-
-// `npm install --save replace`
 var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
+//var gulpSequence = require('gulp-sequence');
+var runSequence = require('run-sequence');
 
 var bases = {
   dist: 'dist/',
@@ -24,8 +23,8 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['js/*.js'],
-  libs: [''],
+  scripts: ['js/**/*.js'],
+  libs: ['lib/**/*'],
   styles: ['css/**/*.css'],
   html: ['index.html'],
   templates: ['templates/**/*.html'],
@@ -34,47 +33,47 @@ var paths = {
 };
 
 // default task to be run when gulp is run
-gulp.task('default', ['clean', 'scripts', 'sass', 'copy']);
+//gulp.task('default', ['release']);
 
 // generates css files from sass
-gulp.task('sass',['clean'], function(done) {
-  gulp.src(['./scss/ionic.app.scss', './scss/mystyle.app.scss'])
+gulp.task('sass', function(done) {
+  gulp.src(paths.sass)
     .pipe(sass())
     .on('error', sass.logError)
-    .pipe(gulp.dest('./www/css/'))
+    .pipe(gulp.dest(bases.app + 'css'))
     .pipe(minifyCss({
       keepSpecialComments: 0
     }))
     .pipe(rename({
       extname: '.min.css'
     }))
-    .pipe(gulp.dest('./www/css/'))
-    .on('end', done);
+    .pipe(gulp.dest(bases.app + 'css'));
+  done();
 });
 
 // Configure the jshint task (checks for errors when saving)
-gulp.task('lint', function() {
-  return gulp.src('www/js/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
-});
-
-gulp.task('build-js', function() {
-  return gulp.src('www/js/**/*.js')
-    .pipe(sourcemaps.init())
-    .pipe(concat('bundle.js'))
-    // only uglify if gulp is ran with '--type production'
-    .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('www/js'));
-});
+// gulp.task('lint', function() {
+//   return gulp.src('www/js/**/*.js')
+//     .pipe(jshint())
+//     .pipe(jshint.reporter('jshint-stylish'));
+// });
+//
+// gulp.task('build-js', function() {
+//   return gulp.src('www/js/**/*.js')
+//     .pipe(sourcemaps.init())
+//     .pipe(concat('bundle.js'))
+//     // only uglify if gulp is ran with '--type production'
+//     .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
+//     .pipe(sourcemaps.write('.'))
+//     .pipe(gulp.dest('www/js'));
+// });
 
 // builds js
-gulp.task('scripts', ['clean'], function() {
+gulp.task('scripts', function(done) {
   gulp.src(bases.app + 'js/*.js')
     // initializes sourcemaps
     .pipe(sourcemaps.init())
-    // babels js
+    // babels js (Ecmascript 6 -> normal js)
     .pipe(babel())
     // dumps all js into same file
     .pipe(concat('bundle.js'))
@@ -83,63 +82,107 @@ gulp.task('scripts', ['clean'], function() {
     // renames file
     .pipe(rename('bundle.min.js'))
     .pipe(uglify({mangle: false}))
-    .pipe(gulp.dest(bases.app + 'js/combined'))
     // write sourcemaps
-    .pipe(sourcemaps.write('.'));
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(bases.app + 'js/combined'));
+  done();
 });
 
 // watches for changes and then runs these
 gulp.task('watch', function() {
-  gulp.watch(paths.sass, ['sass']);
-  //gulp.watch(paths.scripts, ['jshint']);
-  gulp.watch('www/**/*', ['scripts', 'copy']);
+  gulp.watch(paths.sass, ['sass-watch']);
+  gulp.watch(bases.app + paths.scripts, ['scripts-watch']);
+  gulp.watch(bases.app + paths.libs, ['copy-libs']);
+  gulp.watch(bases.app + paths.html, ['copy-html']);
+  gulp.watch(bases.app + paths.templates, ['copy-templates']);
+  gulp.watch(bases.app + paths.images, ['copy-images']);
 });
 
-gulp.task('clean', function() {
-  return gulp.src(bases.dist, {
+gulp.task('sass-watch', function(done) {
+  runSequence('sass', 'copy-styles', done);
+});
+
+gulp.task('scripts-watch', function(done) {
+  runSequence('scripts', 'copy-scripts', done);
+});
+
+gulp.task('clean', function(done) {
+  gulp.src(bases.dist, {
       read: false
     })
     .pipe(clean());
+  done();
 });
 
-gulp.task('copy', ['clean'], function() {
+gulp.task('copy-html', function(done) {
   // copy html
-  console.log('copying html...');
+  console.log('Copying html...');
   gulp.src(paths.html, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist));
-
-  // copy templates
-  console.log('copying templates...');
-  gulp.src(paths.templates, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'templates'));
-
-  // copy styles
-  console.log('copying styles...');
-  gulp.src(paths.styles, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'css'));
-
-  // copy images
-  console.log('copying images...');
-  gulp.src(paths.images, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'img'));
-
-  // copy lib scripts
-  console.log('copying libs...');
-  gulp.src(paths.libs, {cwd: 'www/**'})
-  .pipe(gulp.dest(bases.dist));
-
-  // copy scripts
-  console.log('copying scripts...');
-  gulp.src(bases.app + 'js/combined/*', {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'js/combined'));
-
-  // copy extra files
-  //console.log('copying extras...');
-  /*gulp.src(paths.extras, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist));*/
+  done();
 });
 
-gulp.task('release', ['clean', 'sass', 'scripts', 'copy']);
+gulp.task('copy-templates', function(done) {
+  // copy templates
+  console.log('Copying templates...');
+  gulp.src(paths.templates, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'templates'));
+  done();
+});
+
+gulp.task('copy-styles', function(done) {
+  // copy styles
+  console.log('Copying styles...');
+  gulp.src(paths.styles, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'css'));
+  done();
+});
+
+gulp.task('copy-images', function(done) {
+  // copy images
+  console.log('Copying images...');
+  gulp.src(paths.images, {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'img'));
+  done();
+});
+
+gulp.task('copy-libs', function(done) {
+  // copy lib scripts
+  console.log('Copying libs...');
+  gulp.src(paths.libs, {cwd: 'www/**'})
+  .pipe(gulp.dest(bases.dist));
+  done();
+});
+
+gulp.task('copy-scripts', function(done) {
+  // copy scripts
+  console.log('Copying scripts...');
+  gulp.src('js/combined/*', {cwd: bases.app})
+  .pipe(gulp.dest(bases.dist + 'js/combined'));
+  done();
+});
+
+gulp.task('copy-extras', function(done) {
+  // copy extra files
+  // console.log('copying extras...');
+  // gulp.src(paths.extras, {cwd: bases.app})
+  // .pipe(gulp.dest(bases.dist));
+  // done();
+});
+
+// copies all
+gulp.task('copy', function(done) {
+  runSequence(['copy-html', 'copy-templates', 'copy-styles',
+   'copy-images', 'copy-libs', 'copy-scripts'], done);
+});
+
+// builds a release version
+gulp.task('release', function(done) {
+  runSequence('clean', ['sass', 'scripts'], 'copy', done);
+});
+
+// task for ionic serve to run.
+//gulp.task('live', runSequence('release'));
 
 // runs install bower
 gulp.task('install', ['git-check'], function() {
@@ -165,7 +208,7 @@ gulp.task('git-check', function(done) {
   done();
 });
 
-// adds a proxy for http://localhost:3000 hosting
+// adds a proxy for http://localhost hosting (browser)
 gulp.task('add-proxy', function() {
   return replace({
     regex: 'https://opendata.tamk.fi/r1',
@@ -176,7 +219,7 @@ gulp.task('add-proxy', function() {
   });
 });
 
-// removes proxy for file:// hosting
+// removes proxy for file:// hosting (device)
 gulp.task('remove-proxy', function() {
   return replace({
     regex: 'http://localhost:8100/api',

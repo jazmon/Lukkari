@@ -437,11 +437,8 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
         calendarName: calOptions.calendarName,
         calendarId: calOptions.calendarId
         //calOptions: calOptions
-      }).then(function (result) {
-        console.log('successfully added week to calendar');
-      }, function (err) {
+      }).then(function (result) {}, function (err) {
         success = false;
-        console.log('failed to add to calendar');
       });
     }
 

@@ -19,7 +19,7 @@ lukkariApp.run(['$ionicPlatform', function ($ionicPlatform) {
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 lukkariApp.constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 });
 
 // menuContent-view is presented on the main view.
@@ -437,11 +437,8 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordo
         calendarName: calOptions.calendarName,
         calendarId: calOptions.calendarId
         //calOptions: calOptions
-      }).then(function (result) {
-        console.log('successfully added week to calendar');
-      }, function (err) {
+      }).then(function (result) {}, function (err) {
         success = false;
-        console.log('failed to add to calendar');
       });
     }
 
