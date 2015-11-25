@@ -8,3 +8,4 @@ plugins/
 *.keystore
 apikey.txt
 *.old
+*.apk
