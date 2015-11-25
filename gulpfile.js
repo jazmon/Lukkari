@@ -94,8 +94,9 @@ gulp.task('watch', function() {
   gulp.watch(bases.app + paths.scripts, ['scripts-watch']);
   gulp.watch(bases.app + paths.libs, ['copy-libs']);
   gulp.watch(bases.app + paths.html, ['copy-html']);
-  gulp.watch(bases.app + paths.templates, ['copy-templates']);
+  gulp.watch(bases.app + paths.templates, ['copy-templates', 'copy-html']);
   gulp.watch(bases.app + paths.images, ['copy-images']);
+  gulp.watch(bases.app + paths.styles, ['copy-styles']);
 });
 
 gulp.task('sass-watch', function(done) {
@@ -118,7 +119,8 @@ gulp.task('copy-html', function(done) {
   // copy html
   console.log('Copying html...');
   gulp.src(paths.html, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist));
+  .pipe(gulp.dest(bases.dist))
+  .pipe(livereload());
   done();
 });
 
@@ -126,7 +128,8 @@ gulp.task('copy-templates', function(done) {
   // copy templates
   console.log('Copying templates...');
   gulp.src(paths.templates, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'templates'));
+  .pipe(gulp.dest(bases.dist + 'templates'))
+  .pipe(livereload());
   done();
 });
 
@@ -134,7 +137,8 @@ gulp.task('copy-styles', function(done) {
   // copy styles
   console.log('Copying styles...');
   gulp.src(paths.styles, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'css'));
+  .pipe(gulp.dest(bases.dist + 'css'))
+  .pipe(livereload());
   done();
 });
 
@@ -142,7 +146,8 @@ gulp.task('copy-images', function(done) {
   // copy images
   console.log('Copying images...');
   gulp.src(paths.images, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'img'));
+  .pipe(gulp.dest(bases.dist + 'img'))
+  .pipe(livereload());
   done();
 });
 
@@ -150,7 +155,8 @@ gulp.task('copy-libs', function(done) {
   // copy lib scripts
   console.log('Copying libs...');
   gulp.src(paths.libs, {cwd: 'www/**'})
-  .pipe(gulp.dest(bases.dist));
+  .pipe(gulp.dest(bases.dist))
+  .pipe(livereload());
   done();
 });
 
@@ -158,7 +164,8 @@ gulp.task('copy-scripts', function(done) {
   // copy scripts
   console.log('Copying scripts...');
   gulp.src('js/combined/*', {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'js/combined'));
+  .pipe(gulp.dest(bases.dist + 'js/combined'))
+  .pipe(livereload());
   done();
 });
 
