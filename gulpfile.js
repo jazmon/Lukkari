@@ -17,6 +17,7 @@ var replaceFiles = ['./www/js/app.js'];
 var runSequence = require('run-sequence');
 var livereload = require('gulp-livereload');
 var connect = require('gulp-connect');
+var Proxy = require('gulp-connect-proxy');
 
 var bases = {
   dist: 'dist/',
@@ -55,7 +56,14 @@ gulp.task('sass', function(done) {
 
 gulp.task('serve', function() {
   return connect.server({
-    root: bases.dist
+    root: bases.dist,
+    port: 8100,
+    middleware: function(connect, opt) {
+      opt.route = '/api';
+      opt.context = 'https://opendata.tamk.fi/r1';
+      var proxy = new Proxy(opt);
+      return [proxy];
+    }
   });
 });
 
