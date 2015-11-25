@@ -17,7 +17,7 @@ var replaceFiles = ['./www/js/app.js'];
 var runSequence = require('run-sequence');
 var livereload = require('gulp-livereload');
 var connect = require('gulp-connect');
-var Proxy = require('gulp-connect-proxy');
+var Proxy = require('./gulp-connect-proxy');
 
 var bases = {
   dist: 'dist/',
