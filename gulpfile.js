@@ -15,6 +15,8 @@ var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
 //var gulpSequence = require('gulp-sequence');
 var runSequence = require('run-sequence');
+var livereload = require('gulp-livereload');
+var connect = require('gulp-connect');
 
 var bases = {
   dist: 'dist/',
@@ -51,22 +53,11 @@ gulp.task('sass', function(done) {
   done();
 });
 
-// Configure the jshint task (checks for errors when saving)
-// gulp.task('lint', function() {
-//   return gulp.src('www/js/**/*.js')
-//     .pipe(jshint())
-//     .pipe(jshint.reporter('jshint-stylish'));
-// });
-//
-// gulp.task('build-js', function() {
-//   return gulp.src('www/js/**/*.js')
-//     .pipe(sourcemaps.init())
-//     .pipe(concat('bundle.js'))
-//     // only uglify if gulp is ran with '--type production'
-//     .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
-//     .pipe(sourcemaps.write('.'))
-//     .pipe(gulp.dest('www/js'));
-// });
+gulp.task('serve', function() {
+  return connect.server({
+    root: bases.dist
+  });
+});
 
 // builds js
 gulp.task('scripts', function(done) {
@@ -90,6 +81,7 @@ gulp.task('scripts', function(done) {
 
 // watches for changes and then runs these
 gulp.task('watch', function() {
+  livereload.listen();
   gulp.watch(paths.sass, ['sass-watch']);
   gulp.watch(bases.app + paths.scripts, ['scripts-watch']);
   gulp.watch(bases.app + paths.libs, ['copy-libs']);
