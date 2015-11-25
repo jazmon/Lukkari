@@ -1,6 +1,6 @@
 'use strict';
 
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker']);
+var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material']);
 
 lukkariApp.run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
