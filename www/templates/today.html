@@ -5,21 +5,30 @@
       <a class="button button-calm icon-left ion-android-arrow-forward" ng-click="moveDay(1)">Next day</a>
     </div>
   </ion-header-bar>
-  <ion-content>
-    <div class="card repeat-animation" ng-repeat="lesson in lessons" ng-if="lessons.length > 0">
-      <time-range class="item item-divider"></time-range>
-      <a class="lessonlink" href="#/app/today/{{lesson.id}}">
-        <div class="item item-text-wrap">
-          {{lesson.name}}
-          <br/> Teacher: {{lesson.code}}
-          <br/>
+  <ion-content class="">
+    <div class="item card-item" ng-repeat="lesson in lessons" ng-if="lessons.length > 0">
+      <div class="card stable-bg ink ink-dark">
+        {{lesson.name}}
+        <br/> {{lesson.code}}
+        <div class="card-footer text-right">
+          {{lesson.room}}
+          <time-range class="pull-left">
+            
+          </time-range>
         </div>
-      </a>
-      <div class="item item-divider">
-        {{lesson.room}}
+        <!-- <time-range class=""></time-range>
+        <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+          <div class="item item-text-wrap">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </div>
+        </a>
+        <div class="card-footer">
+          {{lesson.room}}
+        </div> -->
       </div>
     </div>
-    <div class="card repeat-animation no-appointment" ng-if="lessons.length === 0">
+    <div class="card " ng-if="lessons.length === 0">
       <div class="item item-text-wrap">
         No appointments today!
       </div>

@@ -7,9 +7,10 @@ lukkariControllers.controller('LukkariCtrl', [
 
 // controller for today view
 lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
-  'LocalStorage', '$ionicModal', 'MyDate', 'Lessons',
+  'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk',
+  'ionicMaterialMotion',
   function($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate,
-    Lessons) {
+    Lessons, ionicMaterialInk, ionicMaterialMotion) {
     $scope.groupInfo = {};
     $scope.groupInfo.group = LocalStorage.get('groupName');
     $scope.currentDay = new Date();
@@ -87,6 +88,12 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
 
       getAppointments();
     };
+
+    // Set Motion
+    //ionicMaterialMotion.fadeSlideInRight();
+
+    // Set Ink
+    //ionicMaterialInk.displayEffect();
   }
 ]);
 

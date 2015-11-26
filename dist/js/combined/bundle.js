@@ -1,6 +1,6 @@
 'use strict';
 
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker']);
+var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material']);
 
 lukkariApp.run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
@@ -89,7 +89,7 @@ var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
 lukkariControllers.controller('LukkariCtrl', [function ($scope) {}]);
 
 // controller for today view
-lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons) {
+lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
   $scope.groupInfo = {};
   $scope.groupInfo.group = LocalStorage.get('groupName');
   $scope.currentDay = new Date();
@@ -167,6 +167,12 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalSto
 
     getAppointments();
   };
+
+  // Set Motion
+  //ionicMaterialMotion.fadeSlideInRight();
+
+  // Set Ink
+  //ionicMaterialInk.displayEffect();
 }]);
 
 // controller for single appointment view
