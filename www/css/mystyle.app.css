@@ -6,7 +6,8 @@ a.lessonlink {
 
 .bar-subheader .button-bar a {
   height: 47px;
-  font-size: 1.2em; }
+  font-size: 1.2em;
+  min-width: 50%; }
 
 /*https://docs.angularjs.org/api/ngAnimate*/
 @keyframes slideIn {

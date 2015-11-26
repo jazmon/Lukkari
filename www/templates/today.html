@@ -1,20 +1,21 @@
 <ion-view cache-view="false" view-title="Timetable {{currentDay.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'})}}" class="">
   <ion-header-bar class="bar-subheader">
-    <div class="button-bar">
-      <a class="button button-calm icon-right ion-android-arrow-back" ng-click="moveDay(-1)">Previous day</a>
-      <a class="button button-calm icon-left ion-android-arrow-forward" ng-click="moveDay(1)">Next day</a>
+    <div class="button-bar bar-calm">
+      <a class="button button-raised ink-dark icon-right ion-android-arrow-back" ng-click="moveDay(-1)">Previous day</a>
+      <a class="button button-raised icon-left ion-android-arrow-forward" ng-click="moveDay(1)">Next day</a>
     </div>
   </ion-header-bar>
   <ion-content class="">
     <div class="item card-item" ng-repeat="lesson in lessons" ng-if="lessons.length > 0">
-      <div class="card stable-bg ink ink-dark">
-        {{lesson.name}}
-        <br/> {{lesson.code}}
-        <div class="card-footer text-right">
+      <div class="list card calm-bg light">
+        <time-range class="item item-divider">
+        </time-range>
+        <div class="item">
+          {{lesson.name}}
+          <br/>{{lesson.code}}
+        </div>
+        <div class="item card-footer ">
           {{lesson.room}}
-          <time-range class="pull-left">
-            
-          </time-range>
         </div>
         <!-- <time-range class=""></time-range>
         <a class="lessonlink" href="#/app/today/{{lesson.id}}">
