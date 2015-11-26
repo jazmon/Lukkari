@@ -15,6 +15,9 @@ var replace = require('replace');
 var replaceFiles = ['./www/js/app.js'];
 //var gulpSequence = require('gulp-sequence');
 var runSequence = require('run-sequence');
+var livereload = require('gulp-livereload');
+var connect = require('gulp-connect');
+var Proxy = require('./gulp-connect-proxy');
 
 var bases = {
   dist: 'dist/',
@@ -51,22 +54,18 @@ gulp.task('sass', function(done) {
   done();
 });
 
-// Configure the jshint task (checks for errors when saving)
-// gulp.task('lint', function() {
-//   return gulp.src('www/js/**/*.js')
-//     .pipe(jshint())
-//     .pipe(jshint.reporter('jshint-stylish'));
-// });
-//
-// gulp.task('build-js', function() {
-//   return gulp.src('www/js/**/*.js')
-//     .pipe(sourcemaps.init())
-//     .pipe(concat('bundle.js'))
-//     // only uglify if gulp is ran with '--type production'
-//     .pipe(gutil.env.type === 'production' ? uglify() : gutil.noop())
-//     .pipe(sourcemaps.write('.'))
-//     .pipe(gulp.dest('www/js'));
-// });
+gulp.task('serve', function() {
+  return connect.server({
+    root: bases.dist,
+    port: 8100,
+    middleware: function(connect, opt) {
+      opt.route = '/api';
+      opt.context = 'https://opendata.tamk.fi/r1';
+      var proxy = new Proxy(opt);
+      return [proxy];
+    }
+  });
+});
 
 // builds js
 gulp.task('scripts', function(done) {
@@ -90,12 +89,14 @@ gulp.task('scripts', function(done) {
 
 // watches for changes and then runs these
 gulp.task('watch', function() {
+  livereload.listen();
   gulp.watch(paths.sass, ['sass-watch']);
   gulp.watch(bases.app + paths.scripts, ['scripts-watch']);
   gulp.watch(bases.app + paths.libs, ['copy-libs']);
   gulp.watch(bases.app + paths.html, ['copy-html']);
-  gulp.watch(bases.app + paths.templates, ['copy-templates']);
+  gulp.watch(bases.app + paths.templates, ['copy-templates', 'copy-html']);
   gulp.watch(bases.app + paths.images, ['copy-images']);
+  gulp.watch(bases.app + paths.styles, ['copy-styles']);
 });
 
 gulp.task('sass-watch', function(done) {
@@ -118,7 +119,8 @@ gulp.task('copy-html', function(done) {
   // copy html
   console.log('Copying html...');
   gulp.src(paths.html, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist));
+  .pipe(gulp.dest(bases.dist))
+  .pipe(livereload());
   done();
 });
 
@@ -126,7 +128,8 @@ gulp.task('copy-templates', function(done) {
   // copy templates
   console.log('Copying templates...');
   gulp.src(paths.templates, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'templates'));
+  .pipe(gulp.dest(bases.dist + 'templates'))
+  .pipe(livereload());
   done();
 });
 
@@ -134,7 +137,8 @@ gulp.task('copy-styles', function(done) {
   // copy styles
   console.log('Copying styles...');
   gulp.src(paths.styles, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'css'));
+  .pipe(gulp.dest(bases.dist + 'css'))
+  .pipe(livereload());
   done();
 });
 
@@ -142,7 +146,8 @@ gulp.task('copy-images', function(done) {
   // copy images
   console.log('Copying images...');
   gulp.src(paths.images, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'img'));
+  .pipe(gulp.dest(bases.dist + 'img'))
+  .pipe(livereload());
   done();
 });
 
@@ -150,7 +155,8 @@ gulp.task('copy-libs', function(done) {
   // copy lib scripts
   console.log('Copying libs...');
   gulp.src(paths.libs, {cwd: 'www/**'})
-  .pipe(gulp.dest(bases.dist));
+  .pipe(gulp.dest(bases.dist))
+  .pipe(livereload());
   done();
 });
 
@@ -158,7 +164,8 @@ gulp.task('copy-scripts', function(done) {
   // copy scripts
   console.log('Copying scripts...');
   gulp.src('js/combined/*', {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'js/combined'));
+  .pipe(gulp.dest(bases.dist + 'js/combined'))
+  .pipe(livereload());
   done();
 });
 
