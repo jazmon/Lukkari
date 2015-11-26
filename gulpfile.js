@@ -26,12 +26,13 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['js/**/*.js'],
+  scripts: ['js/*.js'],
   libs: ['lib/**/*'],
   styles: ['css/**/*.css'],
   html: ['index.html'],
   templates: ['templates/**/*.html'],
   images: ['img/**/*'],
+  combinedScripts: ['js/combined/*.js']
   //extras: ['favicon.ico']
 };
 
@@ -69,7 +70,7 @@ gulp.task('serve', function() {
 
 // builds js
 gulp.task('scripts', function(done) {
-  gulp.src(bases.app + 'js/*.js')
+  gulp.src(bases.app + paths.scripts)
     // initializes sourcemaps
     .pipe(sourcemaps.init())
     // babels js (Ecmascript 6 -> normal js)
@@ -163,7 +164,7 @@ gulp.task('copy-libs', function(done) {
 gulp.task('copy-scripts', function(done) {
   // copy scripts
   console.log('Copying scripts...');
-  gulp.src('js/combined/*', {cwd: bases.app})
+  gulp.src(paths.combinedScripts, {cwd: bases.app})
   .pipe(gulp.dest(bases.dist + 'js/combined'))
   .pipe(livereload());
   done();
