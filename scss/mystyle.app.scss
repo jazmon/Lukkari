@@ -1,25 +1,58 @@
+$RobotoDraftFontPath: "../lib/robotodraft/fonts";
+$RobotoDraftFontName: "RobotoDraft";
+$RobotoDraftFontVersion: "1.0.0";
+
+@import "../www/lib/robotodraft/sass/robotodraft.scss";
+
+@mixin transform($tr){
+  -webkit-transform: $tr;
+  transform: $tr;
+}
+
+ionic-datepicker{
+  margin-left:auto;
+}
+
 a.lessonlink {
-    text-decoration: none;
+    //text-decoration: none;
 }
 
 .bar-subheader {
-    padding: 0;
+  padding: 0;
+
+    .button-bar a {
+        height: 47px;
+        //font-size: 1.2em;
+        //min-width: 50%;
+        max-width: none;
+        //text-transform: none;
+
+        /* margin-top: 20px; */
+        text-align:  center;
+        vertical-align: middle;
+        padding-top: 5px;
+        font-size: 1em;
+    }
 }
 
-.bar-subheader .button-bar a {
-    height: 47px;
-    font-size: 1.2em;
-    min-width: 50%;
-}
 
 /*https://docs.angularjs.org/api/ngAnimate*/
-@keyframes slideIn {
+@keyframes slideInLeft {
     0% {
-        transform: translate3d(-100%, 0, 0);
+        @include transform(translate3d(-100%, 0, 0));
     }
     100% {
-        transform: translate3d(0, 0, 0);
+        @include transform(translate3d(0, 0, 0));
     }
+}
+
+@keyframes slideInRight {
+  0% {
+    @include transform(translate3d(100%, 0, 0));
+  }
+  100%{
+    @include transform(translate3d(0, 0, 0));
+  }
 }
 
 .repeat-animation.ng-enter,
@@ -33,26 +66,22 @@ a.lessonlink {
 }
 
 .repeat-animation.ng-enter {
-    -webkit-transform: translate3d(-100%, 0, 0);
-    transform: translate3d(-100%, 0, 0);
+    @include transform(translate3d(-100%, 0, 0));
 }
 
 .repeat-animation.ng-enter-stagger {
     /*transition-delay: 0.1s;*/
-    animation-delay: 0.1s;
+    animation-delay: 0.2s;
 }
 
 .repeat-animation.ng-enter.ng-enter-active {
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
+    @include transform(translate3d(0, 0, 0));
 }
 
 .repeat-animation.ng-leave {
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
+    @include transform(translate3d(0, 0, 0));
 }
 
 .repeat-animation.ng-leave.ng-leave-active {
-    -webkit-transform: translate3d(100%, 0, 0);
-    transform: translate3d(100%, 0, 0);
+    @include transform(translate3d(100%, 0, 0));
 }
