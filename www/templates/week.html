@@ -9,7 +9,7 @@
     <ion-list ng-repeat="day in days" class="animate-blinds" ng-last-repeat="myList">
       <!-- Eech day's list item -->
       <ion-item class="item-divider">
-        <strong><date></date></strong>
+        <date></date>
       </ion-item>
       <!-- Each lesson per day item -->
       <ion-item ng-repeat="lesson in day.lessons" ng-if="day.lessons.length > 0">
