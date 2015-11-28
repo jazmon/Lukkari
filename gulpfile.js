@@ -26,15 +26,17 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['js/*.js', 'js/controllers/*.js', 'js/services/*.js',
-    'js/directives/*.js'
-  ],
+  scripts: ['js/**/*.js'],
   libs: ['lib/**/*'],
   styles: ['css/**/*.css'],
   html: ['index.html'],
   templates: ['templates/**/*.html'],
   images: ['img/**/*'],
-  combinedScripts: ['js/combined/*.js']
+  combinedScripts: ['combinedJs/*.js'],
+  controllers: ['js/controllers/*.js'],
+  services: ['js/services/*.js'],
+  directives: ['js/directives/*.js'],
+  app: ['js/app.js']
   //extras: ['favicon.ico']
 };
 
@@ -66,13 +68,26 @@ gulp.task('serve', function() {
       opt.context = 'https://opendata.tamk.fi/r1';
       var proxy = new Proxy(opt);
       return [proxy];
+    },
+    middleware: function(connect, opt) {
+      opt.route = '/lunch';
+      opt.context = 'http://campusravita.fi/ruokalista';
+      var proxy = new Proxy(opt);
+      return [proxy];
     }
   });
 });
 
+// gulp.task('serve-lunch', function() {
+//   return connect.server({
+//     root: bases.dist
+//   });
+// });
+
 // builds js
-gulp.task('scripts', function(done) {
-  gulp.src(bases.app + paths.scripts)
+gulp.task('scripts', function() {
+  return gulp.src([bases.app + paths.app, bases.app + paths.services,
+    bases.app + paths.directives, bases.app + paths.controllers])
     // initializes sourcemaps
     .pipe(sourcemaps.init())
     // babels js (Ecmascript 6 -> normal js)
@@ -80,7 +95,7 @@ gulp.task('scripts', function(done) {
     // dumps all js into same file
     .pipe(concat('bundle.js'))
     // sets destination folder
-    .pipe(gulp.dest(bases.app + 'js/combined'))
+    .pipe(gulp.dest(bases.app + 'combinedJs'))
     // renames file
     .pipe(rename('bundle.min.js'))
     .pipe(uglify({
@@ -88,8 +103,7 @@ gulp.task('scripts', function(done) {
     }))
     // write sourcemaps
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(bases.app + 'js/combined'));
-  done();
+    .pipe(gulp.dest(bases.app + 'combinedJs'));
 });
 
 // watches for changes and then runs these
@@ -181,7 +195,7 @@ gulp.task('copy-scripts', function(done) {
   gulp.src(paths.combinedScripts, {
       cwd: bases.app
     })
-    .pipe(gulp.dest(bases.dist + 'js/combined'))
+    .pipe(gulp.dest(bases.dist + 'js'))
     .pipe(livereload());
   done();
 });

@@ -1,4 +1,4 @@
 angular.module('lukkari.controllers')
-  .controller('LukkariCtrl', [
+  .controller('LukkariCtrl', ['$scope',
     function($scope) {}
   ]);

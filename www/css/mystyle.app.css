@@ -89,6 +89,10 @@
 .material-icons {
   font-size: 2.3em; }
 
+.lunchItem {
+  padding-top: 0;
+  padding-bottom: 0; }
+
 body > div.popup-container.popup-showing.active > div > div.popup-buttons > button.button.ng-binding.button-stable {
   visibility: hidden; }
 

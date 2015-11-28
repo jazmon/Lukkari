@@ -1,0 +1,16 @@
+<ion-view view-title="Lunch list">
+  <ion-content>
+    <ion-list class="animate-ripple">
+      <div ng-repeat="lunch in lunches"  ng-last-repeat="myList">
+        <ion-item class="item-divider dark">
+          {{lunch.date.toLocaleDateString("fi-FI", {day:"numeric", month:"numeric"})}}
+        </ion-item>
+        <ion-item class="lunchItem" ng-repeat="dish in lunch.dishes track by $index">
+          <div class="card calm-900-bg light">
+            <ion-item>{{dish}}</ion-item>
+          </div>
+        </ion-item>
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>
