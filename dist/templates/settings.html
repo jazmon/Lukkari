@@ -1,60 +1,52 @@
 <ion-view view-title="Settings">
   <ion-content>
-    <div class="card">
-      <div class="item item-divider">
-        Change your group
-      </div>
-      <div class="item item-text-wrap">
+    <ion-list class="animate-ripple">
+      <ion-item>
+        <h2 class="icon-left ion-android-create calm settings-title">&nbsp;&nbsp;Change your group</h2>
         <form ng-submit="changeGroup()">
           <div class="list">
-            <label class="item item-input ">
+            <label class="item item-input item-floating-label">
               <span class="input-label">Group name</span>
-              <input type="text" ng-model="groupInfo.group">
+              <input type="text" placeholder="Group name" ng-model="groupInfo.group">
             </label>
-            <div class="row">
-              <div class="col col-50 col-offset-50">
-                <button class="button button-block button-positive icon-right ion-android-send" type="submit">Change</button>
-              </div>
-            </div>
+            <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>
           </div>
         </form>
-      </div>
-    </div>
-    <div class="card">
-      <div class="item item-divider">Add to calendar</div>
-      <div class="item item-text-wrap">
-        <h2>Adds next week's timetable to your calendar</h2>
-        <p><i class="icon ion-android-alert"></i> If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!</p>
-        <p>Also currently this adds a reminder to when the event starts (at 0 mins)</p>
+      </ion-item>
+      <ion-item class="item-divider"></ion-item>
+      <ion-item>
+        <h2 class="settings-title calm icon-left ion-android-calendar">&nbsp;&nbsp;Add to calendar</h2>
+        <ion-list>
+          <ion-item class="show-overflow"><i class="icon ion-android-alert assertive"></i> If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!</ion-item>
+          <ion-item class="show-overflow">Also currently this adds a reminder to when the event starts (at 0 mins)</ion-item>
+        </ion-list>
+        <p></p><br/>
+        <p></p><br/>
         <form ng-submit="addToCalendar()">
           <label class="item item-input">
             <span class="input-label">Select start date</span>
             <ionic-datepicker input-obj="datepickerObject">
-              <button type="button" class="button button-positive icon-right ion-android-calendar">{{datepickerObject.inputDate | date:'dd.MM.yy'}}</button>
+              <button type="button" class="button button-positive icon-left ion-android-calendar "> {{datepickerObject.inputDate | date:'dd.MM.yy'}}</button>
             </ionic-datepicker>
           </label>
           <label class="item item-input">
-            <span class="input-label">Select end date</span>
+            <span class="input-label">Select end date&nbsp;&nbsp;</span>
             <ionic-datepicker input-obj="datepickerObject2">
-              <button type="button" class="button button-positive icon-right ion-android-calendar">{{datepickerObject2.inputDate | date:'dd.MM.yy'}}</button>
+              <button type="button" class="button button-positive icon-left ion-android-calendar "> {{datepickerObject2.inputDate | date:'dd.MM.yy'}}</button>
             </ionic-datepicker>
           </label>
           <label class="item item-input item-select">
             <span class="input-label">Set reminder</span>
-            <select ng-model="reminder.time" class="">
+            <select ng-model="reminder.time">
               <option value="null">No reminder</option>
               <option value="5">5 minutes</option>
               <option selected value="10">10 minutes</option>
               <option value="15">15 minutes</option>
             </select>
           </label>
-          <div class="row">
-            <div class="col col-50 col-offset-50">
-              <button class="button button-block button-positive icon-right ion-android-send" type="submit">Add</button>
-            </div>
-          </div>
+            <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>
         </form>
-      </div>
-    </div>
+      </ion-item>
+    </ion-list>
   </ion-content>
 </ion-view>

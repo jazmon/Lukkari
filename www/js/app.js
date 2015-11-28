@@ -1,5 +1,5 @@
 var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers',
-  'lukkari.services', 'lukkari.directives', 'ionic-datepicker'
+  'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material'
 ]);
 
 lukkariApp.run(['$ionicPlatform',
