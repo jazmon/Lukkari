@@ -86,8 +86,40 @@
   font-style: normal; }
 
 /* END Black */
+.material-icons {
+  font-size: 2.3em; }
+
+body > div.popup-container.popup-showing.active > div > div.popup-buttons > button.button.ng-binding.button-stable {
+  visibility: hidden; }
+
+.date-button {
+  width: 154px;
+  min-width: 154px; }
+
+h1 {
+  display: inline; }
+
+h2.settings-title {
+  font-size: 1.5em; }
+
+date {
+  font-size: 1.3em; }
+
+.show-overflow {
+  white-space: normal; }
+
+ion-list:first-child .time-range {
+  color: #f8f8f8; }
+
+.button-fab-right {
+  float: right;
+  margin-top: -14px; }
+
 ionic-datepicker {
   margin-left: auto; }
+
+a.lessonlink {
+  text-decoration: none; }
 
 .bar-subheader {
   padding: 0; }

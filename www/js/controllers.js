@@ -1,5 +1,7 @@
 var lukkariControllers = angular.module('lukkari.controllers', ['ngCordova']);
-
+const loadingTemplate = '<div class="loader"><svg class="circular">' +
+'<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2"' +
+' stroke-miterlimit="10"/></svg></div>';
 // insert needed sidemenu stuff here
 lukkariControllers.controller('LukkariCtrl', [
   function($scope) {}
@@ -32,21 +34,27 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
 
     function getAppointments() {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: loadingTemplate
       });
 
       Lessons.getDay({
         day: $scope.currentDay,
         callback: function(response) {
           $ionicLoading.hide();
+          // Set Motion
+          //ionicMaterialMotion.blinds();
           if (!response.success) {
-            console.log('ERROR');
+            console.error('ERROR');
           } else {
             $scope.lessons = response.dayLessons;
           }
         }
       });
     }
+
+    $scope.$on('ngLastRepeat.myList', function(e) {
+      ionicMaterialMotion.blinds();
+    });
 
     // sets the group
     $scope.setGroup = function() {
@@ -59,7 +67,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
           if (success) {
             getAppointments();
           } else {
-            console.log('failed to change group name');
+            console.error('failed to change group name');
           }
         }
       });
@@ -73,7 +81,7 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
           if (success) {
             getAppointments();
           } else {
-            console.log('failed to change group name');
+            console.error('failed to change group name');
           }
         }
       });
@@ -89,27 +97,26 @@ lukkariControllers.controller('TodayCtrl', ['$scope', '$ionicLoading',
       getAppointments();
     };
 
-    // Set Motion
-    //ionicMaterialMotion.fadeSlideInRight();
-
     // Set Ink
-    //ionicMaterialInk.displayEffect();
+    ionicMaterialInk.displayEffect();
   }
 ]);
 
 // controller for single appointment view
 lukkariControllers.controller('LessonCtrl', ['$scope', '$ionicLoading',
-  '$stateParams', 'Lessons',
-  function($scope, $ionicLoading, $stateParams, Lessons) {
+  '$stateParams', 'Lessons','ionicMaterialInk', 'ionicMaterialMotion',
+  function($scope, $ionicLoading, $stateParams, Lessons, ionicMaterialInk,
+   ionicMaterialMotion) {
     $scope.lesson = Lessons.getLesson($stateParams.id);
   }
 ]);
 
 // controller for weekly view
 lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
-  '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons',
+  '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons','ionicMaterialInk',
+  'ionicMaterialMotion',
   function($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate,
-    Lessons) {
+    Lessons, ionicMaterialInk, ionicMaterialMotion) {
     $scope.groupInfo = {};
     $scope.groupInfo.group = LocalStorage.get('groupName');
     $scope.currentDate = MyDate.getMonday(new Date());
@@ -138,18 +145,19 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
     function getAppointments() {
       // show the loading window
       $ionicLoading.show({
-        template: 'Loading...'
+        template: loadingTemplate
       });
       // get all the appointments
       Lessons.getWeek({
         day: $scope.currentDate,
         callback: function(response) {
           $ionicLoading.hide();
+          //ionicMaterialMotion.ripple();
+
           if (!response.success) {
-            console.log('ERROR');
+            console.error('ERROR');
           } else {
             var allLessons = response.weekLessons;
-            console.log(allLessons.length);
             $scope.days = [];
             for (var i = 0; i < 5; i++) {
               var day = {};
@@ -177,6 +185,10 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
       $ionicLoading.hide();
     }
 
+    $scope.$on('ngLastRepeat.myList', function(e) {
+      ionicMaterialMotion.blinds();
+    });
+
     // sets the group name
     $scope.setGroup = function() {
       LocalStorage.set('groupName', $scope.groupInfo.group);
@@ -186,10 +198,9 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
         groupName: $scope.groupInfo.group,
         callback: function(success) {
           if (success) {
-            console.log('successfully changed group name');
             getAppointments();
           } else {
-            console.log('failed to change group name');
+            console.error('failed to change group name');
           }
         }
       });
@@ -201,10 +212,9 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
         groupName: $scope.groupInfo.group,
         callback: function(success) {
           if (success) {
-            console.log('successfully changed group name');
             getAppointments();
           } else {
-            console.log('failed to change group name');
+            console.error('failed to change group name');
           }
         }
       });
@@ -223,14 +233,18 @@ lukkariControllers.controller('WeekCtrl', ['$scope', '$ionicLoading',
 
       getAppointments();
     };
+
+    // Set Ink
+    ionicMaterialInk.displayEffect();
   }
 ]);
 
 lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
   '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar',
-  'Lessons', 'MyDate',
+  'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion',
   function($scope, LocalStorage, $cordovaToast, $ionicPlatform,
-    $timeout, $cordovaCalendar, Lessons, MyDate) {
+    $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk,
+     ionicMaterialMotion) {
     $scope.groupInfo = {};
     $scope.reminder = {};
     $scope.reminder.startDay = new Date();
@@ -243,9 +257,9 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
 
     function datePickerCallback(val) {
       if (typeof(val) === 'undefined') {
-        console.log('No date selected');
+        //console.log('No date selected');
       } else {
-        console.log('Selected date is : ', val);
+        //console.log('Selected date is : ', val);
         $scope.reminder.startDay = val;
         $scope.datepickerObject.inputDate = val;
       }
@@ -253,9 +267,9 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
 
     function datePickerCallback2(val) {
       if (typeof(val) === 'undefined') {
-        console.log('No date selected');
+        //console.log('No date selected');
       } else {
-        console.log('Selected date is : ', val);
+        //console.log('Selected date is : ', val);
         $scope.reminder.endDay = val;
         $scope.datepickerObject2.inputDate = val;
       }
@@ -265,11 +279,11 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
     $scope.datepickerObject = {
       titleLabel: 'Select Start Date', //Optional
       todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
+      closeLabel: '<span class="icon ion-android-close"></span>', //Optional
+      setLabel: '<span class="icon ion-android-done"></span>', //Optional
       setButtonType: 'button-positive', //Optional
       todayButtonType: 'button-stable', //Optional
-      closeButtonType: 'button-stable', //Optional
+      closeButtonType: 'button-assertive', //Optional
       inputDate: $scope.reminder.startDay, //Optional
       mondayFirst: true, //Optional
       //disabledDates: disabledDates, //Optional
@@ -291,20 +305,20 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
     $scope.datepickerObject2 = {
       titleLabel: 'Select End Date', //Optional
       todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
+      closeLabel: '<span class="icon ion-android-close"></span>', //Optional
+      setLabel: '<span class="icon ion-android-done"></span>', //Optional
       setButtonType: 'button-positive', //Optional
       todayButtonType: 'button-stable', //Optional
-      closeButtonType: 'button-stable', //Optional
+      closeButtonType: 'button-assertive', //Optional
       inputDate: $scope.reminder.endDay, //Optional
       mondayFirst: true, //Optional
       //disabledDates: disabledDates, //Optional
       //weekDaysList: weekDaysList, //Optional
       //monthList: monthList, //Optional
       templateType: 'popup', //Optional
-      showTodayButton: 'true', //Optional
-      modalHeaderColor: 'bar-stable', //Optional
-      modalFooterColor: 'bar-stable', //Optional
+      showTodayButton: false, //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
       from: new Date(), //Optional
       //to: new Date(2018, 8, 25), //Optional
       callback: function(val) { //Mandatory
@@ -406,6 +420,12 @@ lukkariControllers.controller('SettingsCtrl', ['$scope', 'LocalStorage',
         toastOptions.position);
       console.log(msg);
     };
+
+    // Set Motion
+    ionicMaterialMotion.ripple();
+
+    // Set Ink
+    ionicMaterialInk.displayEffect();
   }
 ]);
 

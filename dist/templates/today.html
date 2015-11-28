@@ -1,37 +1,30 @@
 <ion-view cache-view="false" view-title="Timetable {{currentDay.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'})}}" class="">
   <ion-header-bar class="bar-subheader">
     <div class="button-bar bar-calm">
-      <a class="button button-raised ink-dark icon-right ion-android-arrow-back" ng-click="moveDay(-1)">Previous day</a>
-      <a class="button button-raised icon-left ion-android-arrow-forward" ng-click="moveDay(1)">Next day</a>
+      <a class="button button-raised icon ion-android-arrow-back" ng-click="moveDay(-1)"></a>
+      <a class="button button-raised icon ion-android-arrow-forward" ng-click="moveDay(1)"></a>
     </div>
   </ion-header-bar>
-  <ion-content class="">
-    <div class="item card-item" ng-repeat="lesson in lessons" ng-if="lessons.length > 0">
-      <div class="list card calm-bg light">
-        <time-range class="item item-divider">
+  <ion-content class="light-bg">
+    <div class="animate-blinds" ng-repeat="lesson in lessons" ng-last-repeat="myList" ng-if="lessons.length > 0">
+      <ion-list class="card calm-bg light">
+        <time-range class="item item-divider royal">
         </time-range>
-        <div class="item">
-          {{lesson.name}}
-          <br/>{{lesson.code}}
-        </div>
+        <ion-item>
+          <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/>{{lesson.code}}</a>
+        </ion-item>
         <div class="item card-footer ">
           {{lesson.room}}
         </div>
-        <!-- <time-range class=""></time-range>
-        <a class="lessonlink" href="#/app/today/{{lesson.id}}">
-          <div class="item item-text-wrap">
-            {{lesson.name}}
-            <br/> {{lesson.code}}
-          </div>
-        </a>
-        <div class="card-footer">
-          {{lesson.room}}
-        </div> -->
-      </div>
+      </ion-list>
     </div>
-    <div class="card " ng-if="lessons.length === 0">
-      <div class="item item-text-wrap">
-        No appointments today!
+    <div ng-if="lessons.length === 0">
+      <div class="card calm-bg light">
+        <div class="item item-text-wrap">
+          No appointments today!
+        </div>
       </div>
     </div>
   </ion-content>
