@@ -26,7 +26,9 @@ var bases = {
 // https://gist.github.com/justinmc/9149719
 var paths = {
   sass: ['./scss/**/*.scss'],
-  scripts: ['js/*.js'],
+  scripts: ['js/*.js', 'js/controllers/*.js', 'js/services/*.js',
+    'js/directives/*.js'
+  ],
   libs: ['lib/**/*'],
   styles: ['css/**/*.css'],
   html: ['index.html'],
@@ -81,7 +83,9 @@ gulp.task('scripts', function(done) {
     .pipe(gulp.dest(bases.app + 'js/combined'))
     // renames file
     .pipe(rename('bundle.min.js'))
-    .pipe(uglify({mangle: false}))
+    .pipe(uglify({
+      mangle: false
+    }))
     // write sourcemaps
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest(bases.app + 'js/combined'));
@@ -119,54 +123,66 @@ gulp.task('clean', function(done) {
 gulp.task('copy-html', function(done) {
   // copy html
   console.log('Copying html...');
-  gulp.src(paths.html, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist))
-  .pipe(livereload());
+  gulp.src(paths.html, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist))
+    .pipe(livereload());
   done();
 });
 
 gulp.task('copy-templates', function(done) {
   // copy templates
   console.log('Copying templates...');
-  gulp.src(paths.templates, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'templates'))
-  .pipe(livereload());
+  gulp.src(paths.templates, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'templates'))
+    .pipe(livereload());
   done();
 });
 
 gulp.task('copy-styles', function(done) {
   // copy styles
   console.log('Copying styles...');
-  gulp.src(paths.styles, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'css'))
-  .pipe(livereload());
+  gulp.src(paths.styles, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'css'))
+    .pipe(livereload());
   done();
 });
 
 gulp.task('copy-images', function(done) {
   // copy images
   console.log('Copying images...');
-  gulp.src(paths.images, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'img'))
-  .pipe(livereload());
+  gulp.src(paths.images, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'img'))
+    .pipe(livereload());
   done();
 });
 
 gulp.task('copy-libs', function(done) {
   // copy lib scripts
   console.log('Copying libs...');
-  gulp.src(paths.libs, {cwd: 'www/**'})
-  .pipe(gulp.dest(bases.dist))
-  .pipe(livereload());
+  gulp.src(paths.libs, {
+      cwd: 'www/**'
+    })
+    .pipe(gulp.dest(bases.dist))
+    .pipe(livereload());
   done();
 });
 
 gulp.task('copy-scripts', function(done) {
   // copy scripts
   console.log('Copying scripts...');
-  gulp.src(paths.combinedScripts, {cwd: bases.app})
-  .pipe(gulp.dest(bases.dist + 'js/combined'))
-  .pipe(livereload());
+  gulp.src(paths.combinedScripts, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'js/combined'))
+    .pipe(livereload());
   done();
 });
 
@@ -181,7 +197,8 @@ gulp.task('copy-extras', function(done) {
 // copies all
 gulp.task('copy', function(done) {
   runSequence(['copy-html', 'copy-templates', 'copy-styles',
-   'copy-images', 'copy-libs', 'copy-scripts'], done);
+    'copy-images', 'copy-libs', 'copy-scripts'
+  ], done);
 });
 
 // builds a release version
