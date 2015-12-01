@@ -1,6 +1,9 @@
 $RobotoDraftFontPath: "../lib/robotodraft/fonts";
 $RobotoDraftFontName: "RobotoDraft";
 $RobotoDraftFontVersion: "1.0.0";
+
+$timeRangeColor: #f8f8f8;
+
 @import "../www/lib/robotodraft/sass/robotodraft.scss";
 @mixin transform($tr) {
   -webkit-transform: $tr;
@@ -9,27 +12,40 @@ $RobotoDraftFontVersion: "1.0.0";
 .material-icons {
   font-size: 2.3em;
 }
-body > div.popup-container.popup-showing.active > div > div.popup-buttons > button.button.ng-binding.button-stable{
+.lunchItem {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.dish-card {
+  min-height: 100px;
+  height: 140px;
+  max-height: 140px;
+}
+.card-row {
+  max-height: 140px;
+}
+body > div.popup-container.popup-showing.active > div > div.popup-buttons > button.button.ng-binding.button-stable {
   visibility: hidden;
 }
-.date-button{
+.date-button {
   width: 154px;
   min-width: 154px;
 }
 h1 {
   display: inline;
 }
-h2.settings-title{
+h2.settings-title {
   font-size: 1.5em;
 }
-date{
+date {
   font-size: 1.3em;
 }
-.show-overflow{
+.show-overflow {
   white-space: normal;
 }
-ion-list:first-child .time-range{
-  color: #f8f8f8;
+// The color of the times on the week card
+ion-list:first-child .time-range {
+  color: $timeRangeColor;
 }
 .button-fab-right {
   float: right;
@@ -45,59 +61,10 @@ a.lessonlink {
   padding: 0;
   .button-bar a {
     height: 47px;
-
-    //font-size: 1.2em;
-    //min-width: 50%;
     max-width: none;
-
-    //text-transform: none;
-    /* margin-top: 20px; */
     text-align: center;
     vertical-align: middle;
     padding-top: 5px;
     font-size: 1em;
   }
-}
-
-/*https://docs.angularjs.org/api/ngAnimate*/
-@keyframes slideInLeft {
-  0% {
-    @include transform(translate3d(-100%, 0, 0));
-  }
-  100% {
-    @include transform(translate3d(0, 0, 0));
-  }
-}
-@keyframes slideInRight {
-  0% {
-    @include transform(translate3d(100%, 0, 0));
-  }
-  100% {
-    @include transform(translate3d(0, 0, 0));
-  }
-}
-.repeat-animation.ng-enter,
-.repeat-animation.ng-leave,
-.repeat-animation.ng-move {
-  transition-property: all;
-  transition-duration: 1s;
-  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-  /*transition-delay: */
-  /*easeOutQuint*/
-}
-.repeat-animation.ng-enter {
-  @include transform(translate3d(-100%, 0, 0));
-}
-.repeat-animation.ng-enter-stagger {
-  /*transition-delay: 0.1s;*/
-  animation-delay: 0.2s;
-}
-.repeat-animation.ng-enter.ng-enter-active {
-  @include transform(translate3d(0, 0, 0));
-}
-.repeat-animation.ng-leave {
-  @include transform(translate3d(0, 0, 0));
-}
-.repeat-animation.ng-leave.ng-leave-active {
-  @include transform(translate3d(100%, 0, 0));
 }

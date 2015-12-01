@@ -1,8 +1,8 @@
-var lukkariApp = angular.module('lukkari', ['ionic', 'lukkari.controllers',
-  'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material'
-]);
-
-lukkariApp.run(['$ionicPlatform',
+angular.module('lukkari', ['ionic', 'lukkari.controllers',
+  'lukkari.services', 'lukkari.directives', 'ionic-datepicker',
+  'ionic-material', 'angularXml2json'
+])
+.run(['$ionicPlatform',
 function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -17,15 +17,19 @@ function($ionicPlatform) {
       StatusBar.styleDefault();
     }
   });
-}]);
+}])
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
-lukkariApp.constant('ApiEndpoint', {
+.constant('ApiEndpoint', {
   url: 'http://localhost:8100/api'
-});
+})
+
+.constant('LunchEndPoint', {
+  url: 'http://localhost:8100/lunch'
+})
 
 // menuContent-view is presented on the main view.
-lukkariApp.config(['$stateProvider', '$urlRouterProvider',
+.config(['$stateProvider', '$urlRouterProvider',
  function($stateProvider, $urlRouterProvider) {
   $stateProvider
     .state('app', {
@@ -87,7 +91,23 @@ lukkariApp.config(['$stateProvider', '$urlRouterProvider',
           controller: 'WeekCtrl'
         }
       }
+    })
+    .state('app.lunch', {
+      url: '/lunch',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/lunch.html',
+          controller: 'LunchCtrl'
+        }
+      }
     });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/today');
 }]);
+
+angular.module('lukkari.services', []);
+angular.module('lukkari.controllers', ['ngCordova']);
+const loadingTemplate = '<div class="loader"><svg class="circular">' +
+  '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2"' +
+  ' stroke-miterlimit="10"/></svg></div>';
+angular.module('lukkari.directives', []);

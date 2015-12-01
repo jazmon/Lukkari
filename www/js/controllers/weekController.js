@@ -74,7 +74,7 @@ angular.module('lukkari.controllers')
       }
 
       $scope.$on('ngLastRepeat.myList', function(e) {
-        ionicMaterialMotion.blinds();
+        ionicMaterialMotion.ripple();
       });
 
       // sets the group name

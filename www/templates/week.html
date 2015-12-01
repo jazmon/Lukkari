@@ -6,7 +6,7 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <ion-list ng-repeat="day in days" class="animate-blinds" ng-last-repeat="myList">
+    <ion-list ng-repeat="day in days" class="animate-ripple" ng-last-repeat="myList">
       <!-- Eech day's list item -->
       <ion-item class="item-divider">
         <date></date>
@@ -14,7 +14,7 @@
       <!-- Each lesson per day item -->
       <ion-item ng-repeat="lesson in day.lessons" ng-if="day.lessons.length > 0">
         <ion-list class="card calm-bg light">
-          <time-range class="item item-divider time-range" style=""></time-range>
+          <time-range class="item item-divider time-range"></time-range>
           <ion-item>
             <a class="lessonlink" href="#/app/today/{{lesson.id}}">
             {{lesson.name}}
