@@ -66,7 +66,10 @@ angular.module('lukkari.controllers')
     };
 
     $scope.lessons = [];
-    if ($scope.groupInfo.group !== undefined) {
+    if ($scope.groupInfo.group !== undefined &&
+      $scope.groupInfo.group !== null) {
+      console.log($scope.groupInfo.group);
+      console.log($scope.groupInfo);
       Lessons.changeGroup({
         groupName: $scope.groupInfo.group,
         callback: function(success) {
