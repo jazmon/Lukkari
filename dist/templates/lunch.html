@@ -6,8 +6,24 @@
           {{lunch.date.toLocaleDateString("fi-FI", {day:"numeric", month:"numeric"})}}
         </ion-item>
         <ion-item class="lunchItem" ng-repeat="dish in lunch.dishes track by $index">
-          <div class="card calm-900-bg light">
-            <ion-item>{{dish}}</ion-item>
+          <div class="row card-row" ng-if="$index % 2 === 0">
+            <!-- <div class="list card calm-900-bg light col col-50">
+              <ion-item class="item-body" ng-if="$index % 2 === 0">{{dish.name}} -->
+  <!-- <p> <a class="subdued">Opiskelija: 2.5€</a> <a class="subdued">Henkilökunta: 2.7€</a> </p> -->
+              <!-- </ion-item>
+              <ion-item class="item-body" ng-if="$index % 2 !== 0">{{dish.name}}</ion-item> -->
+              <!-- <ion-item class="text-right">L, G, M</ion-item> -->
+              <!-- <ion-item class="text-right"><span ng-repeat="allergy in dish.allergies">{{allergy}}</span></ion-item>
+              <ion-item class="text-right"><p ng-repeat="pricegroup in dish.pricegroups">{{pricegroup.group}}: {{pricegroup.price}}</p></ion-item> -->
+            <!-- </div> -->
+            <div class="col col-50 list card calm-900-bg light dish-card" ng-init="d1 = lunch.dishes[$index]">
+              <ion-item class="item-body">{{d1.name}}</ion-item>
+            </div>
+            <div class="col col-50 list card calm-900-bg light dish-card" ng-if="lunch.dishes.length > $index + 1" ng-init="d2 = lunch.dishes[$index + 1]">
+              <ion-item class="item-body ">{{d2.name}}</ion-item>
+            </div>
+            <!-- <div class="col list card calm-900-bg light" ng-if="lunch.dishes.length <= $index + 1">
+            </div> -->
           </div>
         </ion-item>
       </div>

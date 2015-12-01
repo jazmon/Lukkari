@@ -68,12 +68,6 @@ gulp.task('serve', function() {
       opt.context = 'https://opendata.tamk.fi/r1';
       var proxy = new Proxy(opt);
       return [proxy];
-    },
-    middleware: function(connect, opt) {
-      opt.route = '/lunch';
-      opt.context = 'http://campusravita.fi/ruokalista';
-      var proxy = new Proxy(opt);
-      return [proxy];
     }
   });
 });
