@@ -1,11 +1,11 @@
 angular.module('lukkari.services')
   .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate',
     function($http, ApiEndpoint, MyDate) {
-      var lessons = [];
-      var savedGroupName = '';
+      let lessons = [];
+      let savedGroupName;
 
       function parseLesson(element, index, array) {
-        var lesson = {};
+        const lesson = {};
         lesson.id = index;
         lesson.startDay = new Date(element.startDate);
         lesson.endDay = new Date(element.endDate);
@@ -36,9 +36,10 @@ angular.module('lukkari.services')
         var data = {
           studentGroup: [savedGroupName]
         };
-        var apiKey = 'Wu47zzKEPa7agvin47f5';
-        var url = ApiEndpoint.url + '/reservation/search' +
-          '?apiKey=' + apiKey;
+        const apiKey = 'Wu47zzKEPa7agvin47f5';
+        const url = [ApiEndpoint.url, '/reservation/search',
+          '?apiKey=', apiKey
+        ].join('');
         $http({
           method: 'POST',
           url: url,
@@ -51,14 +52,13 @@ angular.module('lukkari.services')
             'cache-control': 'no-cache'
           }
         }).success(function(data, status, headers, config) {
-          console.log('success');
           lessons = [];
           data.reservations.forEach(parseLesson);
           callback({
             success: false
           });
         }).error(function(data, status, headers, config) {
-          console.log('failure');
+          console.error('Failed to get lesson data!');
           callback({
             success: false
           });
@@ -105,18 +105,20 @@ angular.module('lukkari.services')
       function getWeek({
         callback, day
       }) {
-        var weekLessons = [];
-        var startDate = new Date(day.getFullYear(), day.getMonth(),
+        let weekLessons = [];
+        const startDate = new Date(day.getFullYear(), day.getMonth(),
           day.getDate());
-        var endDate = MyDate.getDayFromDay({
+        const endDate = MyDate.getDayFromDay({
           currentDay: day,
           offsetDays: 5
         });
-        lessons.forEach(function(lesson, index, array) {
+
+        function checkLessonDate(lesson, index, array) {
           if (lesson.startDay >= startDate && lesson.startDay <= endDate) {
             weekLessons.push(lesson);
           }
-        });
+        }
+        lessons.forEach(checkLessonDate);
         callback({
           success: true,
           weekLessons

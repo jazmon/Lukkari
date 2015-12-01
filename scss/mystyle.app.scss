@@ -1,9 +1,7 @@
 $RobotoDraftFontPath: "../lib/robotodraft/fonts";
 $RobotoDraftFontName: "RobotoDraft";
 $RobotoDraftFontVersion: "1.0.0";
-
 $timeRangeColor: #f8f8f8;
-
 @import "../www/lib/robotodraft/sass/robotodraft.scss";
 @mixin transform($tr) {
   -webkit-transform: $tr;
@@ -43,6 +41,7 @@ date {
 .show-overflow {
   white-space: normal;
 }
+
 // The color of the times on the week card
 ion-list:first-child .time-range {
   color: $timeRangeColor;

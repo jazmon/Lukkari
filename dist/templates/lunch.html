@@ -1,7 +1,7 @@
 <ion-view view-title="Lunch list">
   <ion-content>
     <ion-list class="animate-ripple">
-      <div ng-repeat="lunch in lunches"  ng-last-repeat="myList">
+      <div ng-repeat="lunch in lunches" ng-last-repeat="myList">
         <ion-item class="item-divider dark">
           {{lunch.date.toLocaleDateString("fi-FI", {day:"numeric", month:"numeric"})}}
         </ion-item>
@@ -9,11 +9,11 @@
           <div class="row card-row" ng-if="$index % 2 === 0">
             <!-- <div class="list card calm-900-bg light col col-50">
               <ion-item class="item-body" ng-if="$index % 2 === 0">{{dish.name}} -->
-  <!-- <p> <a class="subdued">Opiskelija: 2.5€</a> <a class="subdued">Henkilökunta: 2.7€</a> </p> -->
-              <!-- </ion-item>
+            <!-- <p> <a class="subdued">Opiskelija: 2.5€</a> <a class="subdued">Henkilökunta: 2.7€</a> </p> -->
+            <!-- </ion-item>
               <ion-item class="item-body" ng-if="$index % 2 !== 0">{{dish.name}}</ion-item> -->
-              <!-- <ion-item class="text-right">L, G, M</ion-item> -->
-              <!-- <ion-item class="text-right"><span ng-repeat="allergy in dish.allergies">{{allergy}}</span></ion-item>
+            <!-- <ion-item class="text-right">L, G, M</ion-item> -->
+            <!-- <ion-item class="text-right"><span ng-repeat="allergy in dish.allergies">{{allergy}}</span></ion-item>
               <ion-item class="text-right"><p ng-repeat="pricegroup in dish.pricegroups">{{pricegroup.group}}: {{pricegroup.price}}</p></ion-item> -->
             <!-- </div> -->
             <div class="col col-50 list card calm-900-bg light dish-card" ng-init="d1 = lunch.dishes[$index]">

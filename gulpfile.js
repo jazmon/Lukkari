@@ -13,7 +13,8 @@ var sourcemaps = require('gulp-sourcemaps');
 var clean = require('gulp-clean');
 var replace = require('replace');
 var replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
-'./www/combinedJs/bundle.min.js'];
+  './www/combinedJs/bundle.min.js'
+];
 //var gulpSequence = require('gulp-sequence');
 var runSequence = require('run-sequence');
 var livereload = require('gulp-livereload');
@@ -82,7 +83,8 @@ gulp.task('serve', function() {
 // builds js
 gulp.task('scripts', function() {
   return gulp.src([bases.app + paths.app, bases.app + paths.services,
-    bases.app + paths.directives, bases.app + paths.controllers])
+      bases.app + paths.directives, bases.app + paths.controllers
+    ])
     // initializes sourcemaps
     .pipe(sourcemaps.init())
     // babels js (Ecmascript 6 -> normal js)

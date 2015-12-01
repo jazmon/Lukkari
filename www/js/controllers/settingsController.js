@@ -10,7 +10,7 @@ angular.module('lukkari.controllers')
       $scope.reminder.startDay = new Date();
       $scope.reminder.endDay = new Date();
 
-      var toastOptions = {
+      const toastOptions = {
         duration: 'long',
         position: 'center'
       };
@@ -19,7 +19,6 @@ angular.module('lukkari.controllers')
         if (typeof(val) === 'undefined') {
           //console.log('No date selected');
         } else {
-          //console.log('Selected date is : ', val);
           $scope.reminder.startDay = val;
           $scope.datepickerObject.inputDate = val;
         }
@@ -29,7 +28,6 @@ angular.module('lukkari.controllers')
         if (typeof(val) === 'undefined') {
           //console.log('No date selected');
         } else {
-          //console.log('Selected date is : ', val);
           $scope.reminder.endDay = val;
           $scope.datepickerObject2.inputDate = val;
         }
@@ -98,30 +96,26 @@ angular.module('lukkari.controllers')
         LocalStorage.set('groupName', $scope.groupInfo.group);
         // show toast that change was successful
         $ionicPlatform.ready(function() {
-          try {
-            $cordovaToast.show('Group successfully changed!',
-              toastOptions.duration,
-              toastOptions.position);
-          } catch (e) {
-            // do nothing because it fails on browser
-          } finally {
-            // change to today view after 2 seconds
-            $timeout(function() {
-              window.location.href = '#/app/today';
-            }, 2000);
-          }
+          $cordovaToast.show('Group successfully changed!',
+            toastOptions.duration,
+            toastOptions.position);
+          // change to today view after 2 seconds
+          $timeout(function() {
+            window.location.href = '#/app/today';
+          }, 2000);
         });
       };
 
       $scope.addToCalendar = function() {
-        var appointments = [];
-        var calOptions = {};
-        // works on iOS only
-        calOptions.calendarName = 'Lukkari app calendar';
-        // android has id but no fucking idea what it does (1 is default)
-        // so great documentation 5/5
-        // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
-        calOptions.calendarId = 1;
+        let appointments = [];
+        let calOptions = {
+          // works on iOS only
+          calendarName: 'Lukkari app calendar',
+          // android has id but no fucking idea what it does (1 is default)
+          // so great documentation 5/5
+          // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
+          calendarId: 1
+        };
 
         // google may set some default reminders depending on settings
         // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin/issues/201
@@ -132,11 +126,11 @@ angular.module('lukkari.controllers')
         }
         calOptions.secondReminderMinutes = null;
 
-        var success = true;
+        let success = true;
 
         function createEvent(element, index, array) {
-          var groups = '';
-          for (var i = 0; i < element.groups.length; i++) {
+          let groups = '';
+          for (let i = 0; i < element.groups.length; i++) {
             groups += element.groups[i] + ', ';
           }
 

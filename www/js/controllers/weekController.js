@@ -5,8 +5,9 @@ angular.module('lukkari.controllers')
     'ionicMaterialMotion',
     function($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate,
       Lessons, ionicMaterialInk, ionicMaterialMotion) {
-      $scope.groupInfo = {};
-      $scope.groupInfo.group = LocalStorage.get('groupName');
+      $scope.groupInfo = {
+        group: LocalStorage.get('groupName')
+      };
       $scope.currentDate = MyDate.getMonday(new Date());
       $scope.endDate = MyDate.getDayFromDay({
         currentDay: $scope.currentDate,
@@ -33,31 +34,29 @@ angular.module('lukkari.controllers')
       function getAppointments() {
         // show the loading window
         $ionicLoading.show({
-          template: loadingTemplate
+          templateUrl: 'templates/loading.html'
         });
         // get all the appointments
         Lessons.getWeek({
           day: $scope.currentDate,
           callback: function(response) {
             $ionicLoading.hide();
-            //ionicMaterialMotion.ripple();
-
             if (!response.success) {
               console.error('ERROR');
             } else {
-              var allLessons = response.weekLessons;
+              const allLessons = response.weekLessons;
               $scope.days = [];
-              for (var i = 0; i < 5; i++) {
-                var day = {};
+              for (let i = 0; i < 5; i++) {
+                let day = {};
                 // get mon-fri
                 day.date = MyDate.getDayFromDay({
                   currentDay: $scope.currentDate,
                   offsetDays: i
                 });
                 day.lessons = [];
-                var lessonsLength = allLessons.length;
-                for (var j = 0; j < lessonsLength; j++) {
-                  var lesson = allLessons[j];
+                const lessonsLength = allLessons.length;
+                for (let j = 0; j < lessonsLength; j++) {
+                  const lesson = allLessons[j];
                   // if same day push into the day array
                   if (lesson.startDay.toDateString() ===
                     day.date.toDateString()) {

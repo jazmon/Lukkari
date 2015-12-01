@@ -92,7 +92,6 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 
 angular.module('lukkari.services', []);
 angular.module('lukkari.controllers', ['ngCordova']);
-var loadingTemplate = '<div class="loader"><svg class="circular">' + '<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2"' + ' stroke-miterlimit="10"/></svg></div>';
 angular.module('lukkari.directives', []);
 'use strict';
 
@@ -100,16 +99,14 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
   var lunches = [];
 
   function parseLunch(element, index, array) {
-    var i;
-    var j;
-    var lunch = {};
-    // get date
-    lunch.date = new Date(element.div[0].span.content[0]);
-    // get dishes
-    lunch.dishes = [];
+    var lunch = {
+      // get date
+      date: new Date(element.div[0].span.content[0]),
+      dishes: []
+    };
     // remove 3 from length to ignore evening foods
     var length = element.div[1].div.length - 3;
-    for (i = 0; i < length; i++) {
+    for (var i = 0; i < length; i++) {
       var dish = {};
       dish.pricegroups = [];
       dish.allergies = [];
@@ -117,46 +114,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
       if (dish.name.includes('Ravintola avoinna')) {
         continue;
       }
-      // get pricing info
-      // var length2;
-      // try {
-      //   length2 = element.div[1].div[i].div.div.ul.li.div.div.div[1].div
-      //     .div.div.div.length;
-      // } catch (e) {
-      //   length2 = 0;
-      // }
-      //
-      // for (j = 0; j < length2; j++) {
-      //   var pricegroup = {};
-      //   try {
-      //     pricegroup.group = element.div[1].div[i].div.div.ul.li.div.div.div[
-      //       1].div.div.div.div[j].div[0].div.div.p;
-      //   } catch (e) {
-      //     pricegroup.group = 'N/A';
-      //   }
-      //   try {
-      //     pricegroup.price = element.div[1].div[i].div.div.ul.li.div.div.div[
-      //       1].div.div.div.div[j].div[1].div.div.content;
-      //   } catch (e) {
-      //     pricegroup.price = '';
-      //   }
-      //
-      //   dish.pricegroups.push(pricegroup);
-      // }
-      // // var pricegroup = {};
-      // // pricegroup.group = element.div[1].div[i].div.div.ul.li.div.div.div[
-      // //   1].div.div.div.div[j].div.div.div.p;
-      // // pricegroup.price = element.div[1].div[i].div.div.ul.li.div.div.div[
-      // //   1].div.div.div.div[j].div.div.div.p;
-      //
-      // // get allergy info
-      // var length3 = element.div[1].div[i].div.div.ul.li.div.div.div[1].div
-      //   .div.length;
-      // for (j = 0; j < length3; j++) {
-      //   var allergy = element.div[1].div[i].div.div.ul.li.div.div.div[1].div
-      //     .div[j].div.div[0].div.div.p;
-      //   dish.allergies.push(allergy);
-      // }
+
       lunch.dishes.push(dish);
     }
     lunches.push(lunch);
@@ -170,7 +128,8 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
     } else {
       $http({
         method: 'GET',
-        url: "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokalista%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Fdiv%5B%40class%3D%22view-grouping%22%5D'&format=json&diagnostics=true&callback="
+        url: ["https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2", "0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali", "sta%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Fdiv%5B%40class%", "3D%22view-grouping%22%5D'&format=json&diagnostics=true&callback="].join('')
+
       }).then(function successCallback(response) {
         var data = response.data.query.results.div;
         data.forEach(parseLunch);
@@ -187,7 +146,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
 
 angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function ($http, ApiEndpoint, MyDate) {
   var lessons = [];
-  var savedGroupName = '';
+  var savedGroupName = undefined;
 
   function parseLesson(element, index, array) {
     var lesson = {};
@@ -221,7 +180,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       studentGroup: [savedGroupName]
     };
     var apiKey = 'Wu47zzKEPa7agvin47f5';
-    var url = ApiEndpoint.url + '/reservation/search' + '?apiKey=' + apiKey;
+    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', apiKey].join('');
     $http({
       method: 'POST',
       url: url,
@@ -234,14 +193,13 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
         'cache-control': 'no-cache'
       }
     }).success(function (data, status, headers, config) {
-      console.log('success');
       lessons = [];
       data.reservations.forEach(parseLesson);
       callback({
         success: false
       });
     }).error(function (data, status, headers, config) {
-      console.log('failure');
+      console.error('Failed to get lesson data!');
       callback({
         success: false
       });
@@ -296,11 +254,13 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       currentDay: day,
       offsetDays: 5
     });
-    lessons.forEach(function (lesson, index, array) {
+
+    function checkLessonDate(lesson, index, array) {
       if (lesson.startDay >= startDate && lesson.startDay <= endDate) {
         weekLessons.push(lesson);
       }
-    });
+    }
+    lessons.forEach(checkLessonDate);
     callback({
       success: true,
       weekLessons: weekLessons
@@ -419,7 +379,7 @@ angular.module('lukkari.services').factory('MyDate', [function () {
 
 angular.module('lukkari.directives').directive('date', function () {
   return {
-    template: '{{day.date.toLocaleDateString("fi-FI",' + ' {weekday: "short", day: "numeric", month:"numeric"})}}'
+    template: ['{{day.date.toLocaleDateString("fi-FI",', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
 });
 'use strict';
@@ -440,15 +400,17 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
 
 angular.module('lukkari.directives').directive('timeRange', function () {
   return {
-    template: '{{lesson.startDay.toLocaleTimeString' + '("fi-FI", {hour:"numeric", minute:"numeric"})}}' + ' — ' + '{{lesson.endDay.toLocaleTimeString' + '("fi-FI", {hour:"numeric", minute:"numeric"})}}'
+    template: ['{{lesson.startDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}'].join('')
   };
 });
 'use strict';
 
 angular.module('lukkari.controllers')
 // controller for single appointment view
-.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Lessons, ionicMaterialInk, ionicMaterialMotion) {
+.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Lessons, ionicMaterialInk) {
   $scope.lesson = Lessons.getLesson($stateParams.id);
+  // Set Ink
+  ionicMaterialInk.displayEffect();
 }]);
 'use strict';
 
@@ -457,7 +419,7 @@ angular.module('lukkari.controllers').controller('LukkariCtrl', ['$scope', funct
 
 angular.module('lukkari.controllers').controller('LunchCtrl', ['$scope', 'FoodService', 'ionicMaterialInk', 'ionicMaterialMotion', '$ionicLoading', function ($scope, FoodService, ionicMaterialInk, ionicMaterialMotion, $ionicLoading) {
   $ionicLoading.show({
-    template: '<div class="loader"><svg class="circular"><circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg></div>'
+    templateUrl: 'templates/loading.html'
   });
   FoodService.get({
     callback: function callback(lunches) {
@@ -495,7 +457,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     if (typeof val === 'undefined') {
       //console.log('No date selected');
     } else {
-        //console.log('Selected date is : ', val);
         $scope.reminder.startDay = val;
         $scope.datepickerObject.inputDate = val;
       }
@@ -505,7 +466,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     if (typeof val === 'undefined') {
       //console.log('No date selected');
     } else {
-        //console.log('Selected date is : ', val);
         $scope.reminder.endDay = val;
         $scope.datepickerObject2.inputDate = val;
       }
@@ -576,28 +536,24 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     LocalStorage.set('groupName', $scope.groupInfo.group);
     // show toast that change was successful
     $ionicPlatform.ready(function () {
-      try {
-        $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
-      } catch (e) {
-        // do nothing because it fails on browser
-      } finally {
-        // change to today view after 2 seconds
-        $timeout(function () {
-          window.location.href = '#/app/today';
-        }, 2000);
-      }
+      $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
+      // change to today view after 2 seconds
+      $timeout(function () {
+        window.location.href = '#/app/today';
+      }, 2000);
     });
   };
 
   $scope.addToCalendar = function () {
     var appointments = [];
-    var calOptions = {};
-    // works on iOS only
-    calOptions.calendarName = 'Lukkari app calendar';
-    // android has id but no fucking idea what it does (1 is default)
-    // so great documentation 5/5
-    // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
-    calOptions.calendarId = 1;
+    var calOptions = {
+      // works on iOS only
+      calendarName: 'Lukkari app calendar',
+      // android has id but no fucking idea what it does (1 is default)
+      // so great documentation 5/5
+      // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
+      calendarId: 1
+    };
 
     // google may set some default reminders depending on settings
     // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin/issues/201
@@ -663,8 +619,9 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 angular.module('lukkari.controllers')
 // controller for today view
 .controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
-  $scope.groupInfo = {};
-  $scope.groupInfo.group = LocalStorage.get('groupName');
+  $scope.groupInfo = {
+    group: LocalStorage.get('groupName')
+  };
   $scope.currentDay = new Date();
 
   // Show new group modal when no group is set
@@ -684,15 +641,13 @@ angular.module('lukkari.controllers')
 
   function getAppointments() {
     $ionicLoading.show({
-      template: loadingTemplate
+      templateUrl: 'templates/loading.html'
     });
 
     Lessons.getDay({
       day: $scope.currentDay,
       callback: function callback(response) {
         $ionicLoading.hide();
-        // Set Motion
-        //ionicMaterialMotion.blinds();
         if (!response.success) {
           console.error('ERROR');
         } else {
@@ -724,7 +679,7 @@ angular.module('lukkari.controllers')
   };
 
   $scope.lessons = [];
-  if ($scope.groupInfo.group !== undefined) {
+  if ($scope.groupInfo.group !== undefined && $scope.groupInfo.group !== null) {
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
@@ -755,8 +710,9 @@ angular.module('lukkari.controllers')
 angular.module('lukkari.controllers')
 // controller for weekly view
 .controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
-  $scope.groupInfo = {};
-  $scope.groupInfo.group = LocalStorage.get('groupName');
+  $scope.groupInfo = {
+    group: LocalStorage.get('groupName')
+  };
   $scope.currentDate = MyDate.getMonday(new Date());
   $scope.endDate = MyDate.getDayFromDay({
     currentDay: $scope.currentDate,
@@ -783,15 +739,13 @@ angular.module('lukkari.controllers')
   function getAppointments() {
     // show the loading window
     $ionicLoading.show({
-      template: loadingTemplate
+      templateUrl: 'templates/loading.html'
     });
     // get all the appointments
     Lessons.getWeek({
       day: $scope.currentDate,
       callback: function callback(response) {
         $ionicLoading.hide();
-        //ionicMaterialMotion.ripple();
-
         if (!response.success) {
           console.error('ERROR');
         } else {
