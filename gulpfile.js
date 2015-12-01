@@ -12,7 +12,8 @@ var sh = require('shelljs');
 var sourcemaps = require('gulp-sourcemaps');
 var clean = require('gulp-clean');
 var replace = require('replace');
-var replaceFiles = ['./www/js/app.js'];
+var replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
+'./www/combinedJs/bundle.min.js'];
 //var gulpSequence = require('gulp-sequence');
 var runSequence = require('run-sequence');
 var livereload = require('gulp-livereload');
