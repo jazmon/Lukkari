@@ -111,11 +111,9 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
       dish.pricegroups = [];
       dish.allergies = [];
       dish.name = element.div[1].div[i].div.div.ul.li.div.div.div[0].div.div.content;
-      if (dish.name.includes('Ravintola avoinna')) {
-        continue;
+      if (!dish.name.includes('Ravintola avoinna')) {
+        lunch.dishes.push(dish);
       }
-
-      lunch.dishes.push(dish);
     }
     lunches.push(lunch);
   }
@@ -128,7 +126,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
     } else {
       $http({
         method: 'GET',
-        url: ["https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2", "0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali", "sta%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Fdiv%5B%40class%", "3D%22view-grouping%22%5D'&format=json&diagnostics=true&callback="].join('')
+        url: ['https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2', '0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali', 'sta%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F%2Fdiv%5B%40class', '%3D%22view-grouping%22%5D\'&format=json&diagnostics=true&callba', 'ck='].join('')
 
       }).then(function successCallback(response) {
         var data = response.data.query.results.div;
@@ -229,17 +227,22 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
         success: false
       });
     } else {
-      var dayLessons = [];
-      lessons.forEach(function (lesson, index, array) {
-        var date = lesson.startDay;
-        if (date.getDate() === day.getDate() && date.getMonth() === day.getMonth()) {
-          dayLessons.push(lesson);
-        }
-      });
-      callback({
-        success: true,
-        dayLessons: dayLessons
-      });
+      (function () {
+        var checkDay = function checkDay(lesson, index, array) {
+          var date = lesson.startDay;
+          if (date.getDate() === day.getDate() && date.getMonth() === day.getMonth()) {
+            dayLessons.push(lesson);
+          }
+        };
+
+        var dayLessons = [];
+
+        lessons.forEach(checkDay);
+        callback({
+          success: true,
+          dayLessons: dayLessons
+        });
+      })();
     }
   }
 
@@ -278,11 +281,14 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       offsetDays: 1
     });
     var retLessons = [];
-    lessons.forEach(function (lesson, index, array) {
+
+    function checkLesson(lesson, index, array) {
       if (lesson.startDay >= startDate && lesson.startDay <= correctEndDate) {
         retLessons.push(lesson);
       }
-    });
+    }
+
+    lessons.forEach(checkLesson);
     callback({
       success: true,
       lessons: retLessons

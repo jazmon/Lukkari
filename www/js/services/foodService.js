@@ -33,10 +33,11 @@ angular.module('lukkari.services')
           $http({
             method: 'GET',
             url: [
-              "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2",
-              "0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali",
-              "sta%22%20and%0A%20%20%20%20%20%20xpath%3D'%2F%2Fdiv%5B%40class%",
-              "3D%22view-grouping%22%5D'&format=json&diagnostics=true&callback="
+              'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2',
+              '0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali',
+              'sta%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F%2Fdiv%5B%40class',
+              '%3D%22view-grouping%22%5D\'&format=json&diagnostics=true&callba',
+              'ck='
             ].join('')
 
           }).then(
