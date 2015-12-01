@@ -1,10 +1,10 @@
 angular.module('lukkari.services')
   .factory('FoodService', ['$http', 'LunchEndPoint', 'ngXml2json',
     function($http, LunchEndPoint, ngXml2json) {
-      var lunches = [];
+      let lunches = [];
 
       function parseLunch(element, index, array) {
-        var lunch = {
+        let lunch = {
           // get date
           date: new Date(element.div[0].span.content[0]),
           dishes: []
@@ -17,11 +17,9 @@ angular.module('lukkari.services')
           dish.allergies = [];
           dish.name = element.div[1].div[i].div.div.ul.li.div.div
             .div[0].div.div.content;
-          if (dish.name.includes('Ravintola avoinna')) {
-            continue;
+          if (!dish.name.includes('Ravintola avoinna')) {
+            lunch.dishes.push(dish);
           }
-
-          lunch.dishes.push(dish);
         }
         lunches.push(lunch);
       }

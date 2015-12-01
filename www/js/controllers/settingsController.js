@@ -161,7 +161,7 @@ angular.module('lukkari.controllers')
             });
           }
         });
-        var msg = '';
+        let msg = '';
         if (success) {
           msg = 'Calendar events successfully added!';
         } else {

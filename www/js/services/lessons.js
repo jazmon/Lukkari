@@ -11,7 +11,7 @@ angular.module('lukkari.services')
         lesson.endDay = new Date(element.endDate);
         lesson.groups = [];
         // parse the resources array
-        var {
+        const {
           resources
         } = element;
         resources.forEach(function(resource, index, array) {
@@ -33,7 +33,7 @@ angular.module('lukkari.services')
       }
 
       function get(callback) {
-        var data = {
+        const data = {
           studentGroup: [savedGroupName]
         };
         const apiKey = 'Wu47zzKEPa7agvin47f5';
@@ -42,8 +42,8 @@ angular.module('lukkari.services')
         ].join('');
         $http({
           method: 'POST',
-          url: url,
-          data: data,
+          url,
+          data,
           withCredentials: true,
           headers: {
             'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
@@ -86,14 +86,17 @@ angular.module('lukkari.services')
             success: false
           });
         } else {
-          var dayLessons = [];
-          lessons.forEach(function(lesson, index, array) {
-            var date = lesson.startDay;
+          let dayLessons = [];
+
+          function checkDay(lesson, index, array) {
+            const date = lesson.startDay;
             if (date.getDate() === day.getDate() &&
               date.getMonth() === day.getMonth()) {
               dayLessons.push(lesson);
             }
-          });
+          }
+
+          lessons.forEach(checkDay);
           callback({
             success: true,
             dayLessons
@@ -129,17 +132,20 @@ angular.module('lukkari.services')
       function getDayToDay({
         callback, startDate, endDate
       }) {
-        var correctEndDate = MyDate.getDayFromDay({
+        const correctEndDate = MyDate.getDayFromDay({
           currentDay: endDate,
           offsetDays: 1
         });
-        var retLessons = [];
-        lessons.forEach(function(lesson, index, array) {
+        let retLessons = [];
+
+        function checkLesson(lesson, index, array) {
           if (lesson.startDay >= startDate && lesson.startDay <=
             correctEndDate) {
             retLessons.push(lesson);
           }
-        });
+        }
+
+        lessons.forEach(checkLesson);
         callback({
           success: true,
           lessons: retLessons
