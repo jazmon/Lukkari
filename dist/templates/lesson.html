@@ -5,10 +5,10 @@
       <!-- <ion-item>Teacher: {{lesson.teacher}}</ion-item> -->
       <ion-item>Course: {{lesson.code}}</ion-item>
       <ion-item ng-if="lesson.groups.length === 1">Groups: {{lesson.groups[0]}}</ion-item>
-        <ion-list ng-if="lesson.groups.length > 1">
-          <ion-item class="item-divider">Groups</ion-item>
-          <ion-item  ng-repeat="group in lesson.groups">{{group}}</ion-item>
-        </ion-list>
+      <ion-list ng-if="lesson.groups.length > 1">
+        <ion-item class="item-divider">Groups</ion-item>
+        <ion-item ng-repeat="group in lesson.groups">{{group}}</ion-item>
+      </ion-list>
       <ion-item class="item-divider">Location</ion-item>
       <ion-item>{{lesson.room}}</ion-item>
       <ion-item>{{lesson.roomInfo}}</ion-item>

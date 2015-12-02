@@ -1,36 +1,38 @@
 <ion-view cache-view="false" view-title="Week {{ currentDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }} — {{ endDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }}">
   <ion-header-bar class="bar-subheader">
-    <div class="button-bar">
-      <a class="button button-calm icon-right ion-android-arrow-back" ng-click="moveWeek(-1)">Previous week</a>
-      <a class="button button-calm icon-left ion-android-arrow-forward" ng-click="moveWeek(1)">Next week</a>
+    <div class="button-bar bar-calm">
+      <a class="button button-raised ink-dark icon ion-android-arrow-back" ng-click="moveWeek(-1)"></a>
+      <a class="button button-raised ink-dark icon ion-android-arrow-forward" ng-click="moveWeek(1)"></a>
     </div>
   </ion-header-bar>
   <ion-content>
-    <ion-list>
-      <div ng-repeat="day in days" class="repeat-animation">
-        <ion-item class="item-divider">
-          <date></date>
-        </ion-item>
-        <ion-item>
-          <div ng-repeat="lesson in day.lessons" class="card" ng-if="day.lessons.length > 0">
-            <time-range class="item item-divider"></time-range>
-            <a class="lessonlink" href="#/app/week/{{lesson.id}}">
-              <div class="item item-text-wrap">
-                {{lesson.name}}
-                <br/> {{lesson.code}}
-              </div>
-            </a>
-            <div class="item item-divider">
-              {{lesson.room}}
-            </div>
+    <ion-list ng-repeat="day in days" class="animate-ripple" ng-last-repeat="myList">
+      <!-- Eech day's list item -->
+      <ion-item class="item-divider">
+        <date></date>
+      </ion-item>
+      <!-- Each lesson per day item -->
+      <ion-item ng-repeat="lesson in day.lessons" ng-if="day.lessons.length > 0">
+        <ion-list class="card calm-bg light">
+          <time-range class="item item-divider time-range"></time-range>
+          <ion-item>
+            <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </a>
+          </ion-item>
+          <ion-item class="card-footer">
+            {{lesson.room}}
+          </ion-item>
+        </ion-list>
+      </ion-item>
+      <ion-item ng-if="day.lessons.length === 0">
+        <div class="card calm-bg light">
+          <div class="item item-text-wrap">
+            No lessons
           </div>
-          <div class="card" ng-if="day.lessons.length === 0">
-            <div class="item item-text-wrap">
-              No lessons
-            </div>
-          </div>
-        </ion-item>
-      </div>
+        </div>
+      </ion-item>
     </ion-list>
   </ion-content>
 </ion-view>

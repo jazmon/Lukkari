@@ -3,7 +3,7 @@
   "app_id": "",
   "proxies": [{
     "path": "/api",
-    "proxyUrl": "https://opendata.tamk.fi/r1"
+    "proxyUrl": "http://localhost:8100/api"
   }],
   "gulpStartupTasks": [
     "release"

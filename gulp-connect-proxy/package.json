@@ -1,0 +1,73 @@
+{
+  "_args": [
+    [
+      "gulp-connect-proxy",
+      "G:\\Dev\\Code\\Web\\lukkari"
+    ]
+  ],
+  "_from": "gulp-connect-proxy@latest",
+  "_id": "gulp-connect-proxy@0.3.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/gulp-connect-proxy",
+  "_nodeVersion": "0.12.0",
+  "_npmUser": {
+    "email": "iam@chrishoage.com",
+    "name": "chrishoage"
+  },
+  "_npmVersion": "2.5.1",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "gulp-connect-proxy",
+    "raw": "gulp-connect-proxy",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_resolved": "https://registry.npmjs.org/gulp-connect-proxy/-/gulp-connect-proxy-0.3.1.tgz",
+  "_shasum": "12897149711aca0c8a4ab20a0a225cd73c5dc22e",
+  "_shrinkwrap": null,
+  "_spec": "gulp-connect-proxy",
+  "_where": "G:\\Dev\\Code\\Web\\lukkari",
+  "author": {
+    "name": "Chris Hoage"
+  },
+  "bugs": {
+    "url": "https://github.com/chrishoage/gulp-connect-proxy/issues"
+  },
+  "dependencies": {
+    "extend": "^2.0.0"
+  },
+  "description": "A simple proxy middleware for gulp-connect",
+  "devDependencies": {},
+  "directories": {},
+  "dist": {
+    "shasum": "12897149711aca0c8a4ab20a0a225cd73c5dc22e",
+    "tarball": "http://registry.npmjs.org/gulp-connect-proxy/-/gulp-connect-proxy-0.3.1.tgz"
+  },
+  "gitHead": "66eefae5a4ecc60a4399847b11ec41f68cdb98a2",
+  "homepage": "https://github.com/chrishoage/gulp-connect-proxy",
+  "license": "ISC",
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "chrishoage",
+      "email": "iam@chrishoage.com"
+    }
+  ],
+  "name": "gulp-connect-proxy",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/chrishoage/gulp-connect-proxy.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "0.3.1"
+}
