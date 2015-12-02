@@ -83,13 +83,18 @@ angular.module('lukkari.controllers')
       };
 
       $scope.reminder.time = 'null';
-      $scope.groupInfo.group = LocalStorage.get('groupName');
+      $scope.groupInfo.group = LocalStorage.get({
+        key: 'groupName'
+      });
       if (!$scope.groupInfo.group) {
         $scope.groupInfo.group = '';
       }
 
       $scope.changeGroup = function() {
-        LocalStorage.set('groupName', $scope.groupInfo.group);
+        LocalStorage.set({
+          key: 'groupName',
+          value: $scope.groupInfo.group
+        });
         // show toast that change was successful
         $ionicPlatform.ready(function() {
           $cordovaToast.show('Group successfully changed!',

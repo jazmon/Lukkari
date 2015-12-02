@@ -6,7 +6,9 @@ angular.module('lukkari.controllers')
     function($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate,
       Lessons, ionicMaterialInk, ionicMaterialMotion) {
       $scope.groupInfo = {
-        group: LocalStorage.get('groupName')
+        group: LocalStorage.get({
+          key: 'groupName'
+        })
       };
       $scope.currentDay = new Date();
 
@@ -49,7 +51,10 @@ angular.module('lukkari.controllers')
 
       // sets the group
       $scope.setGroup = function() {
-        LocalStorage.set('groupName', $scope.groupInfo.group);
+        LocalStorage.set({
+          key: 'groupName',
+          value: $scope.groupInfo.group
+        });
         $scope.modal.hide();
 
         Lessons.changeGroup({
