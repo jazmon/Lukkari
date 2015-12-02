@@ -2,23 +2,37 @@ angular.module('lukkari.controllers')
   .controller('SettingsCtrl', ['$scope', 'LocalStorage',
     '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar',
     'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion',
-    '$cordovaLocalNotification',
+    '$cordovaLocalNotification', 'Notifications',
     function($scope, LocalStorage, $cordovaToast,
       $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate,
-      ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification) {
-      $scope.groupInfo = {};
-      $scope.reminder = {};
-      $scope.reminder.startDay = new Date();
-      $scope.reminder.endDay = new Date();
-      $scope.notification = {
-        use: false
+      ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification,
+      Notifications) {
+      $scope.groupInfo = {
+        group: LocalStorage.get({
+          key: 'groupName'
+        })
       };
-
+      if (!$scope.groupInfo.group) {
+        $scope.groupInfo.group = '';
+      }
+      $scope.reminder = {
+        startDay: new Date(),
+        endDay: new Date(),
+        time: 'null'
+      };
+      $scope.notification = {
+        use: LocalStorage.get({
+          key: 'useNotification'
+        }),
+        time: null
+      };
+      if (!$scope.notification.use) {
+        $scope.notification.use = false;
+      }
       const toastOptions = {
         duration: 'long',
         position: 'center'
       };
-
       // https://github.com/rajeshwarpatlolla/ionic-datepicker
       $scope.datepickerObject = {
         titleLabel: 'Select Start Date', //Optional
@@ -50,7 +64,6 @@ angular.module('lukkari.controllers')
         dateFormat: 'dd-MM-yyyy', //Optional
         closeOnSelect: true, //Optional
       };
-
       $scope.datepickerObject2 = {
         titleLabel: 'Select End Date', //Optional
         todayLabel: 'Today', //Optional
@@ -82,14 +95,6 @@ angular.module('lukkari.controllers')
         closeOnSelect: true, //Optional
       };
 
-      $scope.reminder.time = 'null';
-      $scope.groupInfo.group = LocalStorage.get({
-        key: 'groupName'
-      });
-      if (!$scope.groupInfo.group) {
-        $scope.groupInfo.group = '';
-      }
-
       $scope.changeGroup = () => {
         LocalStorage.set({
           key: 'groupName',
@@ -106,24 +111,11 @@ angular.module('lukkari.controllers')
       };
 
       $scope.setNotification = () => {
-        $ionicPlatform.ready(() => {
-          if ($scope.notification.use) {
-            // schedule a new one
-            $cordovaLocalNotification.schedule({
-              id: 1,
-              title: 'Test Notification!',
-              text: 'LELELELELE',
-              data: {
-                customProperty: 'custom value'
-              }
-            }).then((result) => {
-              //
-            });
-            // save unique id to local storage so existing notifications
-            // can be removed
-          } else {
-            // remove existing one
-          }
+        console.log('Use: ' + $scope.notification.use);
+        console.log('timeOffset: ' + $scope.notification.time);
+        Notifications.useNotifications({
+          use: $scope.notification.use,
+          timeOffset: -$scope.notification.time
         });
       };
 

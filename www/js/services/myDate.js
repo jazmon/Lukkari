@@ -35,13 +35,35 @@ angular.module('lukkari.services')
 
     // returns a day that is offset from today
     function getDayFromToday(offsetDays) {
-      return getDayFromDay({currentDay: new Date(), offsetDays});
+      return getDayFromDay({
+        currentDay: new Date(),
+        offsetDays
+      });
+    }
+
+    function offsetDate({
+      date, minutes, hours, seconds
+    }) {
+      let d = date;
+      // console.log('date: ' + date);
+      if (hours) {
+        d.setHours(date.getHours() + hours);
+      }
+      if (minutes) {
+        d.setMinutes(date.getMinutes() + minutes);
+      }
+      if (seconds) {
+        d.setSeconds(date.getSeconds() + seconds);
+      }
+      // console.log('d: ' + d);
+      return d;
     }
 
     return {
       getMonday: getMonday,
       getDayFromToday: getDayFromToday,
       getLocaleDate: getLocaleDate,
-      getDayFromDay: getDayFromDay
+      getDayFromDay: getDayFromDay,
+      offsetDate: offsetDate
     };
   }]);
