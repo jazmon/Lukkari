@@ -448,34 +448,19 @@ angular.module('lukkari.controllers')
 .controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
 'use strict';
 
-angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion) {
+angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification) {
   $scope.groupInfo = {};
   $scope.reminder = {};
   $scope.reminder.startDay = new Date();
   $scope.reminder.endDay = new Date();
+  $scope.notification = {
+    use: false
+  };
 
   var toastOptions = {
     duration: 'long',
     position: 'center'
   };
-
-  function datePickerCallback(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.startDay = val;
-        $scope.datepickerObject.inputDate = val;
-      }
-  }
-
-  function datePickerCallback2(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.endDay = val;
-        $scope.datepickerObject2.inputDate = val;
-      }
-  }
 
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
@@ -499,7 +484,12 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.startDay = val;
+          $scope.datepickerObject.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
@@ -526,7 +516,12 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback2(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.endDay = val;
+          $scope.datepickerObject2.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
@@ -547,6 +542,28 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
       $timeout(function () {
         window.location.href = '#/app/today';
       }, 2000);
+    });
+  };
+
+  $scope.setNotification = function () {
+    $ionicPlatform.ready(function () {
+      if ($scope.notification.use) {
+        // schedule a new one
+        $cordovaLocalNotification.schedule({
+          id: 1,
+          title: 'Test Notification!',
+          text: 'LELELELELE',
+          data: {
+            customProperty: 'custom value'
+          }
+        }).then(function (result) {
+          //
+        });
+        // save unique id to local storage so existing notifications
+        // can be removed
+      } else {
+          // remove existing one
+        }
     });
   };
 

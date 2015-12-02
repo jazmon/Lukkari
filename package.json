@@ -36,6 +36,10 @@
     {
       "locator": "https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin.git",
       "id": "cordova-plugin-calendar"
+    },
+    {
+      "locator": "https://github.com/katzer/cordova-plugin-local-notifications.git",
+      "id": "de.appplant.cordova.plugin.local-notification"
     }
   ],
   "cordovaPlatforms": [
