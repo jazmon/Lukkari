@@ -3,9 +3,9 @@ angular.module('lukkari.controllers')
     '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar',
     'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion',
     '$cordovaLocalNotification',
-    function($scope, LocalStorage, $cordovaToast, $ionicPlatform,
-      $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk,
-      ionicMaterialMotion, $cordovaLocalNotification) {
+    function($scope, LocalStorage, $cordovaToast,
+      $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate,
+      ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification) {
       $scope.groupInfo = {};
       $scope.reminder = {};
       $scope.reminder.startDay = new Date();
@@ -39,7 +39,7 @@ angular.module('lukkari.controllers')
         modalFooterColor: 'bar-stable', //Optional
         from: new Date(), //Optional
         //to: new Date(2018, 8, 25), //Optional
-        callback: function(val) { //Mandatory
+        callback: (val) => { //Mandatory
           if (typeof(val) === 'undefined') {
             //console.log('No date selected');
           } else {
@@ -70,7 +70,7 @@ angular.module('lukkari.controllers')
         modalFooterColor: 'bar-positive', //Optional
         from: new Date(), //Optional
         //to: new Date(2018, 8, 25), //Optional
-        callback: function(val) { //Mandatory
+        callback: (val) => { //Mandatory
           if (typeof(val) === 'undefined') {
             //console.log('No date selected');
           } else {
@@ -90,25 +90,23 @@ angular.module('lukkari.controllers')
         $scope.groupInfo.group = '';
       }
 
-      $scope.changeGroup = function() {
+      $scope.changeGroup = () => {
         LocalStorage.set({
           key: 'groupName',
           value: $scope.groupInfo.group
         });
         // show toast that change was successful
-        $ionicPlatform.ready(function() {
+        $ionicPlatform.ready(() => {
           $cordovaToast.show('Group successfully changed!',
             toastOptions.duration,
             toastOptions.position);
           // change to today view after 2 seconds
-          $timeout(function() {
-            window.location.href = '#/app/today';
-          }, 2000);
+          $timeout(() => window.location.href = '#/app/today', 2000);
         });
       };
 
-      $scope.setNotification = function() {
-        $ionicPlatform.ready(function() {
+      $scope.setNotification = () => {
+        $ionicPlatform.ready(() => {
           if ($scope.notification.use) {
             // schedule a new one
             $cordovaLocalNotification.schedule({
@@ -118,7 +116,7 @@ angular.module('lukkari.controllers')
               data: {
                 customProperty: 'custom value'
               }
-            }).then(function(result) {
+            }).then((result) => {
               //
             });
             // save unique id to local storage so existing notifications
@@ -129,7 +127,7 @@ angular.module('lukkari.controllers')
         });
       };
 
-      $scope.addToCalendar = function() {
+      $scope.addToCalendar = () => {
         let appointments = [];
         let calOptions = {
           // works on iOS only
@@ -170,7 +168,7 @@ angular.module('lukkari.controllers')
             calendarName: calOptions.calendarName,
             calendarId: calOptions.calendarId
               //calOptions: calOptions
-          }).then(function(result) {}, function(err) {
+          }).then((result) => {}, (err) => {
             success = false;
           });
         }
@@ -178,10 +176,9 @@ angular.module('lukkari.controllers')
         Lessons.getDayToDay({
           startDate: $scope.reminder.startDay,
           endDate: $scope.reminder.endDay,
-          callback: function(response) {
-            $ionicPlatform.ready(function() {
-              response.lessons.forEach(createEvent);
-            });
+          callback: (response) => {
+            $ionicPlatform.ready(() => response.lessons.forEach(
+              createEvent));
           }
         });
         let msg = '';

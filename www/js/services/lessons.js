@@ -14,7 +14,7 @@ angular.module('lukkari.services')
         const {
           resources
         } = element;
-        resources.forEach(function(resource, index, array) {
+        resources.forEach((resource, index, array) => {
           switch (resource.type) {
             case 'realization':
               lesson.code = resource.code;
@@ -51,13 +51,13 @@ angular.module('lukkari.services')
             'content-type': 'application/json',
             'cache-control': 'no-cache'
           }
-        }).success(function(data, status, headers, config) {
+        }).success((data, status, headers, config) => {
           lessons = [];
           data.reservations.forEach(parseLesson);
           callback({
             success: false
           });
-        }).error(function(data, status, headers, config) {
+        }).error((data, status, headers, config) => {
           console.error('Failed to get lesson data!');
           callback({
             success: false
@@ -71,9 +71,7 @@ angular.module('lukkari.services')
         groupName, callback
       }) {
         savedGroupName = groupName.toUpperCase();
-        get(function(result) {
-          callback(result);
-        });
+        get((result) => callback(result));
       }
 
       // get day method that returns one day's lessons using date

@@ -20,7 +20,7 @@ angular.module('lukkari.controllers')
       if (!$scope.groupInfo.group) {
         $ionicModal.fromTemplateUrl('templates/newgroup.html', {
           scope: $scope
-        }).then(function(modal) {
+        }).then(modal => {
           $scope.modal = modal;
           // open modal to set group name
           $scope.modal.show();
@@ -28,7 +28,7 @@ angular.module('lukkari.controllers')
       }
 
       // closes the group name dialog
-      $scope.closeGroupName = function() {
+      $scope.closeGroupName = () => {
         $scope.modal.hide();
       };
 
@@ -41,7 +41,7 @@ angular.module('lukkari.controllers')
         // get all the appointments
         Lessons.getWeek({
           day: $scope.currentDate,
-          callback: function(response) {
+          callback: response => {
             $ionicLoading.hide();
             if (!response.success) {
               console.error('ERROR');
@@ -74,12 +74,10 @@ angular.module('lukkari.controllers')
         $ionicLoading.hide();
       }
 
-      $scope.$on('ngLastRepeat.myList', function(e) {
-        ionicMaterialMotion.ripple();
-      });
+      $scope.$on('ngLastRepeat.myList', e => ionicMaterialMotion.ripple());
 
       // sets the group name
-      $scope.setGroup = function() {
+      $scope.setGroup = () => {
         LocalStorage.set({
           key: 'groupName',
           value: $scope.groupInfo.group
@@ -88,13 +86,8 @@ angular.module('lukkari.controllers')
 
         Lessons.changeGroup({
           groupName: $scope.groupInfo.group,
-          callback: function(success) {
-            if (success) {
-              getAppointments();
-            } else {
-              console.error('failed to change group name');
-            }
-          }
+          callback: success => success ? getAppointments() : console.error(
+            'failed to change group name')
         });
       };
 
@@ -102,18 +95,13 @@ angular.module('lukkari.controllers')
       if ($scope.groupInfo.group !== undefined) {
         Lessons.changeGroup({
           groupName: $scope.groupInfo.group,
-          callback: function(success) {
-            if (success) {
-              getAppointments();
-            } else {
-              console.error('failed to change group name');
-            }
-          }
+          callback: success => success ? getAppointments() : console.error(
+            'failed to change group name')
         });
       }
 
       // moves a week forwards/backwards
-      $scope.moveWeek = function(direction) {
+      $scope.moveWeek = (direction) => {
         $scope.currentDate = MyDate.getDayFromDay({
           currentDay: $scope.currentDate,
           offsetDays: (7 * direction)

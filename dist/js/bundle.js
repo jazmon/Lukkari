@@ -212,7 +212,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 
     savedGroupName = groupName.toUpperCase();
     get(function (result) {
-      callback(result);
+      return callback(result);
     });
   }
 
@@ -310,12 +310,17 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 'use strict';
 
 angular.module('lukkari.services').factory('LocalStorage', [function () {
-  function get(name) {
-    return window.localStorage.getItem(name);
+  function get(_ref) {
+    var key = _ref.key;
+
+    return window.localStorage.getItem(key);
   }
 
-  function set(name, value) {
-    return window.localStorage.setItem(name, value);
+  function set(_ref2) {
+    var key = _ref2.key;
+    var value = _ref2.value;
+
+    return window.localStorage.setItem(key, value);
   }
 
   return {
@@ -339,15 +344,14 @@ angular.module('lukkari.services').factory('MyDate', [function () {
   function getLocaleDate(_ref) {
     var day = _ref.day;
     var years = _ref.years;
+    var weekday = _ref.weekday;
 
     var options = {
-      //weekday: 'long',
       month: 'numeric',
       day: 'numeric'
     };
-    if (typeof years === 'boolean' && years) {
-      options.year = 'numeric';
-    }
+    options.year = years ? 'numeric' : undefined;
+    options.weekday = weekday ? 'long' : undefined;
     return new Intl.DateTimeFormat('fi-FI', options).format(day);
   }
 
@@ -355,9 +359,8 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     var currentDay = _ref2.currentDay;
     var offsetDays = _ref2.offsetDays;
 
-    var day = currentDay.getTime();
     // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
+    var day = currentDay.getTime() + offsetDays * DAY_IN_MILLISECONDS;
     // create Date object and set it's time to the millisecs
     var date = new Date();
     date.setTime(day);
@@ -366,12 +369,7 @@ angular.module('lukkari.services').factory('MyDate', [function () {
 
   // returns a day that is offset from today
   function getDayFromToday(offsetDays) {
-    // today in millisecs since the beginning of time (UNIX time)
-    var day = Date.now();
-    // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
-    // create Date object and set it's time to the millisecs
-    return new Date(day);
+    return getDayFromDay({ currentDay: new Date(), offsetDays: offsetDays });
   }
 
   return {
@@ -379,6 +377,28 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
     getDayFromDay: getDayFromDay
+  };
+}]);
+'use strict';
+
+angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$ionicPlatform', '$cordovaLocalNotification', function (LocalStorage, $ionicPlatform, $cordovaLocalNotification) {
+  function useNotifications(_ref) {
+    var use = _ref.use;
+
+    // get notification ids from local storage
+    var notificationIds = LocalStorage.get({
+      key: 'notifications'
+    });
+
+    $ionicPlatform.ready(function () {
+      if (use) {
+        //
+      } else {}
+    });
+  }
+
+  return {
+    useNotifications: useNotifications
   };
 }]);
 'use strict';
@@ -396,7 +416,7 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
     link: function link(scope, element, attr) {
       if (scope.$last === true) {
         $timeout(function () {
-          scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
+          return scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
         });
       }
     }
@@ -528,19 +548,24 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
   //Optional
   $scope.reminder.time = 'null';
-  $scope.groupInfo.group = LocalStorage.get('groupName');
+  $scope.groupInfo.group = LocalStorage.get({
+    key: 'groupName'
+  });
   if (!$scope.groupInfo.group) {
     $scope.groupInfo.group = '';
   }
 
   $scope.changeGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     // show toast that change was successful
     $ionicPlatform.ready(function () {
       $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
       // change to today view after 2 seconds
       $timeout(function () {
-        window.location.href = '#/app/today';
+        return window.location.href = '#/app/today';
       }, 2000);
     });
   };
@@ -616,7 +641,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
       endDate: $scope.reminder.endDay,
       callback: function callback(response) {
         $ionicPlatform.ready(function () {
-          response.lessons.forEach(createEvent);
+          return response.lessons.forEach(createEvent);
         });
       }
     });
@@ -643,7 +668,9 @@ angular.module('lukkari.controllers')
 // controller for today view
 .controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDay = new Date();
 
@@ -659,7 +686,7 @@ angular.module('lukkari.controllers')
   });
 
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   function getAppointments() {
@@ -681,22 +708,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.blinds();
+    return ionicMaterialMotion.blinds();
   });
 
   // sets the group
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -706,11 +732,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }
@@ -734,7 +756,9 @@ angular.module('lukkari.controllers')
 // controller for weekly view
 .controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDate = MyDate.getMonday(new Date());
   $scope.endDate = MyDate.getDayFromDay({
@@ -800,22 +824,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.ripple();
+    return ionicMaterialMotion.ripple();
   });
 
   // sets the group name
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -825,11 +848,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }
