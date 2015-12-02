@@ -1,32 +1,31 @@
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var babel = require('gulp-babel');
-var jshint = require('gulp-jshint');
-var uglify = require('gulp-uglify');
-var bower = require('bower');
-var concat = require('gulp-concat');
-var sass = require('gulp-sass');
-var minifyCss = require('gulp-minify-css');
-var rename = require('gulp-rename');
-var sh = require('shelljs');
-var sourcemaps = require('gulp-sourcemaps');
-var clean = require('gulp-clean');
-var replace = require('replace');
-var replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
+import gulp from 'gulp';
+import gutil from 'gulp-util';
+import babel from 'gulp-babel';
+import uglify from 'gulp-uglify';
+import bower from 'bower';
+import concat from 'gulp-concat';
+import sass from 'gulp-sass';
+import minifyCss from 'gulp-minify-css';
+import rename from 'gulp-rename';
+import sh from 'shelljs';
+import sourcemaps from 'gulp-sourcemaps';
+import clean from 'gulp-clean';
+import replace from 'replace';
+import runSequence from 'run-sequence';
+import livereload from 'gulp-livereload';
+import connect from 'gulp-connect';
+import Proxy from './gulp-connect-proxy';
+
+const replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
   './www/combinedJs/bundle.min.js'
 ];
-//var gulpSequence = require('gulp-sequence');
-var runSequence = require('run-sequence');
-var livereload = require('gulp-livereload');
-var connect = require('gulp-connect');
-var Proxy = require('./gulp-connect-proxy');
 
-var bases = {
+const bases = {
   dist: 'dist/',
   app: 'www/'
 };
 // https://gist.github.com/justinmc/9149719
-var paths = {
+const paths = {
   sass: ['./scss/**/*.scss'],
   scripts: ['js/**/*.js'],
   libs: ['lib/**/*'],
@@ -46,7 +45,7 @@ var paths = {
 //gulp.task('default', ['release']);
 
 // generates css files from sass
-gulp.task('sass', function(done) {
+gulp.task('sass', (done) => {
   gulp.src(paths.sass)
     .pipe(sass())
     .on('error', sass.logError)
@@ -61,27 +60,21 @@ gulp.task('sass', function(done) {
   done();
 });
 
-gulp.task('serve', function() {
+gulp.task('serve', () => {
   return connect.server({
     root: bases.dist,
     port: 8100,
     middleware: function(connect, opt) {
       opt.route = '/api';
       opt.context = 'https://opendata.tamk.fi/r1';
-      var proxy = new Proxy(opt);
+      const proxy = new Proxy(opt);
       return [proxy];
     }
   });
 });
 
-// gulp.task('serve-lunch', function() {
-//   return connect.server({
-//     root: bases.dist
-//   });
-// });
-
 // builds js
-gulp.task('scripts', function() {
+gulp.task('scripts', () => {
   return gulp.src([bases.app + paths.app, bases.app + paths.services,
       bases.app + paths.directives, bases.app + paths.controllers
     ])
@@ -104,7 +97,7 @@ gulp.task('scripts', function() {
 });
 
 // watches for changes and then runs these
-gulp.task('watch', function() {
+gulp.task('watch', () => {
   livereload.listen();
   gulp.watch(paths.sass, ['sass-watch']);
   gulp.watch(bases.app + paths.scripts, ['scripts-watch']);
@@ -115,15 +108,12 @@ gulp.task('watch', function() {
   gulp.watch(bases.app + paths.styles, ['copy-styles']);
 });
 
-gulp.task('sass-watch', function(done) {
-  runSequence('sass', 'copy-styles', done);
-});
+gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
 
-gulp.task('scripts-watch', function(done) {
-  runSequence('scripts', 'copy-scripts', done);
-});
+gulp.task('scripts-watch', (done) => runSequence('scripts', 'copy-scripts',
+  done));
 
-gulp.task('clean', function(done) {
+gulp.task('clean', (done) => {
   gulp.src(bases.dist, {
       read: false
     })
@@ -131,7 +121,7 @@ gulp.task('clean', function(done) {
   done();
 });
 
-gulp.task('copy-html', function(done) {
+gulp.task('copy-html', (done) => {
   // copy html
   console.log('Copying html...');
   gulp.src(paths.html, {
@@ -142,7 +132,7 @@ gulp.task('copy-html', function(done) {
   done();
 });
 
-gulp.task('copy-templates', function(done) {
+gulp.task('copy-templates', (done) => {
   // copy templates
   console.log('Copying templates...');
   gulp.src(paths.templates, {
@@ -153,7 +143,7 @@ gulp.task('copy-templates', function(done) {
   done();
 });
 
-gulp.task('copy-styles', function(done) {
+gulp.task('copy-styles', (done) => {
   // copy styles
   console.log('Copying styles...');
   gulp.src(paths.styles, {
@@ -164,7 +154,7 @@ gulp.task('copy-styles', function(done) {
   done();
 });
 
-gulp.task('copy-images', function(done) {
+gulp.task('copy-images', (done) => {
   // copy images
   console.log('Copying images...');
   gulp.src(paths.images, {
@@ -175,7 +165,7 @@ gulp.task('copy-images', function(done) {
   done();
 });
 
-gulp.task('copy-libs', function(done) {
+gulp.task('copy-libs', (done) => {
   // copy lib scripts
   console.log('Copying libs...');
   gulp.src(paths.libs, {
@@ -186,7 +176,7 @@ gulp.task('copy-libs', function(done) {
   done();
 });
 
-gulp.task('copy-scripts', function(done) {
+gulp.task('copy-scripts', (done) => {
   // copy scripts
   console.log('Copying scripts...');
   gulp.src(paths.combinedScripts, {
@@ -197,7 +187,7 @@ gulp.task('copy-scripts', function(done) {
   done();
 });
 
-gulp.task('copy-extras', function(done) {
+gulp.task('copy-extras', (done) => {
   // copy extra files
   // console.log('copying extras...');
   // gulp.src(paths.extras, {cwd: bases.app})
@@ -206,22 +196,19 @@ gulp.task('copy-extras', function(done) {
 });
 
 // copies all
-gulp.task('copy', function(done) {
-  runSequence(['copy-html', 'copy-templates', 'copy-styles',
-    'copy-images', 'copy-libs', 'copy-scripts'
-  ], done);
-});
+gulp.task('copy', (done) => runSequence(['copy-html', 'copy-templates',
+  'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts'
+], done));
 
 // builds a release version
-gulp.task('release', function(done) {
-  runSequence('clean', ['sass', 'scripts'], 'copy', done);
-});
+gulp.task('release', (done) => runSequence('clean', ['sass', 'scripts'], 'copy',
+  done));
 
 // task for ionic serve to run.
 //gulp.task('live', runSequence('release'));
 
 // runs install bower
-gulp.task('install', ['git-check'], function() {
+gulp.task('install', ['git-check'], () => {
   return bower.commands.install()
     .on('log', function(data) {
       gutil.log('bower', gutil.colors.cyan(data.id), data.message);
@@ -229,7 +216,7 @@ gulp.task('install', ['git-check'], function() {
 });
 
 // checks if git is installed
-gulp.task('git-check', function(done) {
+gulp.task('git-check', (done) => {
   if (!sh.which('git')) {
     console.log(
       '  ' + gutil.colors.red('Git is not installed.'),
@@ -245,7 +232,7 @@ gulp.task('git-check', function(done) {
 });
 
 // adds a proxy for http://localhost hosting (browser)
-gulp.task('add-proxy', function() {
+gulp.task('add-proxy', () => {
   return replace({
     regex: 'https://opendata.tamk.fi/r1',
     replacement: 'http://localhost:8100/api',
@@ -256,7 +243,7 @@ gulp.task('add-proxy', function() {
 });
 
 // removes proxy for file:// hosting (device)
-gulp.task('remove-proxy', function() {
+gulp.task('remove-proxy', () => {
   return replace({
     regex: 'http://localhost:8100/api',
     replacement: 'https://opendata.tamk.fi/r1',
