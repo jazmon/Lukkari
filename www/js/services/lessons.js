@@ -71,7 +71,7 @@ angular.module('lukkari.services')
         groupName, callback
       }) {
         savedGroupName = groupName.toUpperCase();
-        get((result) => callback(result));
+        get(result => callback(result));
       }
 
       // get day method that returns one day's lessons using date
