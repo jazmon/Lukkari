@@ -5,22 +5,16 @@ angular.module('lukkari.services')
 
       function parseLunch(element, index, array) {
         let lunch = {
-          // get date
-          date: new Date(element.div[0].span.content[0]),
-          dishes: []
+          main: element.div[0].div.div.content
         };
-        // remove 3 from length to ignore evening foods
-        const length = element.div[1].div.length - 3;
-        for (let i = 0; i < length; i++) {
-          let dish = {};
-          dish.pricegroups = [];
-          dish.allergies = [];
-          dish.name = element.div[1].div[i].div.div.ul.li.div.div
-            .div[0].div.div.content;
-          if (!dish.name.includes('Ravintola avoinna')) {
-            lunch.dishes.push(dish);
-          }
+
+        if (element.div.length >= 2) {
+          lunch.side = element.div[1].div.div.content;
         }
+        if (element.div.length >= 3) {
+          lunch.allergy = element.div[2].div.div.content;
+        }
+
         lunches.push(lunch);
       }
 
@@ -33,11 +27,11 @@ angular.module('lukkari.services')
           $http({
             method: 'GET',
             url: [
-              'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2',
-              '0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali',
-              'sta%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F%2Fdiv%5B%40class',
-              '%3D%22view-grouping%22%5D\'&format=json&diagnostics=true&callba',
-              'ck='
+              'https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%',
+              '20html%20where%20url%3D%22http%3A%2F%2Fwww.campusravita.fi%2Fi',
+              'ntra_menu_today.php%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F',
+              '%2Fdiv%5B%40class%3D%22rivitys-intra%22%5D\'&format=json&diagn',
+              'ostics=true&callback='
             ].join('')
 
           }).then(
