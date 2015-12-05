@@ -415,14 +415,12 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
     var notificationIds = JSON.parse(LocalStorage.get({
       key: 'notifications'
     }));
-    console.log('notificationIds:' + notificationIds);
     $ionicPlatform.ready(function () {
       if (use) {
         // remove all
         $cordovaLocalNotification.cancelAll().then(function (result) {
           return console.log(result);
         });
-        console.log('Adding notifications');
         // add next week from now
         Lessons.getWeek({
           day: new Date(),
@@ -441,21 +439,6 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
                 key: 'notifications',
                 value: JSON.stringify(notificationIds)
               });
-              // console.log([lesson.room, ', ', lesson.startDay
-              //   .toLocaleTimeString('fi-FI', {
-              //     hour: 'numeric',
-              //     minute: 'numeric'
-              //   }), ' - ',
-              //   lesson.endDay.toLocaleTimeString(
-              //     'fi-FI', {
-              //       hour: 'numeric',
-              //       minute: 'numeric'
-              //     })
-              // ].join(''));
-              // console.log(MyDate.offsetDate({
-              //   date: lesson.startDay,
-              //   minutes: timeOffset
-              // }));
               $cordovaLocalNotification.schedule({
                 id: id,
                 title: lesson.name,
