@@ -2,15 +2,27 @@ angular.module('lukkari.controllers')
   // controller for today view
   .controller('TodayCtrl', ['$scope', '$ionicLoading',
     'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk',
-    'ionicMaterialMotion',
+    'ionicMaterialMotion', 'Notifications',
     function($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate,
-      Lessons, ionicMaterialInk, ionicMaterialMotion) {
+      Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
       $scope.groupInfo = {
         group: LocalStorage.get({
           key: 'groupName'
         })
       };
       $scope.currentDay = new Date();
+
+      const useNotifications = LocalStorage.get({
+        key: 'useNotification'
+      });
+      console.log(useNotifications);
+      if (useNotifications !== null && useNotifications == true) {
+        console.log('setting notifications');
+        Notifications.useNotifications({
+          use: $scope.notification.use,
+          timeOffset: -$scope.notification.time
+        });
+      }
 
       // Show new group modal when no group is set
       $ionicModal.fromTemplateUrl('templates/newgroup.html', {

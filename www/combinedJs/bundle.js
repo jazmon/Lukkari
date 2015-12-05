@@ -17,7 +17,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 }).constant('LunchEndPoint', {
   url: 'http://localhost:8100/lunch'
 })
@@ -418,7 +418,12 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
     console.log('notificationIds:' + notificationIds);
     $ionicPlatform.ready(function () {
       if (use) {
+        // remove all
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
         console.log('Adding notifications');
+        // add next week from now
         Lessons.getWeek({
           day: new Date(),
           callback: function callback(response) {
@@ -466,15 +471,23 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
                   minutes: timeOffset
                 })
               }).then(function (result) {
-                return console.log('GREAT SUCCESS: ' + result);
+                return console.log('SUCCESS: ' + result);
               });
             });
           }
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'true'
         });
       } else {
         console.log('Removing all notifications');
         $cordovaLocalNotification.cancelAll().then(function (result) {
           return console.log(result);
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'false'
         });
       }
     });
@@ -658,8 +671,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
   };
 
   $scope.setNotification = function () {
-    console.log('Use: ' + $scope.notification.use);
-    console.log('timeOffset: ' + $scope.notification.time);
     Notifications.useNotifications({
       use: $scope.notification.use,
       timeOffset: -$scope.notification.time
@@ -740,13 +751,25 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
   $scope.groupInfo = {
     group: LocalStorage.get({
       key: 'groupName'
     })
   };
   $scope.currentDay = new Date();
+
+  var useNotifications = LocalStorage.get({
+    key: 'useNotification'
+  });
+  console.log(useNotifications);
+  if (useNotifications !== null && useNotifications == true) {
+    console.log('setting notifications');
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
+    });
+  }
 
   // Show new group modal when no group is set
   $ionicModal.fromTemplateUrl('templates/newgroup.html', {

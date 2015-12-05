@@ -369,31 +369,127 @@ angular.module('lukkari.services').factory('MyDate', [function () {
 
   // returns a day that is offset from today
   function getDayFromToday(offsetDays) {
-    return getDayFromDay({ currentDay: new Date(), offsetDays: offsetDays });
+    return getDayFromDay({
+      currentDay: new Date(),
+      offsetDays: offsetDays
+    });
+  }
+
+  function offsetDate(_ref3) {
+    var date = _ref3.date;
+    var minutes = _ref3.minutes;
+    var hours = _ref3.hours;
+    var seconds = _ref3.seconds;
+
+    var d = date;
+    // console.log('date: ' + date);
+    if (hours) {
+      d.setHours(date.getHours() + hours);
+    }
+    if (minutes) {
+      d.setMinutes(date.getMinutes() + minutes);
+    }
+    if (seconds) {
+      d.setSeconds(date.getSeconds() + seconds);
+    }
+    // console.log('d: ' + d);
+    return d;
   }
 
   return {
     getMonday: getMonday,
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
-    getDayFromDay: getDayFromDay
+    getDayFromDay: getDayFromDay,
+    offsetDate: offsetDate
   };
 }]);
 'use strict';
 
-angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$ionicPlatform', '$cordovaLocalNotification', function (LocalStorage, $ionicPlatform, $cordovaLocalNotification) {
+angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$ionicPlatform', '$cordovaLocalNotification', 'Lessons', 'MyDate', function (LocalStorage, $ionicPlatform, $cordovaLocalNotification, Lessons, MyDate) {
   function useNotifications(_ref) {
     var use = _ref.use;
+    var timeOffset = _ref.timeOffset;
 
     // get notification ids from local storage
-    var notificationIds = LocalStorage.get({
+    var notificationIds = JSON.parse(LocalStorage.get({
       key: 'notifications'
-    });
-
+    }));
+    console.log('notificationIds:' + notificationIds);
     $ionicPlatform.ready(function () {
       if (use) {
-        //
-      } else {}
+        // remove all
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
+        console.log('Adding notifications');
+        // add next week from now
+        Lessons.getWeek({
+          day: new Date(),
+          callback: function callback(response) {
+            var lessons = response.weekLessons;
+            lessons.forEach(function (lesson) {
+              var id = undefined;
+              if (!notificationIds) {
+                id = 0;
+                notificationIds = [];
+              } else {
+                id = notificationIds[notificationIds.length - 1] + 1;
+              }
+              notificationIds.push(id);
+              LocalStorage.set({
+                key: 'notifications',
+                value: JSON.stringify(notificationIds)
+              });
+              // console.log([lesson.room, ', ', lesson.startDay
+              //   .toLocaleTimeString('fi-FI', {
+              //     hour: 'numeric',
+              //     minute: 'numeric'
+              //   }), ' - ',
+              //   lesson.endDay.toLocaleTimeString(
+              //     'fi-FI', {
+              //       hour: 'numeric',
+              //       minute: 'numeric'
+              //     })
+              // ].join(''));
+              // console.log(MyDate.offsetDate({
+              //   date: lesson.startDay,
+              //   minutes: timeOffset
+              // }));
+              $cordovaLocalNotification.schedule({
+                id: id,
+                title: lesson.name,
+                text: [lesson.room, ', ', lesson.startDay.toLocaleTimeString('fi-FI', {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                }), ' - ', lesson.endDay.toLocaleTimeString('fi-FI', {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                })].join(''),
+                at: MyDate.offsetDate({
+                  date: lesson.startDay,
+                  minutes: timeOffset
+                })
+              }).then(function (result) {
+                return console.log('SUCCESS: ' + result);
+              });
+            });
+          }
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'true'
+        });
+      } else {
+        console.log('Removing all notifications');
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'false'
+        });
+      }
     });
   }
 
@@ -468,20 +564,33 @@ angular.module('lukkari.controllers')
 .controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
 'use strict';
 
-angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification) {
-  $scope.groupInfo = {};
-  $scope.reminder = {};
-  $scope.reminder.startDay = new Date();
-  $scope.reminder.endDay = new Date();
-  $scope.notification = {
-    use: false
+angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', 'Notifications', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification, Notifications) {
+  $scope.groupInfo = {
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
-
+  if (!$scope.groupInfo.group) {
+    $scope.groupInfo.group = '';
+  }
+  $scope.reminder = {
+    startDay: new Date(),
+    endDay: new Date(),
+    time: 'null'
+  };
+  $scope.notification = {
+    use: LocalStorage.get({
+      key: 'useNotification'
+    }),
+    time: null
+  };
+  if (!$scope.notification.use) {
+    $scope.notification.use = false;
+  }
   var toastOptions = {
     duration: 'long',
     position: 'center'
   };
-
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
     titleLabel: 'Select Start Date', //Optional
@@ -513,7 +622,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
-
   //Optional
   $scope.datepickerObject2 = {
     titleLabel: 'Select End Date', //Optional
@@ -547,14 +655,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     closeOnSelect: true };
 
   //Optional
-  $scope.reminder.time = 'null';
-  $scope.groupInfo.group = LocalStorage.get({
-    key: 'groupName'
-  });
-  if (!$scope.groupInfo.group) {
-    $scope.groupInfo.group = '';
-  }
-
   $scope.changeGroup = function () {
     LocalStorage.set({
       key: 'groupName',
@@ -571,24 +671,9 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
   };
 
   $scope.setNotification = function () {
-    $ionicPlatform.ready(function () {
-      if ($scope.notification.use) {
-        // schedule a new one
-        $cordovaLocalNotification.schedule({
-          id: 1,
-          title: 'Test Notification!',
-          text: 'LELELELELE',
-          data: {
-            customProperty: 'custom value'
-          }
-        }).then(function (result) {
-          //
-        });
-        // save unique id to local storage so existing notifications
-        // can be removed
-      } else {
-          // remove existing one
-        }
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
     });
   };
 
@@ -666,13 +751,25 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
   $scope.groupInfo = {
     group: LocalStorage.get({
       key: 'groupName'
     })
   };
   $scope.currentDay = new Date();
+
+  var useNotifications = LocalStorage.get({
+    key: 'useNotification'
+  });
+  console.log(useNotifications);
+  if (useNotifications !== null && useNotifications == true) {
+    console.log('setting notifications');
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
+    });
+  }
 
   // Show new group modal when no group is set
   $ionicModal.fromTemplateUrl('templates/newgroup.html', {

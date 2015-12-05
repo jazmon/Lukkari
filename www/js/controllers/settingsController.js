@@ -111,8 +111,6 @@ angular.module('lukkari.controllers')
       };
 
       $scope.setNotification = () => {
-        console.log('Use: ' + $scope.notification.use);
-        console.log('timeOffset: ' + $scope.notification.time);
         Notifications.useNotifications({
           use: $scope.notification.use,
           timeOffset: -$scope.notification.time
