@@ -1,13 +1,11 @@
 angular.module('lukkari.directives')
-  .directive('ngLastRepeat', function($timeout) {
+  .directive('ngLastRepeat', ($timeout) => {
     return {
       restrict: 'A',
-      link: function(scope, element, attr) {
+      link: (scope, element, attr) => {
         if (scope.$last === true) {
-          $timeout(function() {
-            scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' +
-              attr.ngLastRepeat : ''));
-          });
+          $timeout(() => scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ?
+            '.' + attr.ngLastRepeat : '')));
         }
       }
     };

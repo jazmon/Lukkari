@@ -1,8 +1,9 @@
 #!/bin/bash
 gulp add-proxy
-echo proxy added
+echo Proxy added.
 gulp clean
-echo folder cleaned
+echo Folder cleaned.
 gulp release
-echo release built
-ionic serve
+echo Release files built.
+gulp serve
+echo You may also want to run 'gulp watch' if you want to livereload.

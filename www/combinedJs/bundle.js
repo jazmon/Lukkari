@@ -212,7 +212,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 
     savedGroupName = groupName.toUpperCase();
     get(function (result) {
-      callback(result);
+      return callback(result);
     });
   }
 
@@ -310,12 +310,17 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 'use strict';
 
 angular.module('lukkari.services').factory('LocalStorage', [function () {
-  function get(name) {
-    return window.localStorage.getItem(name);
+  function get(_ref) {
+    var key = _ref.key;
+
+    return window.localStorage.getItem(key);
   }
 
-  function set(name, value) {
-    return window.localStorage.setItem(name, value);
+  function set(_ref2) {
+    var key = _ref2.key;
+    var value = _ref2.value;
+
+    return window.localStorage.setItem(key, value);
   }
 
   return {
@@ -339,15 +344,14 @@ angular.module('lukkari.services').factory('MyDate', [function () {
   function getLocaleDate(_ref) {
     var day = _ref.day;
     var years = _ref.years;
+    var weekday = _ref.weekday;
 
     var options = {
-      //weekday: 'long',
       month: 'numeric',
       day: 'numeric'
     };
-    if (typeof years === 'boolean' && years) {
-      options.year = 'numeric';
-    }
+    options.year = years ? 'numeric' : undefined;
+    options.weekday = weekday ? 'long' : undefined;
     return new Intl.DateTimeFormat('fi-FI', options).format(day);
   }
 
@@ -355,9 +359,8 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     var currentDay = _ref2.currentDay;
     var offsetDays = _ref2.offsetDays;
 
-    var day = currentDay.getTime();
     // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
+    var day = currentDay.getTime() + offsetDays * DAY_IN_MILLISECONDS;
     // create Date object and set it's time to the millisecs
     var date = new Date();
     date.setTime(day);
@@ -366,19 +369,115 @@ angular.module('lukkari.services').factory('MyDate', [function () {
 
   // returns a day that is offset from today
   function getDayFromToday(offsetDays) {
-    // today in millisecs since the beginning of time (UNIX time)
-    var day = Date.now();
-    // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
-    // create Date object and set it's time to the millisecs
-    return new Date(day);
+    return getDayFromDay({
+      currentDay: new Date(),
+      offsetDays: offsetDays
+    });
+  }
+
+  function offsetDate(_ref3) {
+    var date = _ref3.date;
+    var minutes = _ref3.minutes;
+    var hours = _ref3.hours;
+    var seconds = _ref3.seconds;
+
+    var d = date;
+    // console.log('date: ' + date);
+    if (hours) {
+      d.setHours(date.getHours() + hours);
+    }
+    if (minutes) {
+      d.setMinutes(date.getMinutes() + minutes);
+    }
+    if (seconds) {
+      d.setSeconds(date.getSeconds() + seconds);
+    }
+    // console.log('d: ' + d);
+    return d;
   }
 
   return {
     getMonday: getMonday,
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
-    getDayFromDay: getDayFromDay
+    getDayFromDay: getDayFromDay,
+    offsetDate: offsetDate
+  };
+}]);
+'use strict';
+
+angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$ionicPlatform', '$cordovaLocalNotification', 'Lessons', 'MyDate', function (LocalStorage, $ionicPlatform, $cordovaLocalNotification, Lessons, MyDate) {
+  function useNotifications(_ref) {
+    var use = _ref.use;
+    var timeOffset = _ref.timeOffset;
+
+    // get notification ids from local storage
+    var notificationIds = JSON.parse(LocalStorage.get({
+      key: 'notifications'
+    }));
+    $ionicPlatform.ready(function () {
+      if (use) {
+        // remove all
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
+        // add next week from now
+        Lessons.getWeek({
+          day: new Date(),
+          callback: function callback(response) {
+            var lessons = response.weekLessons;
+            lessons.forEach(function (lesson) {
+              var id = undefined;
+              if (!notificationIds) {
+                id = 0;
+                notificationIds = [];
+              } else {
+                id = notificationIds[notificationIds.length - 1] + 1;
+              }
+              notificationIds.push(id);
+              LocalStorage.set({
+                key: 'notifications',
+                value: JSON.stringify(notificationIds)
+              });
+              $cordovaLocalNotification.schedule({
+                id: id,
+                title: lesson.name,
+                text: [lesson.room, ', ', lesson.startDay.toLocaleTimeString('fi-FI', {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                }), ' - ', lesson.endDay.toLocaleTimeString('fi-FI', {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                })].join(''),
+                at: MyDate.offsetDate({
+                  date: lesson.startDay,
+                  minutes: timeOffset
+                })
+              }).then(function (result) {
+                return console.log('SUCCESS: ' + result);
+              });
+            });
+          }
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'true'
+        });
+      } else {
+        console.log('Removing all notifications');
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'false'
+        });
+      }
+    });
+  }
+
+  return {
+    useNotifications: useNotifications
   };
 }]);
 'use strict';
@@ -396,7 +495,7 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
     link: function link(scope, element, attr) {
       if (scope.$last === true) {
         $timeout(function () {
-          scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
+          return scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
         });
       }
     }
@@ -448,35 +547,33 @@ angular.module('lukkari.controllers')
 .controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
 'use strict';
 
-angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion) {
-  $scope.groupInfo = {};
-  $scope.reminder = {};
-  $scope.reminder.startDay = new Date();
-  $scope.reminder.endDay = new Date();
-
+angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', 'Notifications', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification, Notifications) {
+  $scope.groupInfo = {
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
+  };
+  if (!$scope.groupInfo.group) {
+    $scope.groupInfo.group = '';
+  }
+  $scope.reminder = {
+    startDay: new Date(),
+    endDay: new Date(),
+    time: 'null'
+  };
+  $scope.notification = {
+    use: LocalStorage.get({
+      key: 'useNotification'
+    }),
+    time: null
+  };
+  if (!$scope.notification.use) {
+    $scope.notification.use = false;
+  }
   var toastOptions = {
     duration: 'long',
     position: 'center'
   };
-
-  function datePickerCallback(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.startDay = val;
-        $scope.datepickerObject.inputDate = val;
-      }
-  }
-
-  function datePickerCallback2(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.endDay = val;
-        $scope.datepickerObject2.inputDate = val;
-      }
-  }
-
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
     titleLabel: 'Select Start Date', //Optional
@@ -499,11 +596,15 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.startDay = val;
+          $scope.datepickerObject.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
-
   //Optional
   $scope.datepickerObject2 = {
     titleLabel: 'Select End Date', //Optional
@@ -526,27 +627,36 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback2(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.endDay = val;
+          $scope.datepickerObject2.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
 
   //Optional
-  $scope.reminder.time = 'null';
-  $scope.groupInfo.group = LocalStorage.get('groupName');
-  if (!$scope.groupInfo.group) {
-    $scope.groupInfo.group = '';
-  }
-
   $scope.changeGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     // show toast that change was successful
     $ionicPlatform.ready(function () {
       $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
       // change to today view after 2 seconds
       $timeout(function () {
-        window.location.href = '#/app/today';
+        return window.location.href = '#/app/today';
       }, 2000);
+    });
+  };
+
+  $scope.setNotification = function () {
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
     });
   };
 
@@ -599,7 +709,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
       endDate: $scope.reminder.endDay,
       callback: function callback(response) {
         $ionicPlatform.ready(function () {
-          response.lessons.forEach(createEvent);
+          return response.lessons.forEach(createEvent);
         });
       }
     });
@@ -624,11 +734,25 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDay = new Date();
+
+  var useNotifications = LocalStorage.get({
+    key: 'useNotification'
+  });
+  console.log(useNotifications);
+  if (useNotifications !== null && useNotifications == true) {
+    console.log('setting notifications');
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
+    });
+  }
 
   // Show new group modal when no group is set
   $ionicModal.fromTemplateUrl('templates/newgroup.html', {
@@ -642,7 +766,7 @@ angular.module('lukkari.controllers')
   });
 
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   function getAppointments() {
@@ -664,22 +788,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.blinds();
+    return ionicMaterialMotion.blinds();
   });
 
   // sets the group
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -689,11 +812,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }
@@ -717,7 +836,9 @@ angular.module('lukkari.controllers')
 // controller for weekly view
 .controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDate = MyDate.getMonday(new Date());
   $scope.endDate = MyDate.getDayFromDay({
@@ -783,22 +904,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.ripple();
+    return ionicMaterialMotion.ripple();
   });
 
   // sets the group name
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -808,11 +928,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }

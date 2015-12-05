@@ -11,25 +11,22 @@ angular.module('lukkari.services')
     }
 
     function getLocaleDate({
-      day, years
+      day, years, weekday
     }) {
       const options = {
-        //weekday: 'long',
         month: 'numeric',
         day: 'numeric'
       };
-      if (typeof years === 'boolean' && years) {
-        options.year = 'numeric';
-      }
+      options.year = years ? 'numeric' : undefined;
+      options.weekday = weekday ? 'long' : undefined;
       return new Intl.DateTimeFormat('fi-FI', options).format(day);
     }
 
     function getDayFromDay({
       currentDay, offsetDays
     }) {
-      let day = currentDay.getTime();
       // add desired amount of days to the millisecs
-      day += offsetDays * DAY_IN_MILLISECONDS;
+      const day = currentDay.getTime() + (offsetDays * DAY_IN_MILLISECONDS);
       // create Date object and set it's time to the millisecs
       let date = new Date();
       date.setTime(day);
@@ -38,18 +35,35 @@ angular.module('lukkari.services')
 
     // returns a day that is offset from today
     function getDayFromToday(offsetDays) {
-      // today in millisecs since the beginning of time (UNIX time)
-      let day = Date.now();
-      // add desired amount of days to the millisecs
-      day += offsetDays * DAY_IN_MILLISECONDS;
-      // create Date object and set it's time to the millisecs
-      return new Date(day);
+      return getDayFromDay({
+        currentDay: new Date(),
+        offsetDays
+      });
+    }
+
+    function offsetDate({
+      date, minutes, hours, seconds
+    }) {
+      let d = date;
+      // console.log('date: ' + date);
+      if (hours) {
+        d.setHours(date.getHours() + hours);
+      }
+      if (minutes) {
+        d.setMinutes(date.getMinutes() + minutes);
+      }
+      if (seconds) {
+        d.setSeconds(date.getSeconds() + seconds);
+      }
+      // console.log('d: ' + d);
+      return d;
     }
 
     return {
       getMonday: getMonday,
       getDayFromToday: getDayFromToday,
       getLocaleDate: getLocaleDate,
-      getDayFromDay: getDayFromDay
+      getDayFromDay: getDayFromDay,
+      offsetDate: offsetDate
     };
   }]);

@@ -1,11 +1,11 @@
 angular.module('lukkari.services')
   .factory('LocalStorage', [function() {
-    function get(name) {
-      return window.localStorage.getItem(name);
+    function get({key}) {
+      return window.localStorage.getItem(key);
     }
 
-    function set(name, value) {
-      return window.localStorage.setItem(name, value);
+    function set({key, value}) {
+      return window.localStorage.setItem(key, value);
     }
 
     return {

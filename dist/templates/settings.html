@@ -1,8 +1,11 @@
 <ion-view view-title="Settings">
   <ion-content>
     <ion-list class="animate-ripple">
+      <!-- Group Change -->
       <ion-item>
-        <h2 class="icon-left ion-android-create calm settings-title">&nbsp;&nbsp;Change your group</h2>
+        <h2 class="icon-left ion-android-create calm settings-title">
+          &nbsp;&nbsp;Change your group
+        </h2>
         <form ng-submit="changeGroup()">
           <div class="list">
             <label class="item item-input item-floating-label">
@@ -15,7 +18,37 @@
       </ion-item>
       <ion-item class="item-divider"></ion-item>
       <ion-item>
-        <h2 class="settings-title calm icon-left ion-android-calendar">&nbsp;&nbsp;Add to calendar</h2>
+        <h2 class="icon-left ion-android-notifications calm settings-title">
+          &nbsp;&nbsp;Notification settings
+        </h2>
+        <form ng-submit="setNotification()">
+          <div class="list">
+            <label class="item item-radio">
+              <input type="radio" name="notification" ng-model="notification.use" value="true">
+              <div class="item-content"> Use notifications </div><i class="radio-icon ion-checkmark"></i>
+            </label>
+            <label class="item item-radio">
+              <input type="radio" name="notification" ng-model="notification.use" value="false">
+              <div class="item-content"> Don't use notifications </div><i class="radio-icon ion-checkmark"></i>
+            </label>
+            <label class="item item-input item-select" ng-show="notification.use === 'true'">
+              <div class="input-label">Notification time</div>
+              <select ng-model="notification.time">
+                <option value="null">Select value</option>
+                <option value="5">5 minutes</option>
+                <option value="10" selected>10 minutes</option>
+                <option value="15">15 minutes</option>
+              </select>
+            </label>
+            <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>
+          </div>
+        </form>
+      </ion-item>
+      <ion-item class="item-divider"></ion-item>
+      <ion-item>
+        <h2 class="settings-title calm icon-left ion-android-calendar">
+          &nbsp;&nbsp;Add to calendar
+        </h2>
         <ion-list>
           <ion-item class="show-overflow"><i class="icon ion-android-alert assertive"></i> If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!</ion-item>
           <ion-item class="show-overflow">Also currently this adds a reminder to when the event starts (at 0 mins)</ion-item>

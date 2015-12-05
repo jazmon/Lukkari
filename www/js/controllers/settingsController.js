@@ -2,37 +2,37 @@ angular.module('lukkari.controllers')
   .controller('SettingsCtrl', ['$scope', 'LocalStorage',
     '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar',
     'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion',
-    function($scope, LocalStorage, $cordovaToast, $ionicPlatform,
-      $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk,
-      ionicMaterialMotion) {
-      $scope.groupInfo = {};
-      $scope.reminder = {};
-      $scope.reminder.startDay = new Date();
-      $scope.reminder.endDay = new Date();
-
+    '$cordovaLocalNotification', 'Notifications',
+    function($scope, LocalStorage, $cordovaToast,
+      $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate,
+      ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification,
+      Notifications) {
+      $scope.groupInfo = {
+        group: LocalStorage.get({
+          key: 'groupName'
+        })
+      };
+      if (!$scope.groupInfo.group) {
+        $scope.groupInfo.group = '';
+      }
+      $scope.reminder = {
+        startDay: new Date(),
+        endDay: new Date(),
+        time: 'null'
+      };
+      $scope.notification = {
+        use: LocalStorage.get({
+          key: 'useNotification'
+        }),
+        time: null
+      };
+      if (!$scope.notification.use) {
+        $scope.notification.use = false;
+      }
       const toastOptions = {
         duration: 'long',
         position: 'center'
       };
-
-      function datePickerCallback(val) {
-        if (typeof(val) === 'undefined') {
-          //console.log('No date selected');
-        } else {
-          $scope.reminder.startDay = val;
-          $scope.datepickerObject.inputDate = val;
-        }
-      }
-
-      function datePickerCallback2(val) {
-        if (typeof(val) === 'undefined') {
-          //console.log('No date selected');
-        } else {
-          $scope.reminder.endDay = val;
-          $scope.datepickerObject2.inputDate = val;
-        }
-      }
-
       // https://github.com/rajeshwarpatlolla/ionic-datepicker
       $scope.datepickerObject = {
         titleLabel: 'Select Start Date', //Optional
@@ -53,13 +53,17 @@ angular.module('lukkari.controllers')
         modalFooterColor: 'bar-stable', //Optional
         from: new Date(), //Optional
         //to: new Date(2018, 8, 25), //Optional
-        callback: function(val) { //Mandatory
-          datePickerCallback(val);
+        callback: (val) => { //Mandatory
+          if (typeof(val) === 'undefined') {
+            //console.log('No date selected');
+          } else {
+            $scope.reminder.startDay = val;
+            $scope.datepickerObject.inputDate = val;
+          }
         },
         dateFormat: 'dd-MM-yyyy', //Optional
         closeOnSelect: true, //Optional
       };
-
       $scope.datepickerObject2 = {
         titleLabel: 'Select End Date', //Optional
         todayLabel: 'Today', //Optional
@@ -79,34 +83,41 @@ angular.module('lukkari.controllers')
         modalFooterColor: 'bar-positive', //Optional
         from: new Date(), //Optional
         //to: new Date(2018, 8, 25), //Optional
-        callback: function(val) { //Mandatory
-          datePickerCallback2(val);
+        callback: (val) => { //Mandatory
+          if (typeof(val) === 'undefined') {
+            //console.log('No date selected');
+          } else {
+            $scope.reminder.endDay = val;
+            $scope.datepickerObject2.inputDate = val;
+          }
         },
         dateFormat: 'dd-MM-yyyy', //Optional
         closeOnSelect: true, //Optional
       };
 
-      $scope.reminder.time = 'null';
-      $scope.groupInfo.group = LocalStorage.get('groupName');
-      if (!$scope.groupInfo.group) {
-        $scope.groupInfo.group = '';
-      }
-
-      $scope.changeGroup = function() {
-        LocalStorage.set('groupName', $scope.groupInfo.group);
+      $scope.changeGroup = () => {
+        LocalStorage.set({
+          key: 'groupName',
+          value: $scope.groupInfo.group
+        });
         // show toast that change was successful
-        $ionicPlatform.ready(function() {
+        $ionicPlatform.ready(() => {
           $cordovaToast.show('Group successfully changed!',
             toastOptions.duration,
             toastOptions.position);
           // change to today view after 2 seconds
-          $timeout(function() {
-            window.location.href = '#/app/today';
-          }, 2000);
+          $timeout(() => window.location.href = '#/app/today', 2000);
         });
       };
 
-      $scope.addToCalendar = function() {
+      $scope.setNotification = () => {
+        Notifications.useNotifications({
+          use: $scope.notification.use,
+          timeOffset: -$scope.notification.time
+        });
+      };
+
+      $scope.addToCalendar = () => {
         let appointments = [];
         let calOptions = {
           // works on iOS only
@@ -147,7 +158,7 @@ angular.module('lukkari.controllers')
             calendarName: calOptions.calendarName,
             calendarId: calOptions.calendarId
               //calOptions: calOptions
-          }).then(function(result) {}, function(err) {
+          }).then((result) => {}, (err) => {
             success = false;
           });
         }
@@ -155,10 +166,9 @@ angular.module('lukkari.controllers')
         Lessons.getDayToDay({
           startDate: $scope.reminder.startDay,
           endDate: $scope.reminder.endDay,
-          callback: function(response) {
-            $ionicPlatform.ready(function() {
-              response.lessons.forEach(createEvent);
-            });
+          callback: (response) => {
+            $ionicPlatform.ready(() => response.lessons.forEach(
+              createEvent));
           }
         });
         let msg = '';
