@@ -2,16 +2,16 @@
 
 angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
   $i18nextProvider.options = {
-    lng: 'dev', // If not given, i18n will detect the browser language.
+    //lng: 'dev', // If not given, i18n will detect the browser language.
     useCookie: false,
     useLocalStorage: true,
-    fallbackLng: 'dev',
+    fallbackLng: 'en',
     resGetPath: './locales/__lng__/__ns__.json',
-    defaultLoadingValue: '',
-    localStorageExpirationTime: 1000 // NOTE remove for production
+    defaultLoadingValue: ''
   };
 }]);
 
+//localStorageExpirationTime: 1000 // NOTE remove for production
 angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -29,7 +29,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 }).constant('LunchEndPoint', {
   url: 'http://localhost:8100/lunch'
 }).constant('ApiKey', {
@@ -121,15 +121,20 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
   var lunches = [];
 
   function parseLunch(element, index, array) {
-    var lunch = {
-      main: element.div[0].div.div.content
-    };
+    console.log(element);
+    var lunch = {};
 
-    if (element.div.length >= 2) {
-      lunch.side = element.div[1].div.div.content;
-    }
-    if (element.div.length >= 3) {
-      lunch.allergy = element.div[2].div.div.content;
+    try {
+      lunch.main = element.div[0].div.div.content;
+      if (element.div.length >= 2) {
+        lunch.side = element.div[1].div.div.content;
+      }
+      if (element.div.length >= 3) {
+        lunch.allergy = element.div[2].div.div.content;
+      }
+    } catch (e) {
+      // if only one field is specified, eg. aamupuuro
+      lunch.main = element.div.div.div.content;
     }
 
     lunches.push(lunch);
@@ -892,13 +897,15 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', 'Adverts', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications, Adverts) {
   $scope.groupInfo = {
     group: LocalStorage.get({
       key: 'groupName'
     })
   };
   $scope.currentDay = new Date();
+
+  //Adverts.getAd();
 
   var useNotifications = LocalStorage.get({
     key: 'useNotification'

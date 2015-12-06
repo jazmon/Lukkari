@@ -1,13 +1,13 @@
 angular.module('jm.i18next').config(['$i18nextProvider',
   function($i18nextProvider) {
     $i18nextProvider.options = {
-      lng: 'dev', // If not given, i18n will detect the browser language.
+      //lng: 'dev', // If not given, i18n will detect the browser language.
       useCookie: false,
       useLocalStorage: true,
-      fallbackLng: 'dev',
+      fallbackLng: 'en',
       resGetPath: './locales/__lng__/__ns__.json',
       defaultLoadingValue: '',
-      localStorageExpirationTime: 1000 // NOTE remove for production
+      //localStorageExpirationTime: 1000 // NOTE remove for production
     };
   }
 ]);
@@ -36,7 +36,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 })
 
 .constant('LunchEndPoint', {

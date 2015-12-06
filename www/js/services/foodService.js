@@ -4,15 +4,20 @@ angular.module('lukkari.services')
       let lunches = [];
 
       function parseLunch(element, index, array) {
-        let lunch = {
-          main: element.div[0].div.div.content
-        };
+        console.log(element);
+        let lunch = {};
 
-        if (element.div.length >= 2) {
-          lunch.side = element.div[1].div.div.content;
-        }
-        if (element.div.length >= 3) {
-          lunch.allergy = element.div[2].div.div.content;
+        try {
+          lunch.main = element.div[0].div.div.content;
+          if (element.div.length >= 2) {
+            lunch.side = element.div[1].div.div.content;
+          }
+          if (element.div.length >= 3) {
+            lunch.allergy = element.div[2].div.div.content;
+          }
+        } catch (e) {
+          // if only one field is specified, eg. aamupuuro
+          lunch.main = element.div.div.div.content;
         }
 
         lunches.push(lunch);
