@@ -1,4 +1,4 @@
-<ion-view view-title="Search">
+<ion-view view-title="{{'view_titles.search' | i18next}}">
   <ion-content class="light-bg">
     <div class="animate-blinds" ng-repeat="realization in realizations" ng-last-repeat="myList" ng-if="realizations.length > 0">
       <ion-list class="card calm-bg light">
@@ -14,16 +14,16 @@
       </ion-list>
     </div>
     <div ng-if="realizations.length === 0">
-      <div class="card calm-bg light">
+      <div class="card calm-bg light padding">
         <div class="item item-text-wrap">
-          Search didn't return any realizations!
+          {{'search.no_results' | i18next}}
         </div>
       </div>
     </div>
     <div ng-if="realizations === undefined">
-      <div class="card stable-bg dark">
+      <div class="card stable-bg dark padding">
         <div class="item item-text-wrap">
-          Please search for realizations!
+          {{'search.please_search' | i18next}}
         </div>
       </div>
     </div>

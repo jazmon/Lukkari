@@ -1,0 +1,86 @@
+{
+  "view_titles": {
+    "search": "Haku",
+    "timetable": "Lukujärjestys",
+    "today": "Tänään",
+    "week": "Viikko",
+    "settings": "Asetukset",
+    "lunch": "Lounas tänään"
+  },
+  "lesson": {
+    "course": "Kurssi",
+    "groups": "Ryhmät",
+    "group": "Ryhmä",
+    "location": "Sijainti"
+  },
+  "lunch": {
+    "no_lunch": "Ei lounasta tarjolla tänään!"
+  },
+  "menu": {
+    "menu": "Valikko",
+    "today": "Tänään",
+    "week": "Viikko",
+    "lunch": "Lounas lista",
+    "search": "Haku",
+    "settings": "Asetukset"
+  },
+  "newgroup": {
+    "enter_group_name": "Syötä ryhmäsi nimi",
+    "close": "Sulje",
+    "group_name": "Ryhmän nimi",
+    "submit": "Lähetä"
+  },
+  "realization": {
+    "general_info": "Yleistä infoa",
+    "course_code": "Tunnus",
+    "name": "Nimi",
+    "duration": "Kesto",
+    "student_group": "Opiskelijaryhmä",
+    "student_groups": "Opiskelijaryhmät",
+    "enrollment_period": "Ilmoittautuminen",
+    "details": "Lisätietoja",
+    "teaching_language": "Opetuskieli",
+    "credits": "Opintopisteitä",
+    "virtual_proportion": "Virtuaali osuus",
+    "teaching_location": "Opetuksen sijainti",
+    "degree_programmes": "Koulutusohjelmat",
+    "content": "Sisältö",
+    "objective": "Tavoite",
+    "no_info": "Tietoa ei saatavilla"
+  },
+  "search": {
+    "no_results": "Haku ei palauttanut yhtään opintojaksoa!",
+    "please_search": "Käytä hakua nähdäksesi opintojaksoja"
+  },
+  "search-modal": {
+    "title": "Haku",
+    "close": "Sulje",
+    "realization_name": "Opintojakson nimi",
+    "realization_code": "Opintojakson tunnus",
+    "student_group": "Opiskelijaryhmä",
+    "submit": "Lähetä"
+  },
+  "settings": {
+    "change_group": "Vaihda ryhmääsi",
+    "group_name": "Opiskelijaryhmän nimi",
+    "notification_settings": "Muistutusasetukset",
+    "use_notifications": "Käytä muistutuksia",
+    "dont_use_notifications": "Älä käytä muistutuksia",
+    "notification_time": "Muistutus aika",
+    "select_value": "Valitse",
+    "minutes": "minuuttia",
+    "add_to_calendar": "Lisää kalenteriin",
+    "google_calendar_notification": "Jos käytät Google kalenteria, sinulla voi olla asetuksissa säädettynä automaattinen muistutus! Tarkista asetuksesi, ellet halua tämän lisäksi asetuksesi mukaista muistutusta.",
+    "bug_info": "Tällä hetkellä muistutus lisää pakosta huomautuksen tunnin alkamiskohdalle.",
+    "select_start_date": "Valitse alku",
+    "select_end_date": "Valitse loppu",
+    "set_reminder": "Aseta muistutus",
+    "no_reminder": "Ei muistutusta"
+  },
+  "today": {
+    "no_lessons": "Ei oppitunteja tänään"
+  },
+  "week": {
+    "no_lessons": "Ei oppitunteja"
+  }
+}

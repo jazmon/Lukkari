@@ -1,6 +1,18 @@
 'use strict';
 
-angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json']).run(['$ionicPlatform', function ($ionicPlatform) {
+angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
+  $i18nextProvider.options = {
+    lng: 'dev', // If not given, i18n will detect the browser language.
+    useCookie: false,
+    useLocalStorage: true,
+    fallbackLng: 'dev',
+    resGetPath: '../locales/__lng__/__ns__.json',
+    defaultLoadingValue: '',
+    localStorageExpirationTime: 1000 // NOTE remove for production
+  };
+}]);
+
+angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -134,9 +146,14 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
         url: ['https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%', '20html%20where%20url%3D%22http%3A%2F%2Fwww.campusravita.fi%2Fi', 'ntra_menu_today.php%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F', '%2Fdiv%5B%40class%3D%22rivitys-intra%22%5D\'&format=json&diagn', 'ostics=true&callback='].join('')
 
       }).then(function successCallback(response) {
-        var data = response.data.query.results.div;
-        data.forEach(parseLunch);
-        callback(lunches);
+        // if no lunches (eg. weekend)
+        if (response.data.query.results === null) {
+          callback(lunches);
+        } else {
+          var data = response.data.query.results.div;
+          data.forEach(parseLunch);
+          callback(lunches);
+        }
       }, function errorCallback(response) {});
     }
   }
@@ -183,6 +200,10 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       studentGroup: [savedGroupName]
     };
     var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', ApiKey.key].join('');
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
     $http({
       method: 'POST',
       url: url,
@@ -190,7 +211,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       withCredentials: true,
       headers: {
         'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-        'accept-language': 'fi',
+        'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -514,8 +535,10 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
     if (codes !== undefined) {
       data.codes = codes;
     }
-
-    console.log(data);
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
     $http({
       method: 'POST',
       url: url,
@@ -523,7 +546,7 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
       withCredentials: true,
       headers: {
         'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-        'accept-language': 'fi',
+        'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -541,7 +564,7 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
 
 angular.module('lukkari.directives').directive('date', function () {
   return {
-    template: ['{{day.date.toLocaleDateString("fi-FI",', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
 });
 'use strict';
@@ -562,7 +585,7 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
 
 angular.module('lukkari.directives').directive('timeRange', function () {
   return {
-    template: ['{{lesson.startDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}'].join('')
+    template: ['{{lesson.startDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}'].join('')
   };
 });
 'use strict';
@@ -707,10 +730,11 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     duration: 'long',
     position: 'center'
   };
+  //console.log(i18n.t('lesson.course'));
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
-    titleLabel: 'Select Start Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_start_date'), //Optional
+    todayLabel: i18n.t('date_picker.today'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -740,8 +764,8 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     closeOnSelect: true };
   //Optional
   $scope.datepickerObject2 = {
-    titleLabel: 'Select End Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_end_date'), //Optional
+    todayLabel: i18n.t('date_picker.select_start_date'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -778,7 +802,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     });
     // show toast that change was successful
     $ionicPlatform.ready(function () {
-      $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
+      $cordovaToast.show(i18n.t('settings.group_change_successful'), toastOptions.duration, toastOptions.position);
       // change to today view after 2 seconds
       $timeout(function () {
         return window.location.href = '#/app/today';
@@ -797,7 +821,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     var appointments = [];
     var calOptions = {
       // works on iOS only
-      calendarName: 'Lukkari app calendar',
+      calendarName: i18n.t('settings.calendar_name'),
       // android has id but no fucking idea what it does (1 is default)
       // so great documentation 5/5
       // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
@@ -821,10 +845,11 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
         groups += element.groups[i] + ', ';
       }
 
+      var notes = [i18n.t('settings.course_name'), element.code, '\n', i18n.t('settings.group'), groups].join('');
       $cordovaCalendar.createEventWithOptions({
         title: element.name,
         location: element.room,
-        notes: 'Teacher(s): ' + element.teacher + '\nGroup(s): ' + groups + '\nCourse: ' + element.code,
+        notes: notes,
         startDate: element.startDay,
         endDate: element.endDay,
         firstReminderMinutes: calOptions.firstReminderMinutes,
@@ -848,9 +873,9 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     });
     var msg = '';
     if (success) {
-      msg = 'Calendar events successfully added!';
+      msg = i18n.t('settings.success_message');
     } else {
-      msg = 'Failed to add calendar events!';
+      msg = i18n.t('settings.failure_message');
     }
 
     $cordovaToast.show(msg, toastOptions.duration, toastOptions.position);
@@ -878,8 +903,8 @@ angular.module('lukkari.controllers')
   var useNotifications = LocalStorage.get({
     key: 'useNotification'
   });
-  console.log(useNotifications);
-  if (useNotifications !== null && useNotifications == true) {
+  //console.log(useNotifications);
+  if (useNotifications == true) {
     console.log('setting notifications');
     Notifications.useNotifications({
       use: $scope.notification.use,
@@ -992,7 +1017,7 @@ angular.module('lukkari.controllers')
 
   // closes the group name dialog
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   // returns all of the appointments

@@ -36,9 +36,14 @@ angular.module('lukkari.services')
 
           }).then(
             function successCallback(response) {
-              const data = response.data.query.results.div;
-              data.forEach(parseLunch);
-              callback(lunches);
+              // if no lunches (eg. weekend)
+              if (response.data.query.results === null) {
+                callback(lunches);
+              } else {
+                const data = response.data.query.results.div;
+                data.forEach(parseLunch);
+                callback(lunches);
+              }
             },
             function errorCallback(response) {});
         }

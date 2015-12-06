@@ -37,7 +37,8 @@ const paths = {
   controllers: ['js/controllers/*.js'],
   services: ['js/services/*.js'],
   directives: ['js/directives/*.js'],
-  app: ['js/app.js']
+  app: ['js/app.js'],
+  locales: ['locales/**/*.json']
   //extras: ['favicon.ico']
 };
 
@@ -106,6 +107,7 @@ gulp.task('watch', () => {
   gulp.watch(bases.app + paths.templates, ['copy-templates', 'copy-html']);
   gulp.watch(bases.app + paths.images, ['copy-images']);
   gulp.watch(bases.app + paths.styles, ['copy-styles']);
+  gulp.watch('./' + paths.locales, ['copy-locales']);
 });
 
 gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
@@ -195,9 +197,20 @@ gulp.task('copy-extras', (done) => {
   // done();
 });
 
+gulp.task('copy-locales', (done) => {
+  console.log('Copying locales...');
+  gulp.src(paths.locales, {
+      cwd: './'
+    })
+    .pipe(gulp.dest(bases.dist + 'locales'))
+    .pipe(livereload());
+  done();
+});
+
 // copies all
 gulp.task('copy', (done) => runSequence(['copy-html', 'copy-templates',
-  'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts'
+  'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts',
+  'copy-locales'
 ], done));
 
 // builds a release version

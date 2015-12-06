@@ -1,4 +1,4 @@
-<ion-view cache-view="false" view-title="Timetable {{currentDay.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'})}}" class="">
+<ion-view cache-view="false" view-title="{{'view_titles.today' | i18next}} {{currentDay.toLocaleDateString(navigator.language, {day:'numeric', month:'numeric'})}}" class="">
   <ion-header-bar class="bar-subheader">
     <div class="button-bar bar-calm">
       <a class="button button-raised icon ion-android-arrow-back" ng-click="moveDay(-1)"></a>
@@ -21,9 +21,9 @@
       </ion-list>
     </div>
     <div ng-if="lessons.length === 0">
-      <div class="card calm-bg light">
+      <div class="card calm-bg light padding">
         <div class="item item-text-wrap">
-          No appointments today!
+          {{'today.no_lessons' | i18next}}
         </div>
       </div>
     </div>

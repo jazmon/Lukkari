@@ -1,6 +1,20 @@
+angular.module('jm.i18next').config(['$i18nextProvider',
+  function($i18nextProvider) {
+    $i18nextProvider.options = {
+      lng: 'dev', // If not given, i18n will detect the browser language.
+      useCookie: false,
+      useLocalStorage: true,
+      fallbackLng: 'dev',
+      resGetPath: '../locales/__lng__/__ns__.json',
+      defaultLoadingValue: '',
+      localStorageExpirationTime: 1000 // NOTE remove for production
+    };
+  }
+]);
+
 angular.module('lukkari', ['ionic', 'lukkari.controllers',
     'lukkari.services', 'lukkari.directives', 'ionic-datepicker',
-    'ionic-material', 'angularXml2json'
+    'ionic-material', 'angularXml2json', 'jm.i18next'
   ])
   .run(['$ionicPlatform',
     function($ionicPlatform) {
@@ -26,11 +40,11 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 })
 
 .constant('LunchEndPoint', {
-  url: 'http://localhost:8100/lunch'
-})
-.constant('ApiKey', {
-  key: 'Wu47zzKEPa7agvin47f5'
-})
+    url: 'http://localhost:8100/lunch'
+  })
+  .constant('ApiKey', {
+    key: 'Wu47zzKEPa7agvin47f5'
+  })
 
 // menuContent-view is presented on the main view.
 .config(['$stateProvider', '$urlRouterProvider',

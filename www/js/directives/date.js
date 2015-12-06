@@ -1,7 +1,7 @@
 angular.module('lukkari.directives')
   .directive('date', () => {
     return {
-      template: ['{{day.date.toLocaleDateString("fi-FI",',
+      template: ['{{day.date.toLocaleDateString(', navigator.language, ',',
         ' {weekday: "short", day: "numeric", month:"numeric"})}}'
       ].join('')
     };
