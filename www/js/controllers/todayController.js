@@ -2,15 +2,17 @@ angular.module('lukkari.controllers')
   // controller for today view
   .controller('TodayCtrl', ['$scope', '$ionicLoading',
     'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk',
-    'ionicMaterialMotion', 'Notifications',
+    'ionicMaterialMotion', 'Notifications','Adverts',
     function($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate,
-      Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
+      Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications, Adverts) {
       $scope.groupInfo = {
         group: LocalStorage.get({
           key: 'groupName'
         })
       };
       $scope.currentDay = new Date();
+
+      //Adverts.getAd();
 
       const useNotifications = LocalStorage.get({
         key: 'useNotification'
