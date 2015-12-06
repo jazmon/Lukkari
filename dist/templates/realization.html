@@ -4,14 +4,14 @@
       <ion-item class="item-divider">{{'realization.general_info' | i18next}}</ion-item>
       <ion-item>{{'realization.course_code' | i18next}}: {{realization.code}}</ion-item>
       <ion-item>{{'realization.name' | i18next}}: {{realization.name}}</ion-item>
-      <ion-item>{{'realization.duration' | i18next}}: {{realization.startDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.endDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item>{{'realization.duration' | i18next}}: {{realization.startDate.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.endDate.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
       <ion-item ng-if="realization.studentGroups.length === 1">{{'realization.student_group' | i18next}}: {{realization.studentGroups[0].code}}</ion-item>
       <ion-list ng-if="realization.studentGroups.length > 1">
         <ion-item class="item-divider">{{'realization.student_groups' | i18next}}</ion-item>
         <ion-item ng-repeat="group in realization.studentGroups">{{group.code}}</ion-item>
       </ion-list>
       <ion-item class="item-divider">{{'realization.enrollment_period' | i18next}}</ion-item>
-      <ion-item>{{realization.enrollmentStart.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.enrollmentEnd.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item>{{realization.enrollmentStart.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.enrollmentEnd.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
       <ion-item class="item-divider">{{'realization.details' | i18next}}</ion-item>
       <ion-item>{{'realization.teaching_language' | i18next}}: {{realization.teachingLanguage}}</ion-item>
       <ion-item>{{'realization.credits' | i18next}}: {{realization.credits}}</ion-item>

@@ -33,10 +33,11 @@ angular.module('lukkari.controllers')
         duration: 'long',
         position: 'center'
       };
+      //console.log(i18n.t('lesson.course'));
       // https://github.com/rajeshwarpatlolla/ionic-datepicker
       $scope.datepickerObject = {
-        titleLabel: 'Select Start Date', //Optional
-        todayLabel: 'Today', //Optional
+        titleLabel: i18n.t('date_picker.select_start_date'), //Optional
+        todayLabel: i18n.t('date_picker.today'), //Optional
         closeLabel: '<span class="icon ion-android-close"></span>', //Optional
         setLabel: '<span class="icon ion-android-done"></span>', //Optional
         setButtonType: 'button-positive', //Optional
@@ -65,8 +66,8 @@ angular.module('lukkari.controllers')
         closeOnSelect: true, //Optional
       };
       $scope.datepickerObject2 = {
-        titleLabel: 'Select End Date', //Optional
-        todayLabel: 'Today', //Optional
+        titleLabel: i18n.t('date_picker.select_end_date'), //Optional
+        todayLabel: i18n.t('date_picker.select_start_date'), //Optional
         closeLabel: '<span class="icon ion-android-close"></span>', //Optional
         setLabel: '<span class="icon ion-android-done"></span>', //Optional
         setButtonType: 'button-positive', //Optional
@@ -102,7 +103,7 @@ angular.module('lukkari.controllers')
         });
         // show toast that change was successful
         $ionicPlatform.ready(() => {
-          $cordovaToast.show('Group successfully changed!',
+          $cordovaToast.show(i18n.t('settings.group_change_successful'),
             toastOptions.duration,
             toastOptions.position);
           // change to today view after 2 seconds
@@ -121,7 +122,7 @@ angular.module('lukkari.controllers')
         let appointments = [];
         let calOptions = {
           // works on iOS only
-          calendarName: 'Lukkari app calendar',
+          calendarName: i18n.t('settings.calendar_name'),
           // android has id but no fucking idea what it does (1 is default)
           // so great documentation 5/5
           // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
@@ -145,12 +146,14 @@ angular.module('lukkari.controllers')
             groups += element.groups[i] + ', ';
           }
 
+          const notes = [i18n.t('settings.course_name'),
+            element.code, '\n',
+            i18n.t('settings.group'), groups
+          ].join('');
           $cordovaCalendar.createEventWithOptions({
             title: element.name,
             location: element.room,
-            notes: 'Teacher(s): ' + element.teacher +
-              '\nGroup(s): ' + groups +
-              '\nCourse: ' + element.code,
+            notes,
             startDate: element.startDay,
             endDate: element.endDay,
             firstReminderMinutes: calOptions.firstReminderMinutes,
@@ -173,9 +176,9 @@ angular.module('lukkari.controllers')
         });
         let msg = '';
         if (success) {
-          msg = 'Calendar events successfully added!';
+          msg = i18n.t('settings.success_message');
         } else {
-          msg = 'Failed to add calendar events!';
+          msg = i18n.t('settings.failure_message');
         }
 
         $cordovaToast.show(msg,

@@ -2,16 +2,16 @@
 
 angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
   $i18nextProvider.options = {
-    //lng: 'fi', // If not given, i18n will detect the browser language.
+    lng: 'dev', // If not given, i18n will detect the browser language.
     useCookie: false,
     useLocalStorage: true,
     fallbackLng: 'dev',
     resGetPath: '../locales/__lng__/__ns__.json',
-    defaultLoadingValue: ''
+    defaultLoadingValue: '',
+    localStorageExpirationTime: 1000 // NOTE remove for production
   };
 }]);
 
-//localStorageExpirationTime: 1000 // NOTE remove for production
 angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -564,7 +564,7 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
 
 angular.module('lukkari.directives').directive('date', function () {
   return {
-    template: ['{{day.date.toLocaleDateString("fi-FI",', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
 });
 'use strict';
@@ -585,7 +585,7 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
 
 angular.module('lukkari.directives').directive('timeRange', function () {
   return {
-    template: ['{{lesson.startDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}'].join('')
+    template: ['{{lesson.startDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}'].join('')
   };
 });
 'use strict';
@@ -730,10 +730,11 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     duration: 'long',
     position: 'center'
   };
+  //console.log(i18n.t('lesson.course'));
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
-    titleLabel: 'Select Start Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_start_date'), //Optional
+    todayLabel: i18n.t('date_picker.today'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -763,8 +764,8 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     closeOnSelect: true };
   //Optional
   $scope.datepickerObject2 = {
-    titleLabel: 'Select End Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_end_date'), //Optional
+    todayLabel: i18n.t('date_picker.select_start_date'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -801,7 +802,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     });
     // show toast that change was successful
     $ionicPlatform.ready(function () {
-      $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
+      $cordovaToast.show(i18n.t('settings.group_change_successful'), toastOptions.duration, toastOptions.position);
       // change to today view after 2 seconds
       $timeout(function () {
         return window.location.href = '#/app/today';
@@ -820,7 +821,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     var appointments = [];
     var calOptions = {
       // works on iOS only
-      calendarName: 'Lukkari app calendar',
+      calendarName: i18n.t('settings.calendar_name'),
       // android has id but no fucking idea what it does (1 is default)
       // so great documentation 5/5
       // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
@@ -844,10 +845,11 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
         groups += element.groups[i] + ', ';
       }
 
+      var notes = [i18n.t('settings.course_name'), element.code, '\n', i18n.t('settings.group'), groups].join('');
       $cordovaCalendar.createEventWithOptions({
         title: element.name,
         location: element.room,
-        notes: 'Teacher(s): ' + element.teacher + '\nGroup(s): ' + groups + '\nCourse: ' + element.code,
+        notes: notes,
         startDate: element.startDay,
         endDate: element.endDay,
         firstReminderMinutes: calOptions.firstReminderMinutes,
@@ -871,9 +873,9 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     });
     var msg = '';
     if (success) {
-      msg = 'Calendar events successfully added!';
+      msg = i18n.t('settings.success_message');
     } else {
-      msg = 'Failed to add calendar events!';
+      msg = i18n.t('settings.failure_message');
     }
 
     $cordovaToast.show(msg, toastOptions.duration, toastOptions.position);

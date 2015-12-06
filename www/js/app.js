@@ -1,13 +1,13 @@
 angular.module('jm.i18next').config(['$i18nextProvider',
   function($i18nextProvider) {
     $i18nextProvider.options = {
-      //lng: 'fi', // If not given, i18n will detect the browser language.
+      lng: 'dev', // If not given, i18n will detect the browser language.
       useCookie: false,
       useLocalStorage: true,
       fallbackLng: 'dev',
       resGetPath: '../locales/__lng__/__ns__.json',
       defaultLoadingValue: '',
-      //localStorageExpirationTime: 1000 // NOTE remove for production
+      localStorageExpirationTime: 1000 // NOTE remove for production
     };
   }
 ]);
