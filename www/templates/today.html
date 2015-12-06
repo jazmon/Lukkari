@@ -1,4 +1,4 @@
-<ion-view cache-view="false" view-title="{{'view_titles.today' | i18next}} {{currentDay.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'})}}" class="">
+<ion-view cache-view="false" view-title="{{'view_titles.today' | i18next}} {{currentDay.toLocaleDateString(navigator.language, {day:'numeric', month:'numeric'})}}" class="">
   <ion-header-bar class="bar-subheader">
     <div class="button-bar bar-calm">
       <a class="button button-raised icon ion-android-arrow-back" ng-click="moveDay(-1)"></a>
