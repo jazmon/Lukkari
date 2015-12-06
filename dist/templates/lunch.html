@@ -1,6 +1,6 @@
-<ion-view view-title="Lunch Today">
+<ion-view view-title="{{'view_titles.lunch' | i18next}}">
   <ion-content>
-    <div class="animate-ripple" ng-repeat="lunch in lunches" ng-last-repeat="myList">
+    <div class="animate-ripple" ng-repeat="lunch in lunches" ng-last-repeat="myList" ng-if="lunches.length > 0">
       <ion-list class="card calm-bg light">
         <ion-item class="item-body">
           {{lunch.main}}<br/>
@@ -10,6 +10,11 @@
           {{lunch.allergy}}
         </ion-item>
       </ion-list>
+    </div>
+    <div class="list card calm-bg light padding" ng-if="lunches.length === 0">
+      <div class="item item-body">
+        {{'lunch.no_lunch' | i18next}}
+      </div>
     </div>
   </ion-content>
 </ion-view>

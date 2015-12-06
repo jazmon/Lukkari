@@ -1,0 +1,86 @@
+{
+  "view_titles": {
+    "search": "Search",
+    "timetable": "Timetable",
+    "today": "Today",
+    "week": "Week",
+    "settings": "Settings",
+    "lunch": "Lunch Today"
+  },
+  "lesson": {
+    "course": "Course",
+    "groups": "Groups",
+    "group": "Group",
+    "location": "Location"
+  },
+  "lunch": {
+    "no_lunch": "No lunch available today!"
+  },
+  "menu": {
+    "menu": "Menu",
+    "today": "Today",
+    "week": "Week",
+    "lunch": "Lunch list",
+    "search": "Search",
+    "settings": "Settings"
+  },
+  "newgroup": {
+    "enter_group_name": "Enter your group name",
+    "close": "Close",
+    "group_name": "Group name",
+    "submit": "Submit"
+  },
+  "realization": {
+    "general_info": "General info",
+    "course_code": "Course code",
+    "name": "Name",
+    "duration": "Duration",
+    "student_group": "Student group",
+    "student_groups": "Student groups",
+    "enrollment_period": "Enrollment period",
+    "details": "Details",
+    "teaching_language": "Teaching language",
+    "credits": "Credits",
+    "virtual_proportion": "Virtual proportion",
+    "teaching_location": "Teaching location",
+    "degree_programmes": "Degree programmes",
+    "content": "Content",
+    "objective": "Objective",
+    "no_info": "Information not available"
+  },
+  "search": {
+    "no_results": "Search didn't return any realizations!",
+    "please_search": "Please search first"
+  },
+  "search-modal": {
+    "title": "Search",
+    "close": "Close",
+    "realization_name": "Realization name",
+    "realization_code": "Realization code",
+    "student_group": "Student group",
+    "submit": "Submit"
+  },
+  "settings": {
+    "change_group": "Change your group",
+    "group_name": "Group name",
+    "notification_settings": "Notification settings",
+    "use_notifications": "Use notifications",
+    "dont_use_notifications": "Don't use notifications",
+    "notification_time": "Notification time",
+    "select_value": "Select value",
+    "minutes": "minutes",
+    "add_to_calendar": "Add to calendar",
+    "google_calendar_notification": "If you are using Google Calendar, you may have default notification set for calendar events! Check your settings!",
+    "bug_info": "Also currently this adds a reminder to when the event starts (at 0 mins)",
+    "select_start_date": "Select start date",
+    "select_end_date": "Select end date",
+    "set_reminder": "Set reminder",
+    "no_reminder": "No reminder"
+  },
+  "today": {
+    "no_lessons": "No lessons today"
+  },
+  "week": {
+    "no_lessons": "No lessons"
+  }
+}

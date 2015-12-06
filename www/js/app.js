@@ -6,7 +6,8 @@ angular.module('jm.i18next').config(['$i18nextProvider',
       useLocalStorage: true,
       fallbackLng: 'dev',
       resGetPath: '../locales/__lng__/__ns__.json',
-      defaultLoadingValue: ''
+      defaultLoadingValue: '',
+      //localStorageExpirationTime: 1000 // NOTE remove for production
     };
   }
 ]);

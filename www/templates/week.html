@@ -1,4 +1,4 @@
-<ion-view cache-view="false" view-title="Week {{ currentDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }} — {{ endDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }}">
+<ion-view cache-view="false" view-title="{{'view_titles.week' | i18next}} {{ currentDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }} — {{ endDate.toLocaleDateString('fi-FI', {day:'numeric', month:'numeric'} ) }}">
   <ion-header-bar class="bar-subheader">
     <div class="button-bar bar-calm">
       <a class="button button-raised ink-dark icon ion-android-arrow-back" ng-click="moveWeek(-1)"></a>
@@ -29,7 +29,7 @@
       <ion-item ng-if="day.lessons.length === 0">
         <div class="card calm-bg light">
           <div class="item item-text-wrap">
-            No lessons
+            {{'week.no_lessons' | i18next}}
           </div>
         </div>
       </ion-item>

@@ -1,6 +1,18 @@
 'use strict';
 
-angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json']).run(['$ionicPlatform', function ($ionicPlatform) {
+angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
+  $i18nextProvider.options = {
+    //lng: 'fi', // If not given, i18n will detect the browser language.
+    useCookie: false,
+    useLocalStorage: true,
+    fallbackLng: 'dev',
+    resGetPath: '../locales/__lng__/__ns__.json',
+    defaultLoadingValue: ''
+  };
+}]);
+
+//localStorageExpirationTime: 1000 // NOTE remove for production
+angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -134,9 +146,14 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
         url: ['https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%', '20html%20where%20url%3D%22http%3A%2F%2Fwww.campusravita.fi%2Fi', 'ntra_menu_today.php%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F', '%2Fdiv%5B%40class%3D%22rivitys-intra%22%5D\'&format=json&diagn', 'ostics=true&callback='].join('')
 
       }).then(function successCallback(response) {
-        var data = response.data.query.results.div;
-        data.forEach(parseLunch);
-        callback(lunches);
+        // if no lunches (eg. weekend)
+        if (response.data.query.results === null) {
+          callback(lunches);
+        } else {
+          var data = response.data.query.results.div;
+          data.forEach(parseLunch);
+          callback(lunches);
+        }
       }, function errorCallback(response) {});
     }
   }
@@ -183,6 +200,10 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       studentGroup: [savedGroupName]
     };
     var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', ApiKey.key].join('');
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
     $http({
       method: 'POST',
       url: url,
@@ -190,7 +211,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       withCredentials: true,
       headers: {
         'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-        'accept-language': 'fi',
+        'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -514,8 +535,10 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
     if (codes !== undefined) {
       data.codes = codes;
     }
-
-    console.log(data);
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
     $http({
       method: 'POST',
       url: url,
@@ -523,7 +546,7 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
       withCredentials: true,
       headers: {
         'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-        'accept-language': 'fi',
+        'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -878,8 +901,8 @@ angular.module('lukkari.controllers')
   var useNotifications = LocalStorage.get({
     key: 'useNotification'
   });
-  console.log(useNotifications);
-  if (useNotifications !== null && useNotifications == true) {
+  //console.log(useNotifications);
+  if (useNotifications == true) {
     console.log('setting notifications');
     Notifications.useNotifications({
       use: $scope.notification.use,
@@ -992,7 +1015,7 @@ angular.module('lukkari.controllers')
 
   // closes the group name dialog
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   // returns all of the appointments

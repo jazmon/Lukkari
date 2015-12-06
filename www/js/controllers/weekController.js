@@ -28,9 +28,7 @@ angular.module('lukkari.controllers')
       }
 
       // closes the group name dialog
-      $scope.closeGroupName = () => {
-        $scope.modal.hide();
-      };
+      $scope.closeGroupName = () => $scope.modal.hide();
 
       // returns all of the appointments
       function getAppointments() {

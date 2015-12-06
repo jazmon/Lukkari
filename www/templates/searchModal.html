@@ -1,21 +1,22 @@
 <ion-modal-view>
   <ion-header-bar>
-    <h1 class="title">Search</h1>
+    <h1 class="title">{{'search-modal.title' | i18next}}</h1>
     <div class="buttons">
-      <button class="button button-clear" ng-click="close()">Close</button>
+      <button class="button button-clear" ng-click="close()">{{'search-modal.close' | i18next}}</button>
     </div>
   </ion-header-bar>
   <ion-content>
     <form ng-submit="search()">
       <div class="list">
         <label class="item item-input">
-          <span class="input-label">Realization name</span>
+          <span class="input-label">{{'search-modal.realization_name' | i18next}}</span>
           <input type="text" ng-model="searchParams.name">
         </label>
         <label class="item item-input">
-          <span class="input-label">Realization code</span>
+          <span class="input-label">{{'search-modal.realization_code' | i18next}}</span>
           <input type="text" ng-model="searchParams.code">
         </label>
+        <!-- TODO, need to use the date picker -->
         <!-- <label class="item item-input">
           <span class="input-label">Start date</span>
           <input type="date" ng-model="searchParams.startDate">
@@ -25,11 +26,11 @@
           <input type="date" ng-model="searchParams.endDate">
         </label> -->
         <label class="item item-input">
-          <span class="input-label">Student group</span>
+          <span class="input-label">{{'search-modal.student_group' | i18next}}</span>
           <input type="text" ng-model="searchParams.studentGroup">
         </label>
         <label class="item">
-          <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+          <button class="button button-block button-positive" type="submit">{{'search-modal.submit' | i18next}} <i class="icon ion-submit"></i></button>
         </label>
       </div>
     </form>

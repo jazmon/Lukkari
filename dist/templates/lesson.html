@@ -2,14 +2,15 @@
   <ion-content>
     <ion-list>
       <ion-item class="item-divider">{{lesson.name}}</ion-item>
-      <!-- <ion-item>Teacher: {{lesson.teacher}}</ion-item> -->
-      <ion-item>Course: {{lesson.code}}</ion-item>
-      <ion-item ng-if="lesson.groups.length === 1">Groups: {{lesson.groups[0]}}</ion-item>
+      <ion-item>{{'lesson.course' | i18next}}: {{lesson.code}}</ion-item>
+      <ion-item ng-if="lesson.groups.length === 1">
+        {{'lesson.group' | i18next}}: {{lesson.groups[0]}}
+      </ion-item>
       <ion-list ng-if="lesson.groups.length > 1">
-        <ion-item class="item-divider">Groups</ion-item>
+        <ion-item class="item-divider">{{'lesson.groups' | i18next}}</ion-item>
         <ion-item ng-repeat="group in lesson.groups">{{group}}</ion-item>
       </ion-list>
-      <ion-item class="item-divider">Location</ion-item>
+      <ion-item class="item-divider">{{'lesson.location' | i18next}}</ion-item>
       <ion-item>{{lesson.room}}</ion-item>
       <ion-item>{{lesson.roomInfo}}</ion-item>
     </ion-list>

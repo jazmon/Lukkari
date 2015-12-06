@@ -25,8 +25,10 @@ angular.module('lukkari.services')
         if (codes !== undefined) {
           data.codes = codes;
         }
-
-        console.log(data);
+        let lang = 'en';
+        if (navigator.language.includes('fi')) {
+          lang = 'fi';
+        }
         $http({
           method: 'POST',
           url,
@@ -34,7 +36,7 @@ angular.module('lukkari.services')
           withCredentials: true,
           headers: {
             'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-            'accept-language': 'fi',
+            'accept-language': lang,
             'content-type': 'application/json',
             'cache-control': 'no-cache'
           }

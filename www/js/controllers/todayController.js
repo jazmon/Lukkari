@@ -15,8 +15,8 @@ angular.module('lukkari.controllers')
       const useNotifications = LocalStorage.get({
         key: 'useNotification'
       });
-      console.log(useNotifications);
-      if (useNotifications !== null && useNotifications == true) {
+      //console.log(useNotifications);
+      if (useNotifications == true) {
         console.log('setting notifications');
         Notifications.useNotifications({
           use: $scope.notification.use,
