@@ -107,7 +107,7 @@ gulp.task('watch', () => {
   gulp.watch(bases.app + paths.templates, ['copy-templates', 'copy-html']);
   gulp.watch(bases.app + paths.images, ['copy-images']);
   gulp.watch(bases.app + paths.styles, ['copy-styles']);
-  gulp.watch('./' + paths.locales, ['copy-locales']);
+  gulp.watch(bases.app + paths.locales, ['copy-locales']);
 });
 
 gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
@@ -200,9 +200,10 @@ gulp.task('copy-extras', (done) => {
 gulp.task('copy-locales', (done) => {
   console.log('Copying locales...');
   gulp.src(paths.locales, {
-      cwd: './'
+      cwd: bases.app
     })
     .pipe(gulp.dest(bases.dist + 'locales'))
+    //.pipe(gulp.dest('./platforms/android/assets/www/locales'))
     .pipe(livereload());
   done();
 });

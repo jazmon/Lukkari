@@ -5,7 +5,7 @@ angular.module('jm.i18next').config(['$i18nextProvider',
       useCookie: false,
       useLocalStorage: true,
       fallbackLng: 'dev',
-      resGetPath: '../locales/__lng__/__ns__.json',
+      resGetPath: './locales/__lng__/__ns__.json',
       defaultLoadingValue: '',
       localStorageExpirationTime: 1000 // NOTE remove for production
     };
@@ -36,7 +36,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 })
 
 .constant('LunchEndPoint', {

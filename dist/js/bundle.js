@@ -29,7 +29,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 }).constant('LunchEndPoint', {
   url: 'http://localhost:8100/lunch'
 }).constant('ApiKey', {
