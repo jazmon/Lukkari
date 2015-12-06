@@ -1,0 +1,29 @@
+<ion-view view-title="{{realization.code}}">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-divider">General info</ion-item>
+      <ion-item>Course code: {{realization.code}}</ion-item>
+      <ion-item>Name: {{realization.name}}</ion-item>
+      <ion-item>Duration: {{realization.startDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.endDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item ng-if="realization.studentGroups.length === 1">Student group: {{realization.studentGroups[0].code}}</ion-item>
+      <ion-list ng-if="realization.studentGroups.length > 1">
+        <ion-item class="item-divider">Student groups</ion-item>
+        <ion-item ng-repeat="group in realization.studentGroups">{{group.code}}</ion-item>
+      </ion-list>
+      <ion-item class="item-divider">Enrollment period</ion-item>
+      <ion-item>{{realization.enrollmentStart.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.enrollmentEnd.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item class="item-divider">Specifics</ion-item>
+      <ion-item>Teaching language: {{realization.teachingLanguage}}</ion-item>
+      <ion-item>Credits: {{realization.credits}}</ion-item>
+      <ion-item>Virtual proportion: {{realization.virtualProportion}} %</ion-item>
+      <ion-item>Teaching location: {{realization.office.localizedName.valueFi}}</ion-item>
+      <ion-item>Degree programmes: {{realization.unit.localizedName.valueFi}}</ion-item>
+      <ion-item class="item-divider">Content</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.content.length > 0">{{realization.content}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.content.length === 0">Information not available</ion-item>
+      <ion-item class="item-divider">Objective</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.objective.length > 0">{{realization.objective}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.objective.length === 0">Information not available</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

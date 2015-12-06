@@ -1,6 +1,6 @@
 angular.module('lukkari.services')
-  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate',
-    function($http, ApiEndpoint, MyDate) {
+  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey',
+    function($http, ApiEndpoint, MyDate, ApiKey) {
       let lessons = [];
       let savedGroupName;
 
@@ -36,9 +36,8 @@ angular.module('lukkari.services')
         const data = {
           studentGroup: [savedGroupName]
         };
-        const apiKey = 'Wu47zzKEPa7agvin47f5';
         const url = [ApiEndpoint.url, '/reservation/search',
-          '?apiKey=', apiKey
+          '?apiKey=', ApiKey.key
         ].join('');
         $http({
           method: 'POST',
