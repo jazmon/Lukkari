@@ -1,0 +1,37 @@
+<ion-modal-view>
+  <ion-header-bar>
+    <h1 class="title">Search</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="close()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="search()">
+      <div class="list">
+        <label class="item item-input">
+          <span class="input-label">Realization name</span>
+          <input type="text" ng-model="searchParams.name">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Realization code</span>
+          <input type="text" ng-model="searchParams.code">
+        </label>
+        <!-- <label class="item item-input">
+          <span class="input-label">Start date</span>
+          <input type="date" ng-model="searchParams.startDate">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">End date</span>
+          <input type="date" ng-model="searchParams.endDate">
+        </label> -->
+        <label class="item item-input">
+          <span class="input-label">Student group</span>
+          <input type="text" ng-model="searchParams.studentGroup">
+        </label>
+        <label class="item">
+          <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+        </label>
+      </div>
+    </form>
+  </ion-content>
+</ion-modal-view>

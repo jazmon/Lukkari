@@ -28,6 +28,9 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 .constant('LunchEndPoint', {
   url: 'http://localhost:8100/lunch'
 })
+.constant('ApiKey', {
+  key: 'Wu47zzKEPa7agvin47f5'
+})
 
 // menuContent-view is presented on the main view.
 .config(['$stateProvider', '$urlRouterProvider',
@@ -45,6 +48,15 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
           'menuContent': {
             templateUrl: 'templates/search.html',
             controller: 'SearchCtrl'
+          }
+        }
+      })
+      .state('app.realization', {
+        url: '/search/:code',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/realization.html',
+            controller: 'RealizationCtrl'
           }
         }
       })

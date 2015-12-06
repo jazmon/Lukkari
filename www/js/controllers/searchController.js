@@ -1,5 +1,57 @@
 angular.module('lukkari.controllers')
-  // TODO
-  .controller('SearchCtrl', ['$scope', 'LocalStorage',
-    function($scope, LocalStorage) {}
+  .controller('SearchCtrl', ['$scope', 'LocalStorage', 'Search',
+    '$ionicLoading',
+    '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion',
+    function($scope, LocalStorage, Search, $ionicLoading, $ionicModal,
+      ionicMaterialInk, ionicMaterialMotion) {
+      $scope.searchParams = {
+        successCallback: data => {
+          console.log(data);
+          if (data.realizations.length < 1000) {
+            $scope.realizations = data.realizations;
+            $scope.realizations.forEach((element) => {
+              element.startDate = new Date(element.startDate);
+              element.endDate = new Date(element.endDate);
+            });
+          } else {
+            // show error popup
+            console.log('Please enter some search parameters!');
+          }
+          $ionicLoading.hide();
+        },
+        errorCallback: status => console.log(status)
+      };
+
+      $ionicModal.fromTemplateUrl('templates/searchModal.html', {
+        scope: $scope
+      }).then(modal => $scope.modal = modal);
+
+      $scope.close = () => $scope.modal.hide();
+
+      $scope.openSearch = () => $scope.modal.show();
+
+      $scope.search = () => {
+        $scope.modal.hide();
+        $ionicLoading.show({
+          templateUrl: 'templates/loading.html'
+        });
+        if ($scope.searchParams.code !== undefined &&
+          $scope.searchParams.code !== null) {
+          $scope.searchParams.codes = [$scope.searchParams.code];
+        }
+        if ($scope.searchParams.studentGroup !== undefined &&
+          $scope.searchParams.studentGroup !== null &&
+          $scope.searchParams.studentGroup !== '') {
+          $scope.searchParams.studentGroups = [$scope.searchParams.studentGroup
+            .toUpperCase()
+          ];
+        }
+        Search.search($scope.searchParams);
+      };
+
+      $scope.$on('ngLastRepeat.myList', e => ionicMaterialMotion.blinds());
+
+      // Set Ink
+      ionicMaterialInk.displayEffect();
+    }
   ]);

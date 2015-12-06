@@ -20,6 +20,8 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
   url: 'http://localhost:8100/api'
 }).constant('LunchEndPoint', {
   url: 'http://localhost:8100/lunch'
+}).constant('ApiKey', {
+  key: 'Wu47zzKEPa7agvin47f5'
 })
 
 // menuContent-view is presented on the main view.
@@ -35,6 +37,14 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
       'menuContent': {
         templateUrl: 'templates/search.html',
         controller: 'SearchCtrl'
+      }
+    }
+  }).state('app.realization', {
+    url: '/search/:code',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/realization.html',
+        controller: 'RealizationCtrl'
       }
     }
   }).state('app.settings', {
@@ -137,7 +147,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
 }]);
 'use strict';
 
-angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function ($http, ApiEndpoint, MyDate) {
+angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey', function ($http, ApiEndpoint, MyDate, ApiKey) {
   var lessons = [];
   var savedGroupName = undefined;
 
@@ -172,8 +182,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
     var data = {
       studentGroup: [savedGroupName]
     };
-    var apiKey = 'Wu47zzKEPa7agvin47f5';
-    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', apiKey].join('');
+    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', ApiKey.key].join('');
     $http({
       method: 'POST',
       url: url,
@@ -477,6 +486,59 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
 }]);
 'use strict';
 
+angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'ApiKey', function ($http, ApiEndpoint, ApiKey) {
+  function search(_ref) {
+    var name = _ref.name;
+    var studentGroups = _ref.studentGroups;
+    var startDate = _ref.startDate;
+    var endDate = _ref.endDate;
+    var codes = _ref.codes;
+    var successCallback = _ref.successCallback;
+    var errorCallback = _ref.errorCallback;
+
+    var url = [ApiEndpoint.url, '/realization/search', '?apiKey=', ApiKey.key].join('');
+
+    var data = {};
+    if (name !== undefined) {
+      data.name = name;
+    }
+    if (studentGroups !== undefined) {
+      data.studentGroups = studentGroups;
+    }
+    if (startDate !== undefined) {
+      data.startDate = startDate;
+    }
+    if (endDate !== undefined) {
+      data.endDate = endDate;
+    }
+    if (codes !== undefined) {
+      data.codes = codes;
+    }
+
+    console.log(data);
+    $http({
+      method: 'POST',
+      url: url,
+      data: data,
+      withCredentials: true,
+      headers: {
+        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
+        'accept-language': 'fi',
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+    }).success(function (data, status, headers, config) {
+      successCallback(data);
+    }).error(function (data, status, headers, config) {
+      errorCallback(status);
+    });
+  }
+  return {
+    search: search
+  };
+}]);
+'use strict';
+
 angular.module('lukkari.directives').directive('date', function () {
   return {
     template: ['{{day.date.toLocaleDateString("fi-FI",', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
@@ -538,8 +600,84 @@ angular.module('lukkari.controllers').controller('LunchCtrl', ['$scope', 'FoodSe
 'use strict';
 
 angular.module('lukkari.controllers')
-// TODO
-.controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
+// controller for single appointment view
+.controller('RealizationCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Search', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Search, ionicMaterialInk) {
+  var searchParams = {
+    codes: [$stateParams.code],
+    successCallback: function successCallback(data) {
+      console.log(data.realizations[0]);
+      $scope.realization = data.realizations[0];
+      $scope.realization.startDate = new Date($scope.realization.startDate);
+      $scope.realization.endDate = new Date($scope.realization.endDate);
+      $scope.realization.enrollmentStart = new Date($scope.realization.enrollmentStart);
+      $scope.realization.enrollmentEnd = new Date($scope.realization.enrollmentEnd);
+    },
+    errorCallback: function errorCallback(status) {
+      return console.log(status);
+    }
+  };
+  $scope.realization = Search.search(searchParams);
+  // Set Ink
+  ionicMaterialInk.displayEffect();
+}]);
+'use strict';
+
+angular.module('lukkari.controllers').controller('SearchCtrl', ['$scope', 'LocalStorage', 'Search', '$ionicLoading', '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, LocalStorage, Search, $ionicLoading, $ionicModal, ionicMaterialInk, ionicMaterialMotion) {
+  $scope.searchParams = {
+    successCallback: function successCallback(data) {
+      console.log(data);
+      if (data.realizations.length < 1000) {
+        $scope.realizations = data.realizations;
+        $scope.realizations.forEach(function (element) {
+          element.startDate = new Date(element.startDate);
+          element.endDate = new Date(element.endDate);
+        });
+      } else {
+        // show error popup
+        console.log('Please enter some search parameters!');
+      }
+      $ionicLoading.hide();
+    },
+    errorCallback: function errorCallback(status) {
+      return console.log(status);
+    }
+  };
+
+  $ionicModal.fromTemplateUrl('templates/searchModal.html', {
+    scope: $scope
+  }).then(function (modal) {
+    return $scope.modal = modal;
+  });
+
+  $scope.close = function () {
+    return $scope.modal.hide();
+  };
+
+  $scope.openSearch = function () {
+    return $scope.modal.show();
+  };
+
+  $scope.search = function () {
+    $scope.modal.hide();
+    $ionicLoading.show({
+      templateUrl: 'templates/loading.html'
+    });
+    if ($scope.searchParams.code !== undefined && $scope.searchParams.code !== null) {
+      $scope.searchParams.codes = [$scope.searchParams.code];
+    }
+    if ($scope.searchParams.studentGroup !== undefined && $scope.searchParams.studentGroup !== null && $scope.searchParams.studentGroup !== '') {
+      $scope.searchParams.studentGroups = [$scope.searchParams.studentGroup.toUpperCase()];
+    }
+    Search.search($scope.searchParams);
+  };
+
+  $scope.$on('ngLastRepeat.myList', function (e) {
+    return ionicMaterialMotion.blinds();
+  });
+
+  // Set Ink
+  ionicMaterialInk.displayEffect();
+}]);
 'use strict';
 
 angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', 'Notifications', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification, Notifications) {
