@@ -966,6 +966,35 @@ angular.module('lukkari.controllers')
 
   // Moves a day forwards/backwards
   $scope.moveDay = function (direction) {
+
+    // ad logic
+    var lastAdTimeMillis = LocalStorage.get({
+      key: 'adTime'
+    });
+    if (!lastAdTimeMillis) {
+      if (typeof AdMob !== 'undefined') {
+        AdMob.showInterstitial();
+      }
+      lastAdTimeMillis = Date.now();
+      LocalStorage.set({
+        key: 'adTime',
+        value: lastAdTimeMillis
+      });
+    } else {
+      var AD_DELAY = 300000;
+      var difference = Date.now() - lastAdTimeMillis;
+      if (difference > AD_DELAY) {
+        if (typeof AdMob !== 'undefined') {
+          AdMob.showInterstitial();
+        }
+        lastAdTimeMillis = Date.now();
+        LocalStorage.set({
+          key: 'adTime',
+          value: lastAdTimeMillis
+        });
+      }
+    }
+
     $scope.currentDay = MyDate.getDayFromDay({
       currentDay: $scope.currentDay,
       offsetDays: direction
