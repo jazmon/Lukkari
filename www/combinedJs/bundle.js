@@ -891,8 +891,6 @@ angular.module('lukkari.controllers')
   };
   $scope.currentDay = new Date();
 
-  //Adverts.getAd();
-
   var useNotifications = LocalStorage.get({
     key: 'useNotification'
   });
@@ -909,13 +907,20 @@ angular.module('lukkari.controllers')
   }).then(function (modal) {
     $scope.modal = modal;
     if (!$scope.groupInfo.group) {
+      if (typeof AdMob !== 'undefined') {
+        AdMob.hideBanner();
+      }
       // open modal to set group name
       $scope.modal.show();
     }
   });
 
   $scope.closeGroupName = function () {
-    return $scope.modal.hide();
+    $scope.modal.hide();
+    if (typeof AdMob !== 'undefined') {
+      console.log('ad should show now again');
+      AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
+    }
   };
 
   function getAppointments() {

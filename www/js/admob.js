@@ -17,7 +17,11 @@ function initApp() {
     overlap: false,
     offsetTopBar: false,
     position: AdMob.AD_POSITION.BOTTOM_CENTER,
-    bgColor: 'black'
+    bgColor: 'black',
+    autoShow: true
+  }, function success() {
+  }, function fail() {
+    console.error('Failed to create banner');
   });
 
   AdMob.prepareInterstitial({
