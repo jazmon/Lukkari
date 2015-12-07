@@ -39,7 +39,7 @@ const paths = {
   directives: ['js/directives/*.js'],
   app: ['js/app.js'],
   locales: ['locales/**/*.json']
-  //extras: ['favicon.ico']
+    //extras: ['favicon.ico']
 };
 
 // default task to be run when gulp is run
@@ -108,6 +108,7 @@ gulp.task('watch', () => {
   gulp.watch(bases.app + paths.images, ['copy-images']);
   gulp.watch(bases.app + paths.styles, ['copy-styles']);
   gulp.watch(bases.app + paths.locales, ['copy-locales']);
+  gulp.watch(bases.app + 'js/admob.js', ['copy-extras']);
 });
 
 gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
@@ -191,10 +192,12 @@ gulp.task('copy-scripts', (done) => {
 
 gulp.task('copy-extras', (done) => {
   // copy extra files
-  // console.log('copying extras...');
-  // gulp.src(paths.extras, {cwd: bases.app})
-  // .pipe(gulp.dest(bases.dist));
-  // done();
+  console.log('copying extras...');
+  gulp.src('js/admob.js', {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'js'));
+  done();
 });
 
 gulp.task('copy-locales', (done) => {
