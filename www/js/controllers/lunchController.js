@@ -7,13 +7,13 @@ angular.module('lukkari.controllers')
         templateUrl: 'templates/loading.html'
       });
       FoodService.get({
-        callback: function(lunches) {
+        callback: (lunches) => {
           $scope.lunches = lunches;
           $ionicLoading.hide();
         }
       });
 
-      $scope.$on('ngLastRepeat.myList', function(e) {
+      $scope.$on('ngLastRepeat.myList', (e) => {
         ionicMaterialMotion.ripple();
       });
 

@@ -37,7 +37,8 @@ const paths = {
   controllers: ['js/controllers/*.js'],
   services: ['js/services/*.js'],
   directives: ['js/directives/*.js'],
-  app: ['js/app.js']
+  app: ['js/app.js'],
+  locales: ['locales/**/*.json']
   //extras: ['favicon.ico']
 };
 
@@ -89,7 +90,7 @@ gulp.task('scripts', () => {
     // renames file
     .pipe(rename('bundle.min.js'))
     .pipe(uglify({
-      mangle: false
+      mangle: true
     }))
     // write sourcemaps
     .pipe(sourcemaps.write('.'))
@@ -106,6 +107,8 @@ gulp.task('watch', () => {
   gulp.watch(bases.app + paths.templates, ['copy-templates', 'copy-html']);
   gulp.watch(bases.app + paths.images, ['copy-images']);
   gulp.watch(bases.app + paths.styles, ['copy-styles']);
+  gulp.watch(bases.app + paths.locales, ['copy-locales']);
+  gulp.watch(bases.app + 'js/admob.js', ['copy-extras']);
 });
 
 gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
@@ -189,15 +192,29 @@ gulp.task('copy-scripts', (done) => {
 
 gulp.task('copy-extras', (done) => {
   // copy extra files
-  // console.log('copying extras...');
-  // gulp.src(paths.extras, {cwd: bases.app})
-  // .pipe(gulp.dest(bases.dist));
-  // done();
+  console.log('copying extras...');
+  gulp.src('js/admob.js', {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'js'));
+  done();
+});
+
+gulp.task('copy-locales', (done) => {
+  console.log('Copying locales...');
+  gulp.src(paths.locales, {
+      cwd: bases.app
+    })
+    .pipe(gulp.dest(bases.dist + 'locales'))
+    //.pipe(gulp.dest('./platforms/android/assets/www/locales'))
+    .pipe(livereload());
+  done();
 });
 
 // copies all
 gulp.task('copy', (done) => runSequence(['copy-html', 'copy-templates',
-  'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts'
+  'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts',
+  'copy-locales'
 ], done));
 
 // builds a release version

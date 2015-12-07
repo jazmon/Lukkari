@@ -1,6 +1,18 @@
 'use strict';
 
-angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json']).run(['$ionicPlatform', function ($ionicPlatform) {
+angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
+  $i18nextProvider.options = {
+    //lng: 'dev', // If not given, i18n will detect the browser language.
+    useCookie: false,
+    useLocalStorage: true,
+    fallbackLng: 'en',
+    resGetPath: './locales/__lng__/__ns__.json',
+    defaultLoadingValue: ''
+  };
+}]);
+
+//localStorageExpirationTime: 1000 // NOTE remove for production
+angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -14,12 +26,11 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
     }
   });
 }])
-
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
-}).constant('LunchEndPoint', {
-  url: 'http://localhost:8100/lunch'
+  url: 'https://opendata.tamk.fi/r1'
+}).constant('ApiKey', {
+  key: 'Wu47zzKEPa7agvin47f5'
 })
 
 // menuContent-view is presented on the main view.
@@ -35,6 +46,14 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
       'menuContent': {
         templateUrl: 'templates/search.html',
         controller: 'SearchCtrl'
+      }
+    }
+  }).state('app.realization', {
+    url: '/search/:code',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/realization.html',
+        controller: 'RealizationCtrl'
       }
     }
   }).state('app.settings', {
@@ -95,26 +114,24 @@ angular.module('lukkari.controllers', ['ngCordova']);
 angular.module('lukkari.directives', []);
 'use strict';
 
-angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoint', 'ngXml2json', function ($http, LunchEndPoint, ngXml2json) {
+angular.module('lukkari.services').factory('FoodService', ['$http', function ($http) {
   var lunches = [];
 
   function parseLunch(element, index, array) {
-    var lunch = {
-      // get date
-      date: new Date(element.div[0].span.content[0]),
-      dishes: []
-    };
-    // remove 3 from length to ignore evening foods
-    var length = element.div[1].div.length - 3;
-    for (var i = 0; i < length; i++) {
-      var dish = {};
-      dish.pricegroups = [];
-      dish.allergies = [];
-      dish.name = element.div[1].div[i].div.div.ul.li.div.div.div[0].div.div.content;
-      if (!dish.name.includes('Ravintola avoinna')) {
-        lunch.dishes.push(dish);
+    var lunch = {};
+    try {
+      lunch.main = element.div[0].div.div.content;
+      if (element.div.length >= 2) {
+        lunch.side = element.div[1].div.div.content;
       }
+      if (element.div.length >= 3) {
+        lunch.allergy = element.div[2].div.div.content;
+      }
+    } catch (e) {
+      // if only one field is specified, eg. aamupuuro
+      lunch.main = element.div.div.div.content;
     }
+
     lunches.push(lunch);
   }
 
@@ -126,12 +143,17 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
     } else {
       $http({
         method: 'GET',
-        url: ['https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%2', '0html%20where%20url%3D%22http%3A%2F%2Fcampusravita.fi%2Fruokali', 'sta%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F%2Fdiv%5B%40class', '%3D%22view-grouping%22%5D\'&format=json&diagnostics=true&callba', 'ck='].join('')
+        url: ['https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%', '20html%20where%20url%3D%22http%3A%2F%2Fwww.campusravita.fi%2Fi', 'ntra_menu_today.php%22%20and%0A%20%20%20%20%20%20xpath%3D\'%2F', '%2Fdiv%5B%40class%3D%22rivitys-intra%22%5D\'&format=json&diagn', 'ostics=true&callback='].join('')
 
       }).then(function successCallback(response) {
-        var data = response.data.query.results.div;
-        data.forEach(parseLunch);
-        callback(lunches);
+        // if no lunches (eg. weekend)
+        if (response.data.query.results === null) {
+          callback(lunches);
+        } else {
+          var data = response.data.query.results.div;
+          data.forEach(parseLunch);
+          callback(lunches);
+        }
       }, function errorCallback(response) {});
     }
   }
@@ -142,7 +164,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoi
 }]);
 'use strict';
 
-angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function ($http, ApiEndpoint, MyDate) {
+angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey', function ($http, ApiEndpoint, MyDate, ApiKey) {
   var lessons = [];
   var savedGroupName = undefined;
 
@@ -177,8 +199,11 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
     var data = {
       studentGroup: [savedGroupName]
     };
-    var apiKey = 'Wu47zzKEPa7agvin47f5';
-    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', apiKey].join('');
+    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', ApiKey.key].join('');
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
     $http({
       method: 'POST',
       url: url,
@@ -186,7 +211,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       withCredentials: true,
       headers: {
         'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-        'accept-language': 'fi',
+        'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
       }
@@ -212,7 +237,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 
     savedGroupName = groupName.toUpperCase();
     get(function (result) {
-      callback(result);
+      return callback(result);
     });
   }
 
@@ -310,12 +335,17 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
 'use strict';
 
 angular.module('lukkari.services').factory('LocalStorage', [function () {
-  function get(name) {
-    return window.localStorage.getItem(name);
+  function get(_ref) {
+    var key = _ref.key;
+
+    return window.localStorage.getItem(key);
   }
 
-  function set(name, value) {
-    return window.localStorage.setItem(name, value);
+  function set(_ref2) {
+    var key = _ref2.key;
+    var value = _ref2.value;
+
+    return window.localStorage.setItem(key, value);
   }
 
   return {
@@ -339,15 +369,14 @@ angular.module('lukkari.services').factory('MyDate', [function () {
   function getLocaleDate(_ref) {
     var day = _ref.day;
     var years = _ref.years;
+    var weekday = _ref.weekday;
 
     var options = {
-      //weekday: 'long',
       month: 'numeric',
       day: 'numeric'
     };
-    if (typeof years === 'boolean' && years) {
-      options.year = 'numeric';
-    }
+    options.year = years ? 'numeric' : undefined;
+    options.weekday = weekday ? 'long' : undefined;
     return new Intl.DateTimeFormat('fi-FI', options).format(day);
   }
 
@@ -355,9 +384,8 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     var currentDay = _ref2.currentDay;
     var offsetDays = _ref2.offsetDays;
 
-    var day = currentDay.getTime();
     // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
+    var day = currentDay.getTime() + offsetDays * DAY_IN_MILLISECONDS;
     // create Date object and set it's time to the millisecs
     var date = new Date();
     date.setTime(day);
@@ -366,54 +394,200 @@ angular.module('lukkari.services').factory('MyDate', [function () {
 
   // returns a day that is offset from today
   function getDayFromToday(offsetDays) {
-    // today in millisecs since the beginning of time (UNIX time)
-    var day = Date.now();
-    // add desired amount of days to the millisecs
-    day += offsetDays * DAY_IN_MILLISECONDS;
-    // create Date object and set it's time to the millisecs
-    return new Date(day);
+    return getDayFromDay({
+      currentDay: new Date(),
+      offsetDays: offsetDays
+    });
+  }
+
+  function offsetDate(_ref3) {
+    var date = _ref3.date;
+    var minutes = _ref3.minutes;
+    var hours = _ref3.hours;
+    var seconds = _ref3.seconds;
+
+    var d = date;
+    // console.log('date: ' + date);
+    if (hours) {
+      d.setHours(date.getHours() + hours);
+    }
+    if (minutes) {
+      d.setMinutes(date.getMinutes() + minutes);
+    }
+    if (seconds) {
+      d.setSeconds(date.getSeconds() + seconds);
+    }
+    // console.log('d: ' + d);
+    return d;
   }
 
   return {
     getMonday: getMonday,
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
-    getDayFromDay: getDayFromDay
+    getDayFromDay: getDayFromDay,
+    offsetDate: offsetDate
   };
 }]);
 'use strict';
 
-angular.module('lukkari.directives').directive('date', function () {
+angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$ionicPlatform', '$cordovaLocalNotification', 'Lessons', 'MyDate', function (LocalStorage, $ionicPlatform, $cordovaLocalNotification, Lessons, MyDate) {
+  function useNotifications(_ref) {
+    var use = _ref.use;
+    var timeOffset = _ref.timeOffset;
+
+    // get notification ids from local storage
+    var notificationIds = JSON.parse(LocalStorage.get({
+      key: 'notifications'
+    }));
+    $ionicPlatform.ready(function () {
+      if (use) {
+        // remove all
+        $cordovaLocalNotification.cancelAll().then(function (result) {
+          return console.log(result);
+        });
+        // add next week from now
+        Lessons.getWeek({
+          day: new Date(),
+          callback: function callback(response) {
+            var lessons = response.weekLessons;
+            lessons.forEach(function (lesson) {
+              var id = undefined;
+              if (!notificationIds) {
+                id = 0;
+                notificationIds = [];
+              } else {
+                id = notificationIds[notificationIds.length - 1] + 1;
+              }
+              notificationIds.push(id);
+              LocalStorage.set({
+                key: 'notifications',
+                value: JSON.stringify(notificationIds)
+              });
+              $cordovaLocalNotification.schedule({
+                id: id,
+                title: lesson.name,
+                text: [lesson.room, ', ', lesson.startDay.toLocaleTimeString(navigator.language, {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                }), ' - ', lesson.endDay.toLocaleTimeString(navigator.language, {
+                  hour: 'numeric',
+                  minute: 'numeric'
+                })].join(''),
+                at: MyDate.offsetDate({
+                  date: lesson.startDay,
+                  minutes: timeOffset
+                })
+              });
+            });
+          }
+        });
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'true'
+        });
+      } else {
+        $cordovaLocalNotification.cancelAll();
+        LocalStorage.set({
+          key: 'useNotification',
+          value: 'false'
+        });
+      }
+    });
+  }
+
   return {
-    template: ['{{day.date.toLocaleDateString("fi-FI",', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    useNotifications: useNotifications
   };
-});
+}]);
 'use strict';
 
-angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeout) {
+angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'ApiKey', function ($http, ApiEndpoint, ApiKey) {
+  function search(_ref) {
+    var name = _ref.name;
+    var studentGroups = _ref.studentGroups;
+    var startDate = _ref.startDate;
+    var endDate = _ref.endDate;
+    var codes = _ref.codes;
+    var successCallback = _ref.successCallback;
+    var errorCallback = _ref.errorCallback;
+
+    var url = [ApiEndpoint.url, '/realization/search', '?apiKey=', ApiKey.key].join('');
+
+    var data = {};
+    if (name !== undefined) {
+      data.name = name;
+    }
+    if (studentGroups !== undefined) {
+      data.studentGroups = studentGroups;
+    }
+    if (startDate !== undefined) {
+      data.startDate = startDate;
+    }
+    if (endDate !== undefined) {
+      data.endDate = endDate;
+    }
+    if (codes !== undefined) {
+      data.codes = codes;
+    }
+    var lang = 'en';
+    if (navigator.language.includes('fi')) {
+      lang = 'fi';
+    }
+    $http({
+      method: 'POST',
+      url: url,
+      data: data,
+      withCredentials: true,
+      headers: {
+        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
+        'accept-language': lang,
+        'content-type': 'application/json',
+        'cache-control': 'no-cache'
+      }
+    }).success(function (data, status, headers, config) {
+      successCallback(data);
+    }).error(function (data, status, headers, config) {
+      errorCallback(status);
+    });
+  }
+  return {
+    search: search
+  };
+}]);
+'use strict';
+
+angular.module('lukkari.directives').directive('date', [function () {
+  return {
+    template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+  };
+}]);
+'use strict';
+
+angular.module('lukkari.directives').directive('ngLastRepeat', ['$timeout', function ($timeout) {
   return {
     restrict: 'A',
     link: function link(scope, element, attr) {
       if (scope.$last === true) {
         $timeout(function () {
-          scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
+          return scope.$emit('ngLastRepeat' + (attr.ngLastRepeat ? '.' + attr.ngLastRepeat : ''));
         });
       }
     }
   };
-});
+}]);
 'use strict';
 
-angular.module('lukkari.directives').directive('timeRange', function () {
+angular.module('lukkari.directives').directive('timeRange', [function () {
   return {
-    template: ['{{lesson.startDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '("fi-FI", {hour:"numeric", minute:"numeric"})}}'].join('')
+    template: ['{{lesson.startDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}'].join('')
   };
-});
+}]);
 'use strict';
 
 angular.module('lukkari.controllers')
 // controller for single appointment view
-.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Lessons, ionicMaterialInk) {
+.controller('LessonCtrl', ['$scope', '$stateParams', 'Lessons', 'ionicMaterialInk', function ($scope, $stateParams, Lessons, ionicMaterialInk) {
   $scope.lesson = Lessons.getLesson($stateParams.id);
   // Set Ink
   ionicMaterialInk.displayEffect();
@@ -444,43 +618,115 @@ angular.module('lukkari.controllers').controller('LunchCtrl', ['$scope', 'FoodSe
 'use strict';
 
 angular.module('lukkari.controllers')
-// TODO
-.controller('SearchCtrl', ['$scope', 'LocalStorage', function ($scope, LocalStorage) {}]);
+// controller for single appointment view
+.controller('RealizationCtrl', ['$scope', '$stateParams', 'Search', 'ionicMaterialInk', function ($scope, $stateParams, Search, ionicMaterialInk) {
+  var searchParams = {
+    codes: [$stateParams.code],
+    successCallback: function successCallback(data) {
+      $scope.realization = data.realizations[0];
+      $scope.realization.startDate = new Date($scope.realization.startDate);
+      $scope.realization.endDate = new Date($scope.realization.endDate);
+      $scope.realization.enrollmentStart = new Date($scope.realization.enrollmentStart);
+      $scope.realization.enrollmentEnd = new Date($scope.realization.enrollmentEnd);
+    },
+    errorCallback: function errorCallback(status) {
+      return console.log(status);
+    }
+  };
+  $scope.realization = Search.search(searchParams);
+  // Set Ink
+  ionicMaterialInk.displayEffect();
+}]);
 'use strict';
 
-angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion) {
-  $scope.groupInfo = {};
-  $scope.reminder = {};
-  $scope.reminder.startDay = new Date();
-  $scope.reminder.endDay = new Date();
+angular.module('lukkari.controllers').controller('SearchCtrl', ['$scope', 'Search', '$ionicLoading', '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaToast', function ($scope, Search, $ionicLoading, $ionicModal, ionicMaterialInk, ionicMaterialMotion, $cordovaToast) {
+  $scope.searchParams = {
+    successCallback: function successCallback(data) {
+      if (data.realizations.length < 1000) {
+        $scope.realizations = data.realizations;
+        $scope.realizations.forEach(function (element) {
+          element.startDate = new Date(element.startDate);
+          element.endDate = new Date(element.endDate);
+        });
+      } else {
+        $cordovaToast.show(i18n.t('search.please_enter_parameters'), 'long', 'center');
+      }
+      $ionicLoading.hide();
+    },
+    errorCallback: function errorCallback(status) {
+      return console.error(status);
+    }
+  };
 
+  $ionicModal.fromTemplateUrl('templates/searchModal.html', {
+    scope: $scope
+  }).then(function (modal) {
+    return $scope.modal = modal;
+  });
+
+  $scope.close = function () {
+    return $scope.modal.hide();
+  };
+
+  $scope.openSearch = function () {
+    return $scope.modal.show();
+  };
+
+  $scope.search = function () {
+    $scope.modal.hide();
+    $ionicLoading.show({
+      templateUrl: 'templates/loading.html'
+    });
+    if ($scope.searchParams.code !== undefined && $scope.searchParams.code !== null) {
+      $scope.searchParams.codes = [$scope.searchParams.code];
+    }
+    if ($scope.searchParams.studentGroup !== undefined && $scope.searchParams.studentGroup !== null && $scope.searchParams.studentGroup !== '') {
+      $scope.searchParams.studentGroups = [$scope.searchParams.studentGroup.toUpperCase()];
+    }
+    Search.search($scope.searchParams);
+  };
+
+  $scope.$on('ngLastRepeat.myList', function (e) {
+    return ionicMaterialMotion.blinds();
+  });
+
+  // Set Ink
+  ionicMaterialInk.displayEffect();
+}]);
+'use strict';
+
+angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'LocalStorage', '$cordovaToast', '$ionicPlatform', '$timeout', '$cordovaCalendar', 'Lessons', 'MyDate', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaLocalNotification', 'Notifications', function ($scope, LocalStorage, $cordovaToast, $ionicPlatform, $timeout, $cordovaCalendar, Lessons, MyDate, ionicMaterialInk, ionicMaterialMotion, $cordovaLocalNotification, Notifications) {
+  $scope.groupInfo = {
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
+  };
+  if (!$scope.groupInfo.group) {
+    $scope.groupInfo.group = '';
+  }
+  $scope.reminder = {
+    startDay: new Date(),
+    endDay: new Date(),
+    time: 'null'
+  };
+  $scope.notification = {
+    use: LocalStorage.get({
+      key: 'useNotification'
+    }),
+    time: null
+  };
+  if (!$scope.notification.use) {
+    $scope.notification.use = false;
+  }
   var toastOptions = {
     duration: 'long',
     position: 'center'
   };
-
-  function datePickerCallback(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.startDay = val;
-        $scope.datepickerObject.inputDate = val;
-      }
-  }
-
-  function datePickerCallback2(val) {
-    if (typeof val === 'undefined') {
-      //console.log('No date selected');
-    } else {
-        $scope.reminder.endDay = val;
-        $scope.datepickerObject2.inputDate = val;
-      }
-  }
-
+  //console.log(i18n.t('lesson.course'));
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
-    titleLabel: 'Select Start Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_start_date'), //Optional
+    todayLabel: i18n.t('date_picker.today'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -499,15 +745,19 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.startDay = val;
+          $scope.datepickerObject.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
-
   //Optional
   $scope.datepickerObject2 = {
-    titleLabel: 'Select End Date', //Optional
-    todayLabel: 'Today', //Optional
+    titleLabel: i18n.t('date_picker.select_end_date'), //Optional
+    todayLabel: i18n.t('date_picker.select_start_date'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -526,27 +776,36 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     //to: new Date(2018, 8, 25), //Optional
     callback: function callback(val) {
       //Mandatory
-      datePickerCallback2(val);
+      if (typeof val === 'undefined') {
+        //console.log('No date selected');
+      } else {
+          $scope.reminder.endDay = val;
+          $scope.datepickerObject2.inputDate = val;
+        }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
 
   //Optional
-  $scope.reminder.time = 'null';
-  $scope.groupInfo.group = LocalStorage.get('groupName');
-  if (!$scope.groupInfo.group) {
-    $scope.groupInfo.group = '';
-  }
-
   $scope.changeGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     // show toast that change was successful
     $ionicPlatform.ready(function () {
-      $cordovaToast.show('Group successfully changed!', toastOptions.duration, toastOptions.position);
+      $cordovaToast.show(i18n.t('settings.group_change_successful'), toastOptions.duration, toastOptions.position);
       // change to today view after 2 seconds
       $timeout(function () {
-        window.location.href = '#/app/today';
+        return window.location.href = '#/app/today';
       }, 2000);
+    });
+  };
+
+  $scope.setNotification = function () {
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
     });
   };
 
@@ -554,7 +813,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     var appointments = [];
     var calOptions = {
       // works on iOS only
-      calendarName: 'Lukkari app calendar',
+      calendarName: i18n.t('settings.calendar_name'),
       // android has id but no fucking idea what it does (1 is default)
       // so great documentation 5/5
       // https://github.com/EddyVerbruggen/Calendar-PhoneGap-Plugin
@@ -578,10 +837,11 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
         groups += element.groups[i] + ', ';
       }
 
+      var notes = [i18n.t('settings.course_name'), element.code, '\n', i18n.t('settings.group'), groups].join('');
       $cordovaCalendar.createEventWithOptions({
         title: element.name,
         location: element.room,
-        notes: 'Teacher(s): ' + element.teacher + '\nGroup(s): ' + groups + '\nCourse: ' + element.code,
+        notes: notes,
         startDate: element.startDay,
         endDate: element.endDay,
         firstReminderMinutes: calOptions.firstReminderMinutes,
@@ -599,19 +859,18 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
       endDate: $scope.reminder.endDay,
       callback: function callback(response) {
         $ionicPlatform.ready(function () {
-          response.lessons.forEach(createEvent);
+          return response.lessons.forEach(createEvent);
         });
       }
     });
     var msg = '';
     if (success) {
-      msg = 'Calendar events successfully added!';
+      msg = i18n.t('settings.success_message');
     } else {
-      msg = 'Failed to add calendar events!';
+      msg = i18n.t('settings.failure_message');
     }
 
     $cordovaToast.show(msg, toastOptions.duration, toastOptions.position);
-    console.log(msg);
   };
 
   // Set Motion
@@ -624,11 +883,25 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDay = new Date();
+
+  //Adverts.getAd();
+
+  var useNotifications = LocalStorage.get({
+    key: 'useNotification'
+  });
+  if (useNotifications == true) {
+    Notifications.useNotifications({
+      use: $scope.notification.use,
+      timeOffset: -$scope.notification.time
+    });
+  }
 
   // Show new group modal when no group is set
   $ionicModal.fromTemplateUrl('templates/newgroup.html', {
@@ -642,7 +915,7 @@ angular.module('lukkari.controllers')
   });
 
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   function getAppointments() {
@@ -654,9 +927,7 @@ angular.module('lukkari.controllers')
       day: $scope.currentDay,
       callback: function callback(response) {
         $ionicLoading.hide();
-        if (!response.success) {
-          console.error('ERROR');
-        } else {
+        if (!response.success) {} else {
           $scope.lessons = response.dayLessons;
         }
       }
@@ -664,22 +935,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.blinds();
+    return ionicMaterialMotion.blinds();
   });
 
   // sets the group
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -689,11 +959,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }
@@ -717,7 +983,9 @@ angular.module('lukkari.controllers')
 // controller for weekly view
 .controller('WeekCtrl', ['$scope', '$ionicLoading', '$ionicModal', 'LocalStorage', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $ionicModal, LocalStorage, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion) {
   $scope.groupInfo = {
-    group: LocalStorage.get('groupName')
+    group: LocalStorage.get({
+      key: 'groupName'
+    })
   };
   $scope.currentDate = MyDate.getMonday(new Date());
   $scope.endDate = MyDate.getDayFromDay({
@@ -738,7 +1006,7 @@ angular.module('lukkari.controllers')
 
   // closes the group name dialog
   $scope.closeGroupName = function () {
-    $scope.modal.hide();
+    return $scope.modal.hide();
   };
 
   // returns all of the appointments
@@ -783,22 +1051,21 @@ angular.module('lukkari.controllers')
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    ionicMaterialMotion.ripple();
+    return ionicMaterialMotion.ripple();
   });
 
   // sets the group name
   $scope.setGroup = function () {
-    LocalStorage.set('groupName', $scope.groupInfo.group);
+    LocalStorage.set({
+      key: 'groupName',
+      value: $scope.groupInfo.group
+    });
     $scope.modal.hide();
 
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   };
@@ -808,11 +1075,7 @@ angular.module('lukkari.controllers')
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
-        if (success) {
-          getAppointments();
-        } else {
-          console.error('failed to change group name');
-        }
+        return success ? getAppointments() : console.error('failed to change group name');
       }
     });
   }

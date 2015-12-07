@@ -1,32 +1,44 @@
+angular.module('jm.i18next').config(['$i18nextProvider',
+  function($i18nextProvider) {
+    $i18nextProvider.options = {
+      //lng: 'dev', // If not given, i18n will detect the browser language.
+      useCookie: false,
+      useLocalStorage: true,
+      fallbackLng: 'en',
+      resGetPath: './locales/__lng__/__ns__.json',
+      defaultLoadingValue: '',
+      //localStorageExpirationTime: 1000 // NOTE remove for production
+    };
+  }
+]);
+
 angular.module('lukkari', ['ionic', 'lukkari.controllers',
     'lukkari.services', 'lukkari.directives', 'ionic-datepicker',
-    'ionic-material', 'angularXml2json'
+    'ionic-material', 'jm.i18next'
   ])
-  .run(['$ionicPlatform',
-    function($ionicPlatform) {
-      $ionicPlatform.ready(function() {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
-          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-          cordova.plugins.Keyboard.disableScroll(true);
+.run(['$ionicPlatform',
+  function($ionicPlatform) {
+    $ionicPlatform.ready(() => {
+      // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+      // for form inputs)
+      if (window.cordova && window.cordova.plugins.Keyboard) {
+        cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+        cordova.plugins.Keyboard.disableScroll(true);
 
-        }
-        if (window.StatusBar) {
-          // org.apache.cordova.statusbar required
-          StatusBar.styleDefault();
-        }
-      });
-    }
-  ])
-
+      }
+      if (window.StatusBar) {
+        // org.apache.cordova.statusbar required
+        StatusBar.styleDefault();
+      }
+    });
+  }
+])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 })
-
-.constant('LunchEndPoint', {
-  url: 'http://localhost:8100/lunch'
+.constant('ApiKey', {
+  key: 'Wu47zzKEPa7agvin47f5'
 })
 
 // menuContent-view is presented on the main view.
@@ -45,6 +57,15 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
           'menuContent': {
             templateUrl: 'templates/search.html',
             controller: 'SearchCtrl'
+          }
+        }
+      })
+      .state('app.realization', {
+        url: '/search/:code',
+        views: {
+          'menuContent': {
+            templateUrl: 'templates/realization.html',
+            controller: 'RealizationCtrl'
           }
         }
       })

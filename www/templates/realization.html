@@ -1,0 +1,29 @@
+<ion-view view-title="{{realization.code}}">
+  <ion-content>
+    <ion-list>
+      <ion-item class="item-divider">{{'realization.general_info' | i18next}}</ion-item>
+      <ion-item>{{'realization.course_code' | i18next}}: {{realization.code}}</ion-item>
+      <ion-item>{{'realization.name' | i18next}}: {{realization.name}}</ion-item>
+      <ion-item>{{'realization.duration' | i18next}}: {{realization.startDate.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.endDate.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item ng-if="realization.studentGroups.length === 1">{{'realization.student_group' | i18next}}: {{realization.studentGroups[0].code}}</ion-item>
+      <ion-list ng-if="realization.studentGroups.length > 1">
+        <ion-item class="item-divider">{{'realization.student_groups' | i18next}}</ion-item>
+        <ion-item ng-repeat="group in realization.studentGroups">{{group.code}}</ion-item>
+      </ion-list>
+      <ion-item class="item-divider">{{'realization.enrollment_period' | i18next}}</ion-item>
+      <ion-item>{{realization.enrollmentStart.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.enrollmentEnd.toLocaleDateString(navigator.language, {day: "numeric", month:"numeric", year: "numeric"})}}</ion-item>
+      <ion-item class="item-divider">{{'realization.details' | i18next}}</ion-item>
+      <ion-item>{{'realization.teaching_language' | i18next}}: {{realization.teachingLanguage}}</ion-item>
+      <ion-item>{{'realization.credits' | i18next}}: {{realization.credits}}</ion-item>
+      <ion-item>{{'realization.virtual_proportion' | i18next}}: {{realization.virtualProportion}} {{'realization.credits' | i18next}}</ion-item>
+      <ion-item>{{'realization.teaching_location' | i18next}}: {{realization.office.localizedName.valueFi}}</ion-item>
+      <ion-item>{{'realization.degree_programmes' | i18next}}: {{realization.unit.localizedName.valueFi}}</ion-item>
+      <ion-item class="item-divider">{{'realization.content' | i18next}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.content.length > 0">{{realization.content}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.content.length === 0">{{'realization.no_info' | i18next}}</ion-item>
+      <ion-item class="item-divider">{{'realization.objective' | i18next}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.objective.length > 0">{{realization.objective}}</ion-item>
+      <ion-item class="show-overflow" ng-if="realization.objective.length === 0">{{'realization.no_info' | i18next}}</ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

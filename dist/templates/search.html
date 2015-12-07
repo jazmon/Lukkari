@@ -1,5 +1,33 @@
-<ion-view view-title="Search">
-  <ion-content>
-    <h1>Search</h1>
+<ion-view view-title="{{'view_titles.search' | i18next}}">
+  <ion-content class="light-bg">
+    <div class="animate-blinds" ng-repeat="realization in realizations" ng-last-repeat="myList" ng-if="realizations.length > 0">
+      <ion-list class="card calm-bg light">
+        <ion-item class="item item-divider">
+          {{realization.code}}
+        </ion-item>
+        <ion-item>
+          <a class="lessonLink" href="#/app/search/{{realization.code}}">{{realization.name}}</a>
+        </ion-item>
+        <ion-item class="item card-footer">
+          {{realization.startDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}} - {{realization.endDate.toLocaleDateString("fi-FI", {day: "numeric", month:"numeric", year: "numeric"})}}
+        </ion-item>
+      </ion-list>
+    </div>
+    <div ng-if="realizations.length === 0">
+      <div class="card calm-bg light padding">
+        <div class="item item-text-wrap">
+          {{'search.no_results' | i18next}}
+        </div>
+      </div>
+    </div>
+    <div ng-if="realizations === undefined">
+      <div class="card stable-bg dark padding">
+        <div class="item item-text-wrap">
+          {{'search.please_search' | i18next}}
+        </div>
+      </div>
+    </div>
+
   </ion-content>
+  <button class="button button-fab button-fab-bottom-right button-balanced icon ion-android-search" ng-click="openSearch()"></button>
 </ion-view>

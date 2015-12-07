@@ -1,19 +1,19 @@
 <ion-modal-view>
   <ion-header-bar>
-    <h1 class="title">Enter your group name</h1>
+    <h1 class="title">{{'newgroup.enter_group_name' | i18next}}</h1>
     <div class="buttons">
-      <button class="button button-clear" ng-click="closeGroupName()">Close</button>
+      <button class="button button-clear" ng-click="closeGroupName()">{{'newgroup.close' | i18next}}</button>
     </div>
   </ion-header-bar>
   <ion-content>
     <form ng-submit="setGroup()">
       <div class="list">
         <label class="item item-input">
-          <span class="input-label">Group name</span>
+          <span class="input-label">{{'newgroup.group_name' | i18next}}</span>
           <input type="text" ng-model="groupInfo.group">
         </label>
         <label class="item">
-          <button class="button button-block button-positive" type="submit">Submit <i class="icon ion-submit"></i></button>
+          <button class="button button-block button-positive" type="submit">{{'newgroup.submit' | i18next}} <i class="icon ion-submit"></i></button>
         </label>
       </div>
     </form>

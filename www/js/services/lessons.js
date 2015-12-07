@@ -1,6 +1,6 @@
 angular.module('lukkari.services')
-  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate',
-    function($http, ApiEndpoint, MyDate) {
+  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey',
+    function($http, ApiEndpoint, MyDate, ApiKey) {
       let lessons = [];
       let savedGroupName;
 
@@ -14,7 +14,7 @@ angular.module('lukkari.services')
         const {
           resources
         } = element;
-        resources.forEach(function(resource, index, array) {
+        resources.forEach((resource, index, array) => {
           switch (resource.type) {
             case 'realization':
               lesson.code = resource.code;
@@ -36,10 +36,13 @@ angular.module('lukkari.services')
         const data = {
           studentGroup: [savedGroupName]
         };
-        const apiKey = 'Wu47zzKEPa7agvin47f5';
         const url = [ApiEndpoint.url, '/reservation/search',
-          '?apiKey=', apiKey
+          '?apiKey=', ApiKey.key
         ].join('');
+        let lang = 'en';
+        if (navigator.language.includes('fi')) {
+          lang = 'fi';
+        }
         $http({
           method: 'POST',
           url,
@@ -47,17 +50,17 @@ angular.module('lukkari.services')
           withCredentials: true,
           headers: {
             'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
-            'accept-language': 'fi',
+            'accept-language': lang,
             'content-type': 'application/json',
             'cache-control': 'no-cache'
           }
-        }).success(function(data, status, headers, config) {
+        }).success((data, status, headers, config) => {
           lessons = [];
           data.reservations.forEach(parseLesson);
           callback({
             success: false
           });
-        }).error(function(data, status, headers, config) {
+        }).error((data, status, headers, config) => {
           console.error('Failed to get lesson data!');
           callback({
             success: false
@@ -71,9 +74,7 @@ angular.module('lukkari.services')
         groupName, callback
       }) {
         savedGroupName = groupName.toUpperCase();
-        get(function(result) {
-          callback(result);
-        });
+        get(result => callback(result));
       }
 
       // get day method that returns one day's lessons using date

@@ -1,4 +1,0 @@
-The HTTP requests needed to get a response containing ical formatted timetable:
-
-https://lukkarit.tamk.fi/paivitaKori.php?toiminto=addGroup&code=14TIKOOT&viewReply=true
-https://lukkarit.tamk.fi/icalcreator.php?startDate=26.10.2015&endDate=28.12.2015
