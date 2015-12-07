@@ -15,6 +15,7 @@ import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
 import connect from 'gulp-connect';
 import Proxy from './gulp-connect-proxy';
+import minifyHTML from 'gulp-minify-html';
 
 const replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
   './www/combinedJs/bundle.min.js'
@@ -214,7 +215,7 @@ gulp.task('copy-locales', (done) => {
 // copies all
 gulp.task('copy', (done) => runSequence(['copy-html', 'copy-templates',
   'copy-styles', 'copy-images', 'copy-libs', 'copy-scripts',
-  'copy-locales'
+  'copy-locales', 'copy-extras'
 ], done));
 
 // builds a release version
