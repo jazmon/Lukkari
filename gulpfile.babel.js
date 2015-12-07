@@ -39,7 +39,7 @@ const paths = {
   directives: ['js/directives/*.js'],
   app: ['js/app.js'],
   locales: ['locales/**/*.json']
-    //extras: ['favicon.ico']
+  //extras: ['favicon.ico']
 };
 
 // default task to be run when gulp is run
