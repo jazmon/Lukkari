@@ -90,7 +90,7 @@ gulp.task('scripts', () => {
     // renames file
     .pipe(rename('bundle.min.js'))
     .pipe(uglify({
-      mangle: false
+      mangle: true
     }))
     // write sourcemaps
     .pipe(sourcemaps.write('.'))
