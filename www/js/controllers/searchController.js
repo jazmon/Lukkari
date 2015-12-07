@@ -1,12 +1,10 @@
 angular.module('lukkari.controllers')
-  .controller('SearchCtrl', ['$scope', 'LocalStorage', 'Search',
-    '$ionicLoading',
-    '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion',
-    function($scope, LocalStorage, Search, $ionicLoading, $ionicModal,
-      ionicMaterialInk, ionicMaterialMotion) {
+  .controller('SearchCtrl', ['$scope', 'Search', '$ionicLoading',
+    '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaToast',
+    function($scope, Search, $ionicLoading, $ionicModal,
+      ionicMaterialInk, ionicMaterialMotion, $cordovaToast) {
       $scope.searchParams = {
         successCallback: data => {
-          console.log(data);
           if (data.realizations.length < 1000) {
             $scope.realizations = data.realizations;
             $scope.realizations.forEach((element) => {
@@ -14,12 +12,13 @@ angular.module('lukkari.controllers')
               element.endDate = new Date(element.endDate);
             });
           } else {
-            // show error popup
-            console.log('Please enter some search parameters!');
+            $cordovaToast.show(i18n.t('search.please_enter_parameters'),
+              'long',
+              'center');
           }
           $ionicLoading.hide();
         },
-        errorCallback: status => console.log(status)
+        errorCallback: status => console.error(status)
       };
 
       $ionicModal.fromTemplateUrl('templates/searchModal.html', {

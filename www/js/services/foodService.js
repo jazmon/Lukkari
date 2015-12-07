@@ -1,12 +1,10 @@
 angular.module('lukkari.services')
-  .factory('FoodService', ['$http', 'LunchEndPoint', 'ngXml2json',
-    function($http, LunchEndPoint, ngXml2json) {
+  .factory('FoodService', ['$http',
+    function($http) {
       let lunches = [];
 
       function parseLunch(element, index, array) {
-        console.log(element);
         let lunch = {};
-
         try {
           lunch.main = element.div[0].div.div.content;
           if (element.div.length >= 2) {

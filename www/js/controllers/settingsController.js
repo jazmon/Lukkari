@@ -184,7 +184,6 @@ angular.module('lukkari.controllers')
         $cordovaToast.show(msg,
           toastOptions.duration,
           toastOptions.position);
-        console.log(msg);
       };
 
       // Set Motion

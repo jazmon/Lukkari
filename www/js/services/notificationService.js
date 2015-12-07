@@ -39,12 +39,12 @@ angular.module('lukkari.services')
                     id,
                     title: lesson.name,
                     text: [lesson.room, ', ', lesson.startDay
-                      .toLocaleTimeString('fi-FI', {
+                      .toLocaleTimeString(navigator.language, {
                         hour: 'numeric',
                         minute: 'numeric'
                       }), ' - ',
                       lesson.endDay.toLocaleTimeString(
-                        'fi-FI', {
+                        navigator.language, {
                           hour: 'numeric',
                           minute: 'numeric'
                         })
@@ -53,8 +53,7 @@ angular.module('lukkari.services')
                       date: lesson.startDay,
                       minutes: timeOffset
                     })
-                  }).then(result => console.log('SUCCESS: ' +
-                    result));
+                  });
                 });
               }
             });
@@ -63,9 +62,7 @@ angular.module('lukkari.services')
               value: 'true'
             });
           } else {
-            console.log('Removing all notifications');
-            $cordovaLocalNotification.cancelAll().then(result =>
-              console.log(result));
+            $cordovaLocalNotification.cancelAll();
             LocalStorage.set({
               key: 'useNotification',
               value: 'false'

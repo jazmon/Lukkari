@@ -12,7 +12,7 @@ angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvi
 }]);
 
 //localStorageExpirationTime: 1000 // NOTE remove for production
-angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'angularXml2json', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
+angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', 'lukkari.directives', 'ionic-datepicker', 'ionic-material', 'jm.i18next']).run(['$ionicPlatform', function ($ionicPlatform) {
   $ionicPlatform.ready(function () {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -26,12 +26,9 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
     }
   });
 }])
-
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
   url: 'http://localhost:8100/api'
-}).constant('LunchEndPoint', {
-  url: 'http://localhost:8100/lunch'
 }).constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
 })
@@ -117,13 +114,11 @@ angular.module('lukkari.controllers', ['ngCordova']);
 angular.module('lukkari.directives', []);
 'use strict';
 
-angular.module('lukkari.services').factory('FoodService', ['$http', 'LunchEndPoint', 'ngXml2json', function ($http, LunchEndPoint, ngXml2json) {
+angular.module('lukkari.services').factory('FoodService', ['$http', function ($http) {
   var lunches = [];
 
   function parseLunch(element, index, array) {
-    console.log(element);
     var lunch = {};
-
     try {
       lunch.main = element.div[0].div.div.content;
       if (element.div.length >= 2) {
@@ -472,10 +467,10 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
               $cordovaLocalNotification.schedule({
                 id: id,
                 title: lesson.name,
-                text: [lesson.room, ', ', lesson.startDay.toLocaleTimeString('fi-FI', {
+                text: [lesson.room, ', ', lesson.startDay.toLocaleTimeString(navigator.language, {
                   hour: 'numeric',
                   minute: 'numeric'
-                }), ' - ', lesson.endDay.toLocaleTimeString('fi-FI', {
+                }), ' - ', lesson.endDay.toLocaleTimeString(navigator.language, {
                   hour: 'numeric',
                   minute: 'numeric'
                 })].join(''),
@@ -483,8 +478,6 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
                   date: lesson.startDay,
                   minutes: timeOffset
                 })
-              }).then(function (result) {
-                return console.log('SUCCESS: ' + result);
               });
             });
           }
@@ -494,10 +487,7 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
           value: 'true'
         });
       } else {
-        console.log('Removing all notifications');
-        $cordovaLocalNotification.cancelAll().then(function (result) {
-          return console.log(result);
-        });
+        $cordovaLocalNotification.cancelAll();
         LocalStorage.set({
           key: 'useNotification',
           value: 'false'
@@ -567,14 +557,14 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
 }]);
 'use strict';
 
-angular.module('lukkari.directives').directive('date', function () {
+angular.module('lukkari.directives').directive('date', [function () {
   return {
     template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
-});
+}]);
 'use strict';
 
-angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeout) {
+angular.module('lukkari.directives').directive('ngLastRepeat', ['$timeout', function ($timeout) {
   return {
     restrict: 'A',
     link: function link(scope, element, attr) {
@@ -585,19 +575,19 @@ angular.module('lukkari.directives').directive('ngLastRepeat', function ($timeou
       }
     }
   };
-});
+}]);
 'use strict';
 
-angular.module('lukkari.directives').directive('timeRange', function () {
+angular.module('lukkari.directives').directive('timeRange', [function () {
   return {
     template: ['{{lesson.startDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}'].join('')
   };
-});
+}]);
 'use strict';
 
 angular.module('lukkari.controllers')
 // controller for single appointment view
-.controller('LessonCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Lessons, ionicMaterialInk) {
+.controller('LessonCtrl', ['$scope', '$stateParams', 'Lessons', 'ionicMaterialInk', function ($scope, $stateParams, Lessons, ionicMaterialInk) {
   $scope.lesson = Lessons.getLesson($stateParams.id);
   // Set Ink
   ionicMaterialInk.displayEffect();
@@ -629,11 +619,10 @@ angular.module('lukkari.controllers').controller('LunchCtrl', ['$scope', 'FoodSe
 
 angular.module('lukkari.controllers')
 // controller for single appointment view
-.controller('RealizationCtrl', ['$scope', '$ionicLoading', '$stateParams', 'Search', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, $ionicLoading, $stateParams, Search, ionicMaterialInk) {
+.controller('RealizationCtrl', ['$scope', '$stateParams', 'Search', 'ionicMaterialInk', function ($scope, $stateParams, Search, ionicMaterialInk) {
   var searchParams = {
     codes: [$stateParams.code],
     successCallback: function successCallback(data) {
-      console.log(data.realizations[0]);
       $scope.realization = data.realizations[0];
       $scope.realization.startDate = new Date($scope.realization.startDate);
       $scope.realization.endDate = new Date($scope.realization.endDate);
@@ -650,10 +639,9 @@ angular.module('lukkari.controllers')
 }]);
 'use strict';
 
-angular.module('lukkari.controllers').controller('SearchCtrl', ['$scope', 'LocalStorage', 'Search', '$ionicLoading', '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion', function ($scope, LocalStorage, Search, $ionicLoading, $ionicModal, ionicMaterialInk, ionicMaterialMotion) {
+angular.module('lukkari.controllers').controller('SearchCtrl', ['$scope', 'Search', '$ionicLoading', '$ionicModal', 'ionicMaterialInk', 'ionicMaterialMotion', '$cordovaToast', function ($scope, Search, $ionicLoading, $ionicModal, ionicMaterialInk, ionicMaterialMotion, $cordovaToast) {
   $scope.searchParams = {
     successCallback: function successCallback(data) {
-      console.log(data);
       if (data.realizations.length < 1000) {
         $scope.realizations = data.realizations;
         $scope.realizations.forEach(function (element) {
@@ -661,13 +649,12 @@ angular.module('lukkari.controllers').controller('SearchCtrl', ['$scope', 'Local
           element.endDate = new Date(element.endDate);
         });
       } else {
-        // show error popup
-        console.log('Please enter some search parameters!');
+        $cordovaToast.show(i18n.t('search.please_enter_parameters'), 'long', 'center');
       }
       $ionicLoading.hide();
     },
     errorCallback: function errorCallback(status) {
-      return console.log(status);
+      return console.error(status);
     }
   };
 
@@ -884,7 +871,6 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     }
 
     $cordovaToast.show(msg, toastOptions.duration, toastOptions.position);
-    console.log(msg);
   };
 
   // Set Motion
@@ -897,7 +883,7 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
 
 angular.module('lukkari.controllers')
 // controller for today view
-.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', 'Adverts', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications, Adverts) {
+.controller('TodayCtrl', ['$scope', '$ionicLoading', 'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk', 'ionicMaterialMotion', 'Notifications', function ($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate, Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
   $scope.groupInfo = {
     group: LocalStorage.get({
       key: 'groupName'
@@ -910,9 +896,7 @@ angular.module('lukkari.controllers')
   var useNotifications = LocalStorage.get({
     key: 'useNotification'
   });
-  //console.log(useNotifications);
   if (useNotifications == true) {
-    console.log('setting notifications');
     Notifications.useNotifications({
       use: $scope.notification.use,
       timeOffset: -$scope.notification.time
@@ -943,9 +927,7 @@ angular.module('lukkari.controllers')
       day: $scope.currentDay,
       callback: function callback(response) {
         $ionicLoading.hide();
-        if (!response.success) {
-          console.error('ERROR');
-        } else {
+        if (!response.success) {} else {
           $scope.lessons = response.dayLessons;
         }
       }

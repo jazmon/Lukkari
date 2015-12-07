@@ -2,9 +2,9 @@ angular.module('lukkari.controllers')
   // controller for today view
   .controller('TodayCtrl', ['$scope', '$ionicLoading',
     'LocalStorage', '$ionicModal', 'MyDate', 'Lessons', 'ionicMaterialInk',
-    'ionicMaterialMotion', 'Notifications','Adverts',
+    'ionicMaterialMotion', 'Notifications',
     function($scope, $ionicLoading, LocalStorage, $ionicModal, MyDate,
-      Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications, Adverts) {
+      Lessons, ionicMaterialInk, ionicMaterialMotion, Notifications) {
       $scope.groupInfo = {
         group: LocalStorage.get({
           key: 'groupName'
@@ -17,9 +17,7 @@ angular.module('lukkari.controllers')
       const useNotifications = LocalStorage.get({
         key: 'useNotification'
       });
-      //console.log(useNotifications);
       if (useNotifications == true) {
-        console.log('setting notifications');
         Notifications.useNotifications({
           use: $scope.notification.use,
           timeOffset: -$scope.notification.time
@@ -49,7 +47,6 @@ angular.module('lukkari.controllers')
           callback: response => {
             $ionicLoading.hide();
             if (!response.success) {
-              console.error('ERROR');
             } else {
               $scope.lessons = response.dayLessons;
             }

@@ -42,6 +42,7 @@
     "teaching_language": "Opetuskieli",
     "credits": "Opintopisteitä",
     "virtual_proportion": "Virtuaali osuus",
+    "credits": "op",
     "teaching_location": "Opetuksen sijainti",
     "degree_programmes": "Koulutusohjelmat",
     "content": "Sisältö",
@@ -50,7 +51,8 @@
   },
   "search": {
     "no_results": "Haku ei palauttanut yhtään opintojaksoa!",
-    "please_search": "Käytä hakua nähdäksesi opintojaksoja"
+    "please_search": "Käytä hakua nähdäksesi opintojaksoja",
+    "please_enter_parameters": "Anna hakuparametreja!"
   },
   "search-modal": {
     "title": "Haku",

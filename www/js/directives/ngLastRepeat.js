@@ -1,5 +1,5 @@
 angular.module('lukkari.directives')
-  .directive('ngLastRepeat', ($timeout) => {
+  .directive('ngLastRepeat', ['$timeout', function($timeout) {
     return {
       restrict: 'A',
       link: (scope, element, attr) => {
@@ -9,4 +9,4 @@ angular.module('lukkari.directives')
         }
       }
     };
-  });
+  }]);
