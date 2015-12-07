@@ -42,6 +42,7 @@
     "teaching_language": "Teaching language",
     "credits": "Credits",
     "virtual_proportion": "Virtual proportion",
+    "credits": "Credits",
     "teaching_location": "Teaching location",
     "degree_programmes": "Degree programmes",
     "content": "Content",
@@ -50,7 +51,8 @@
   },
   "search": {
     "no_results": "Search didn't return any realizations!",
-    "please_search": "Please search first"
+    "please_search": "Please search first",
+    "please_enter_parameters": "Please enter some parameters!"
   },
   "search-modal": {
     "title": "Search",
