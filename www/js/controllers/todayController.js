@@ -28,9 +28,9 @@ angular.module('lukkari.controllers')
       }).then(modal => {
         $scope.modal = modal;
         if (!$scope.groupInfo.group) {
-          if (typeof AdMob !== 'undefined') {
-            AdMob.hideBanner();
-          }
+          // if (typeof AdMob !== 'undefined') {
+          //   AdMob.hideBanner();
+          // }
           // open modal to set group name
           $scope.modal.show();
         }
@@ -79,6 +79,10 @@ angular.module('lukkari.controllers')
       $scope.lessons = [];
       if ($scope.groupInfo.group !== undefined &&
         $scope.groupInfo.group !== null) {
+
+        if (typeof AdMob !== 'undefined') {
+          AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
+        }
         Lessons.changeGroup({
           groupName: $scope.groupInfo.group,
           callback: success => success ? getAppointments() : console.error(

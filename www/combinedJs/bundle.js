@@ -28,7 +28,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 }])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'http://localhost:8100/api'
+  url: 'https://opendata.tamk.fi/r1'
 }).constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
 })
@@ -917,9 +917,9 @@ angular.module('lukkari.controllers')
   }).then(function (modal) {
     $scope.modal = modal;
     if (!$scope.groupInfo.group) {
-      if (typeof AdMob !== 'undefined') {
-        AdMob.hideBanner();
-      }
+      // if (typeof AdMob !== 'undefined') {
+      //   AdMob.hideBanner();
+      // }
       // open modal to set group name
       $scope.modal.show();
     }
@@ -970,6 +970,10 @@ angular.module('lukkari.controllers')
 
   $scope.lessons = [];
   if ($scope.groupInfo.group !== undefined && $scope.groupInfo.group !== null) {
+
+    if (typeof AdMob !== 'undefined') {
+      AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
+    }
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {
