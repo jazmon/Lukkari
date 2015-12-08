@@ -28,7 +28,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 }])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 }).constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
 })
@@ -132,7 +132,17 @@ angular.module('lukkari.services').factory('FoodService', ['$http', function ($h
       lunch.main = element.div.div.div.content;
     }
 
-    lunches.push(lunch);
+    var found = false;
+    var lunchLength = lunches.length;
+    while (lunchLength--) {
+      if (lunches[lunchLength].main.includes(lunch.main)) {
+        console.log('found');
+        found = true;
+      }
+    }
+    if (!found) {
+      lunches.push(lunch);
+    }
   }
 
   function get(_ref) {
@@ -725,8 +735,8 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
   //console.log(i18n.t('lesson.course'));
   // https://github.com/rajeshwarpatlolla/ionic-datepicker
   $scope.datepickerObject = {
-    titleLabel: i18n.t('date_picker.select_start_date'), //Optional
-    todayLabel: i18n.t('date_picker.today'), //Optional
+    titleLabel: i18n.t('settings.select_start_date'), //Optional
+    todayLabel: i18n.t('settings.today'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -746,18 +756,18 @@ angular.module('lukkari.controllers').controller('SettingsCtrl', ['$scope', 'Loc
     callback: function callback(val) {
       //Mandatory
       if (typeof val === 'undefined') {
-        //console.log('No date selected');
+        console.log('No date selected');
       } else {
-          $scope.reminder.startDay = val;
-          $scope.datepickerObject.inputDate = val;
-        }
+        $scope.reminder.startDay = val;
+        $scope.datepickerObject.inputDate = val;
+      }
     },
     dateFormat: 'dd-MM-yyyy', //Optional
     closeOnSelect: true };
   //Optional
   $scope.datepickerObject2 = {
-    titleLabel: i18n.t('date_picker.select_end_date'), //Optional
-    todayLabel: i18n.t('date_picker.select_start_date'), //Optional
+    titleLabel: i18n.t('settings.select_end_date'), //Optional
+    todayLabel: i18n.t('settings.select_start_date'), //Optional
     closeLabel: '<span class="icon ion-android-close"></span>', //Optional
     setLabel: '<span class="icon ion-android-done"></span>', //Optional
     setButtonType: 'button-positive', //Optional
@@ -891,8 +901,6 @@ angular.module('lukkari.controllers')
   };
   $scope.currentDay = new Date();
 
-  //Adverts.getAd();
-
   var useNotifications = LocalStorage.get({
     key: 'useNotification'
   });
@@ -909,13 +917,19 @@ angular.module('lukkari.controllers')
   }).then(function (modal) {
     $scope.modal = modal;
     if (!$scope.groupInfo.group) {
+      if (typeof AdMob !== 'undefined') {
+        AdMob.hideBanner();
+      }
       // open modal to set group name
       $scope.modal.show();
     }
   });
 
   $scope.closeGroupName = function () {
-    return $scope.modal.hide();
+    $scope.modal.hide();
+    if (typeof AdMob !== 'undefined') {
+      AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
+    }
   };
 
   function getAppointments() {
@@ -1048,9 +1062,11 @@ angular.module('lukkari.controllers')
     Lessons.getWeek({
       day: $scope.currentDate,
       callback: function callback(response) {
-        $ionicLoading.hide();
         if (!response.success) {
           console.error('ERROR');
+
+          // hide the loading after done
+          $ionicLoading.hide();
         } else {
           var allLessons = response.weekLessons;
           $scope.days = [];
@@ -1075,12 +1091,13 @@ angular.module('lukkari.controllers')
         }
       }
     });
-    // hide the loading after done
-    $ionicLoading.hide();
   }
 
   $scope.$on('ngLastRepeat.myList', function (e) {
-    return ionicMaterialMotion.ripple();
+
+    // hide the loading after done
+    $ionicLoading.hide();
+    ionicMaterialMotion.ripple();
   });
 
   // sets the group name

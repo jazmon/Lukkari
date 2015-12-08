@@ -36,8 +36,8 @@ angular.module('lukkari.controllers')
       //console.log(i18n.t('lesson.course'));
       // https://github.com/rajeshwarpatlolla/ionic-datepicker
       $scope.datepickerObject = {
-        titleLabel: i18n.t('date_picker.select_start_date'), //Optional
-        todayLabel: i18n.t('date_picker.today'), //Optional
+        titleLabel: i18n.t('settings.select_start_date'), //Optional
+        todayLabel: i18n.t('settings.today'), //Optional
         closeLabel: '<span class="icon ion-android-close"></span>', //Optional
         setLabel: '<span class="icon ion-android-done"></span>', //Optional
         setButtonType: 'button-positive', //Optional
@@ -56,7 +56,7 @@ angular.module('lukkari.controllers')
         //to: new Date(2018, 8, 25), //Optional
         callback: (val) => { //Mandatory
           if (typeof(val) === 'undefined') {
-            //console.log('No date selected');
+            console.log('No date selected');
           } else {
             $scope.reminder.startDay = val;
             $scope.datepickerObject.inputDate = val;
@@ -66,8 +66,8 @@ angular.module('lukkari.controllers')
         closeOnSelect: true, //Optional
       };
       $scope.datepickerObject2 = {
-        titleLabel: i18n.t('date_picker.select_end_date'), //Optional
-        todayLabel: i18n.t('date_picker.select_start_date'), //Optional
+        titleLabel: i18n.t('settings.select_end_date'), //Optional
+        todayLabel: i18n.t('settings.select_start_date'), //Optional
         closeLabel: '<span class="icon ion-android-close"></span>', //Optional
         setLabel: '<span class="icon ion-android-done"></span>', //Optional
         setButtonType: 'button-positive', //Optional

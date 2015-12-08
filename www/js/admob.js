@@ -11,21 +11,22 @@ if ((/(ipad|iphone|ipod|android|windows phone)/i.test(navigator.userAgent))) {
 }
 
 function initApp() {
-  AdMob.createBanner({
-    adId: admobid.banner,
-    isTesting: true,
-    overlap: false,
-    offsetTopBar: false,
-    position: AdMob.AD_POSITION.BOTTOM_CENTER,
-    bgColor: 'black',
-    autoShow: true
-  }, function success() {
-  }, function fail() {
-    console.error('Failed to create banner');
-  });
+  if (typeof AdMob !== 'undefined') {
+    AdMob.createBanner({
+      adId: admobid.banner,
+      isTesting: false,
+      overlap: false,
+      offsetTopBar: false,
+      position: AdMob.AD_POSITION.BOTTOM_CENTER,
+      bgColor: 'black',
+      autoShow: true
+    }, function success() {}, function fail() {
+      console.error('Failed to create banner');
+    });
 
-  AdMob.prepareInterstitial({
-    adId: admobid.interstitial,
-    autoShow: false
-  });
+    AdMob.prepareInterstitial({
+      adId: admobid.interstitial,
+      autoShow: false
+    });
+  }
 }

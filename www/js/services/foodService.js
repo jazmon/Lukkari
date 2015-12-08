@@ -18,7 +18,18 @@ angular.module('lukkari.services')
           lunch.main = element.div.div.div.content;
         }
 
-        lunches.push(lunch);
+        let found = false;
+        let lunchLength = lunches.length;
+        while (lunchLength--) {
+          if (lunches[lunchLength].main.includes(lunch.main)) {
+            console.log('found');
+            found = true;
+          }
+        }
+        if (!found) {
+          lunches.push(lunch);
+        }
+
       }
 
       function get({

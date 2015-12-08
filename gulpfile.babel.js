@@ -16,6 +16,8 @@ import livereload from 'gulp-livereload';
 import connect from 'gulp-connect';
 import Proxy from './gulp-connect-proxy';
 import minifyHTML from 'gulp-minify-html';
+import stripDebug from 'gulp-strip-debug';
+import { Server } from 'karma';
 
 const replaceFiles = ['./www/js/app.js', './www/combinedJs/bundle.js',
   './www/combinedJs/bundle.min.js'
@@ -90,6 +92,8 @@ gulp.task('scripts', () => {
     .pipe(gulp.dest(bases.app + 'combinedJs'))
     // renames file
     .pipe(rename('bundle.min.js'))
+    // strip debug statements
+    .pipe(stripDebug())
     .pipe(uglify({
       mangle: true
     }))
@@ -116,6 +120,13 @@ gulp.task('sass-watch', (done) => runSequence('sass', 'copy-styles', done));
 
 gulp.task('scripts-watch', (done) => runSequence('scripts', 'copy-scripts',
   done));
+
+gulp.task('test', done => {
+  new Server({
+    configFile: __dirname + '/my.conf.js',
+    singleRun: true
+  }, done).start();
+});
 
 gulp.task('clean', (done) => {
   gulp.src(bases.dist, {
