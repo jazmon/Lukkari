@@ -40,9 +40,11 @@ angular.module('lukkari.controllers')
         Lessons.getWeek({
           day: $scope.currentDate,
           callback: response => {
-            $ionicLoading.hide();
             if (!response.success) {
               console.error('ERROR');
+
+              // hide the loading after done
+              $ionicLoading.hide();
             } else {
               const allLessons = response.weekLessons;
               $scope.days = [];
@@ -68,11 +70,14 @@ angular.module('lukkari.controllers')
             }
           }
         });
-        // hide the loading after done
-        $ionicLoading.hide();
       }
 
-      $scope.$on('ngLastRepeat.myList', e => ionicMaterialMotion.ripple());
+      $scope.$on('ngLastRepeat.myList', e => {
+
+        // hide the loading after done
+        $ionicLoading.hide();
+        ionicMaterialMotion.ripple();
+      });
 
       // sets the group name
       $scope.setGroup = () => {
