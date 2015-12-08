@@ -2,7 +2,7 @@
 
 angular.module('jm.i18next').config(['$i18nextProvider', function ($i18nextProvider) {
   $i18nextProvider.options = {
-    //lng: 'dev', // If not given, i18n will detect the browser language.
+    //lng: 'fi', // If not given, i18n will detect the browser language.
     useCookie: false,
     useLocalStorage: true,
     fallbackLng: 'en',
@@ -28,7 +28,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 }])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 }).constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
 })
@@ -918,7 +918,6 @@ angular.module('lukkari.controllers')
   $scope.closeGroupName = function () {
     $scope.modal.hide();
     if (typeof AdMob !== 'undefined') {
-      console.log('ad should show now again');
       AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
     }
   };

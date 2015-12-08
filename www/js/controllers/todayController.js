@@ -39,7 +39,6 @@ angular.module('lukkari.controllers')
       $scope.closeGroupName = () => {
         $scope.modal.hide();
         if (typeof AdMob !== 'undefined') {
-          console.log('ad should show now again');
           AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
         }
       };

@@ -35,7 +35,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 ])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 })
 .constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
