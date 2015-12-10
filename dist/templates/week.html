@@ -6,13 +6,13 @@
     </div>
   </ion-header-bar>
   <ion-content>
-    <ion-list ng-repeat="day in days" class="animate-ripple" ng-last-repeat="myList">
-      <!-- Eech day's list item -->
+    <ion-list>
+      <!-- MONDAY -->
       <ion-item class="item-divider">
-        <date></date>
+        <div date day="days[0].date"></div>
       </ion-item>
       <!-- Each lesson per day item -->
-      <ion-item ng-repeat="lesson in day.lessons" ng-if="day.lessons.length > 0">
+      <ion-item ng-repeat="lesson in days[0].lessons" ng-show="days[0].lessons.length > 0">
         <ion-list class="card calm-bg light">
           <time-range class="item item-divider time-range"></time-range>
           <ion-item>
@@ -26,10 +26,114 @@
           </ion-item>
         </ion-list>
       </ion-item>
-      <ion-item ng-if="day.lessons.length === 0">
+      <ion-item ng-show="days[0].lessons.length === 0">
         <div class="card calm-bg light padding">
           <div class="item item-text-wrap">
-            {{'week.no_lessons' | i18next}}
+            {{::'week.no_lessons' | i18next}}
+          </div>
+        </div>
+      </ion-item>
+      <!-- TUESDAY -->
+      <ion-item class="item-divider">
+        <div date day="days[1].date"></div>
+      </ion-item>
+      <!-- Each lesson per day item -->
+      <ion-item ng-repeat="lesson in days[1].lessons" ng-show="days[1].lessons.length > 0">
+        <ion-list class="card calm-bg light">
+          <time-range class="item item-divider time-range"></time-range>
+          <ion-item>
+            <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </a>
+          </ion-item>
+          <ion-item class="card-footer">
+            {{lesson.room}}
+          </ion-item>
+        </ion-list>
+      </ion-item>
+      <ion-item ng-show="days[1].lessons.length === 0">
+        <div class="card calm-bg light padding">
+          <div class="item item-text-wrap">
+            {{::'week.no_lessons' | i18next}}
+          </div>
+        </div>
+      </ion-item>
+      <!-- WEDNESDAY -->
+      <ion-item class="item-divider">
+        <div date day="days[2].date"></div>
+      </ion-item>
+      <!-- Each lesson per day item -->
+      <ion-item ng-repeat="lesson in days[2].lessons" ng-show="days[2].lessons.length > 0">
+        <ion-list class="card calm-bg light">
+          <time-range class="item item-divider time-range"></time-range>
+          <ion-item>
+            <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </a>
+          </ion-item>
+          <ion-item class="card-footer">
+            {{lesson.room}}
+          </ion-item>
+        </ion-list>
+      </ion-item>
+      <ion-item ng-show="days[2].lessons.length === 0">
+        <div class="card calm-bg light padding">
+          <div class="item item-text-wrap">
+            {{::'week.no_lessons' | i18next}}
+          </div>
+        </div>
+      </ion-item>
+      <!-- THURSDAY -->
+      <ion-item class="item-divider">
+        <div date day="days[3].date"></div>
+      </ion-item>
+      <!-- Each lesson per day item -->
+      <ion-item ng-repeat="lesson in days[3].lessons" ng-show="days[3].lessons.length > 0">
+        <ion-list class="card calm-bg light">
+          <time-range class="item item-divider time-range"></time-range>
+          <ion-item>
+            <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </a>
+          </ion-item>
+          <ion-item class="card-footer">
+            {{lesson.room}}
+          </ion-item>
+        </ion-list>
+      </ion-item>
+      <ion-item ng-show="days[3].lessons.length === 0">
+        <div class="card calm-bg light padding">
+          <div class="item item-text-wrap">
+            {{::'week.no_lessons' | i18next}}
+          </div>
+        </div>
+      </ion-item>
+      <!-- FRIDAY -->
+      <ion-item class="item-divider">
+        <div date day="days[4].date"></div>
+      </ion-item>
+      <!-- Each lesson per day item -->
+      <ion-item ng-repeat="lesson in days[4].lessons" ng-show="days[4].lessons.length > 0">
+        <ion-list class="card calm-bg light">
+          <time-range class="item item-divider time-range"></time-range>
+          <ion-item>
+            <a class="lessonlink" href="#/app/today/{{lesson.id}}">
+            {{lesson.name}}
+            <br/> {{lesson.code}}
+          </a>
+          </ion-item>
+          <ion-item class="card-footer">
+            {{lesson.room}}
+          </ion-item>
+        </ion-list>
+      </ion-item>
+      <ion-item ng-show="days[4].lessons.length === 0">
+        <div class="card calm-bg light padding">
+          <div class="item item-text-wrap">
+            {{::'week.no_lessons' | i18next}}
           </div>
         </div>
       </ion-item>

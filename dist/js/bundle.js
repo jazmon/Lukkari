@@ -220,7 +220,6 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       data: data,
       withCredentials: true,
       headers: {
-        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
         'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
@@ -569,7 +568,11 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
 
 angular.module('lukkari.directives').directive('date', [function () {
   return {
-    template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    restrict: 'A',
+    scope: {
+      day: '='
+    },
+    template: ['{{day.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
 }]);
 'use strict';
@@ -917,9 +920,9 @@ angular.module('lukkari.controllers')
   }).then(function (modal) {
     $scope.modal = modal;
     if (!$scope.groupInfo.group) {
-      if (typeof AdMob !== 'undefined') {
-        AdMob.hideBanner();
-      }
+      // if (typeof AdMob !== 'undefined') {
+      //   AdMob.hideBanner();
+      // }
       // open modal to set group name
       $scope.modal.show();
     }
@@ -970,6 +973,10 @@ angular.module('lukkari.controllers')
 
   $scope.lessons = [];
   if ($scope.groupInfo.group !== undefined && $scope.groupInfo.group !== null) {
+
+    if (typeof AdMob !== 'undefined') {
+      AdMob.showBanner(AdMob.AD_POSITION.BOTTOM_CENTER);
+    }
     Lessons.changeGroup({
       groupName: $scope.groupInfo.group,
       callback: function callback(success) {

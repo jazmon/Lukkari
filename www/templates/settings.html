@@ -4,12 +4,12 @@
       <!-- Group Change -->
       <ion-item>
         <h2 class="icon-left ion-android-create calm settings-title">
-          &nbsp;&nbsp;{{'settings.change_group' | i18next}}
+          &nbsp;&nbsp;{{::'settings.change_group' | i18next}}
         </h2>
         <form ng-submit="changeGroup()">
           <div class="list">
             <label class="item item-input item-floating-label">
-              <span class="input-label">{{'settings.group_name' | i18next}}</span>
+              <span class="input-label">{{::'settings.group_name' | i18next}}</span>
               <input type="text" placeholder="Group name" ng-model="groupInfo.group">
             </label>
             <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>
@@ -19,25 +19,25 @@
       <ion-item class="item-divider"></ion-item>
       <ion-item>
         <h2 class="icon-left ion-android-notifications calm settings-title">
-          &nbsp;&nbsp;{{'settings.notification_settings' | i18next}}
+          &nbsp;&nbsp;{{::'settings.notification_settings' | i18next}}
         </h2>
         <form ng-submit="setNotification()">
           <div class="list">
             <label class="item item-radio">
               <input type="radio" name="notification" ng-model="notification.use" value="true">
-              <div class="item-content"> {{'settings.use_notifications' | i18next}} </div><i class="radio-icon ion-checkmark"></i>
+              <div class="item-content"> {{::'settings.use_notifications' | i18next}} </div><i class="radio-icon ion-checkmark"></i>
             </label>
             <label class="item item-radio">
               <input type="radio" name="notification" ng-model="notification.use" value="false">
-              <div class="item-content"> {{'settings.dont_use_notifications' | i18next}} </div><i class="radio-icon ion-checkmark"></i>
+              <div class="item-content"> {{::'settings.dont_use_notifications' | i18next}} </div><i class="radio-icon ion-checkmark"></i>
             </label>
             <label class="item item-input item-select" ng-show="notification.use === 'true'">
-              <div class="input-label">{{'settings.notification_time' | i18next}}</div>
+              <div class="input-label">{{::'settings.notification_time' | i18next}}</div>
               <select ng-model="notification.time">
-                <option value="null">{{'settings.select_value' | i18next}}</option>
-                <option value="5">5 {{'settings.minutes' | i18next}}</option>
-                <option value="10" selected>10 {{'settings.minutes' | i18next}}</option>
-                <option value="15">15 {{'settings.minutes' | i18next}}</option>
+                <option value="null">{{::'settings.select_value' | i18next}}</option>
+                <option value="5">5 {{::'settings.minutes' | i18next}}</option>
+                <option value="10" selected>10 {{::'settings.minutes' | i18next}}</option>
+                <option value="15">15 {{::'settings.minutes' | i18next}}</option>
               </select>
             </label>
             <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>
@@ -47,32 +47,32 @@
       <ion-item class="item-divider"></ion-item>
       <ion-item>
         <h2 class="settings-title calm icon-left ion-android-calendar">
-          &nbsp;&nbsp;{{'settings.add_to_calendar' | i18next}}
+          &nbsp;&nbsp;{{::'settings.add_to_calendar' | i18next}}
         </h2>
         <ion-list>
-          <ion-item class="show-overflow"><i class="icon ion-android-alert assertive"></i> {{'settings.google_calendar_notification' | i18next}}</ion-item>
-          <ion-item class="show-overflow">{{'settings.bug_info' | i18next}}</ion-item>
+          <ion-item class="show-overflow"><i class="icon ion-android-alert assertive"></i> {{::'settings.google_calendar_notification' | i18next}}</ion-item>
+          <ion-item class="show-overflow">{{::'settings.bug_info' | i18next}}</ion-item>
         </ion-list>
         <form ng-submit="addToCalendar()">
           <label class="item item-input">
-            <span class="input-label">{{'settings.select_start_date' | i18next}}</span>
+            <span class="input-label">{{::'settings.select_start_date' | i18next}}</span>
             <ionic-datepicker input-obj="datepickerObject">
               <button type="button" class="button button-positive icon-left ion-android-calendar "> {{datepickerObject.inputDate | date:'dd.MM.yy'}}</button>
             </ionic-datepicker>
           </label>
           <label class="item item-input">
-            <span class="input-label">{{'settings.select_end_date' | i18next}}&nbsp;&nbsp;</span>
+            <span class="input-label">{{::'settings.select_end_date' | i18next}}&nbsp;&nbsp;</span>
             <ionic-datepicker input-obj="datepickerObject2">
               <button type="button" class="button button-positive icon-left ion-android-calendar "> {{datepickerObject2.inputDate | date:'dd.MM.yy'}}</button>
             </ionic-datepicker>
           </label>
           <label class="item item-input item-select">
-            <span class="input-label">{{'settings.set_reminder' | i18next}}</span>
+            <span class="input-label">{{::'settings.set_reminder' | i18next}}</span>
             <select ng-model="reminder.time">
-              <option value="null">{{'settings.no_reminder' | i18next}}</option>
-              <option value="5">5 {{'settings.minutes' | i18next}}</option>
-              <option selected value="10">10 {{'settings.minutes' | i18next}}</option>
-              <option value="15">15 {{'settings.minutes' | i18next}}</option>
+              <option value="null">{{::'settings.no_reminder' | i18next}}</option>
+              <option value="5">5 {{::'settings.minutes' | i18next}}</option>
+              <option selected value="10">10 {{::'settings.minutes' | i18next}}</option>
+              <option value="15">15 {{::'settings.minutes' | i18next}}</option>
             </select>
           </label>
           <button type="submit" class="button button-fab button-balanced icon ion-android-send button-fab-right"></button>

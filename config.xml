@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="xyz.atte.lukkari" version="1.2.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>TAMK lukkari</name>
-  <description>&#xD; A timetable app for TAMK students&#xD;
+  <description>&#xD; A timetable app for TAMK students&#xD;&#xD;
         </description>
-  <author email="atte.huhtakangas@cs.tamk.fi" href="http://ionicframework.com/">&#xD;
-            Atte Huhtakangas&#xD;
+  <author email="atte.huhtakangas@cs.tamk.fi" href="http://ionicframework.com/">&#xD;&#xD;
+            Atte Huhtakangas&#xD;&#xD;
         </author>
   <content src="index.html"/>
   <access origin="*"/>

@@ -49,7 +49,6 @@ angular.module('lukkari.services')
           data,
           withCredentials: true,
           headers: {
-            'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
             'accept-language': lang,
             'content-type': 'application/json',
             'cache-control': 'no-cache'

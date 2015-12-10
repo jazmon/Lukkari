@@ -28,7 +28,7 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 }])
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
-  url: 'https://opendata.tamk.fi/r1'
+  url: 'http://localhost:8100/api'
 }).constant('ApiKey', {
   key: 'Wu47zzKEPa7agvin47f5'
 })
@@ -220,7 +220,6 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       data: data,
       withCredentials: true,
       headers: {
-        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
         'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
@@ -569,7 +568,11 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
 
 angular.module('lukkari.directives').directive('date', [function () {
   return {
-    template: ['{{day.date.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    restrict: 'A',
+    scope: {
+      day: '='
+    },
+    template: ['{{day.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
   };
 }]);
 'use strict';
