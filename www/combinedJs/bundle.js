@@ -29,8 +29,6 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers', 'lukkari.services', '
 // http://blog.ionic.io/handling-cors-issues-in-ionic/
 .constant('ApiEndpoint', {
   url: 'http://localhost:8100/api'
-}).constant('ApiKey', {
-  key: 'Wu47zzKEPa7agvin47f5'
 })
 
 // menuContent-view is presented on the main view.
@@ -174,7 +172,7 @@ angular.module('lukkari.services').factory('FoodService', ['$http', function ($h
 }]);
 'use strict';
 
-angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey', function ($http, ApiEndpoint, MyDate, ApiKey) {
+angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', function ($http, ApiEndpoint, MyDate) {
   var lessons = [];
   var savedGroupName = undefined;
 
@@ -209,7 +207,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
     var data = {
       studentGroup: [savedGroupName]
     };
-    var url = [ApiEndpoint.url, '/reservation/search', '?apiKey=', ApiKey.key].join('');
+    var url = [ApiEndpoint.url, '/reservation/search'].join('');
     var lang = 'en';
     if (navigator.language.includes('fi')) {
       lang = 'fi';
@@ -220,6 +218,7 @@ angular.module('lukkari.services').factory('Lessons', ['$http', 'ApiEndpoint', '
       data: data,
       withCredentials: true,
       headers: {
+        'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
         'accept-language': lang,
         'content-type': 'application/json',
         'cache-control': 'no-cache'
@@ -366,6 +365,16 @@ angular.module('lukkari.services').factory('LocalStorage', [function () {
 
 angular.module('lukkari.services').factory('MyDate', [function () {
   var DAY_IN_MILLISECONDS = 86400000;
+  var dateFormatter = new Intl.DateTimeFormat(navigator.language, {
+    month: 'numeric',
+    day: 'numeric',
+    weekday: 'long'
+  });
+
+  var timeFormatter = new Intl.DateTimeFormat(navigator.language, {
+    hour: 'numeric',
+    minute: 'numeric'
+  });
 
   // returns the monday of the week date object of the given date
   function getMonday(d) {
@@ -380,18 +389,20 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     var years = _ref.years;
     var weekday = _ref.weekday;
 
-    var options = {
-      month: 'numeric',
-      day: 'numeric'
-    };
-    options.year = years ? 'numeric' : undefined;
-    options.weekday = weekday ? 'long' : undefined;
-    return new Intl.DateTimeFormat('fi-FI', options).format(day);
+    // options.year = years ? 'numeric' : undefined;
+    // options.weekday = weekday ? 'long' : undefined;
+    return dateFormatter.format(day);
   }
 
-  function getDayFromDay(_ref2) {
-    var currentDay = _ref2.currentDay;
-    var offsetDays = _ref2.offsetDays;
+  function getLocaleTime(_ref2) {
+    var time = _ref2.time;
+
+    return timeFormatter.format(time);
+  }
+
+  function getDayFromDay(_ref3) {
+    var currentDay = _ref3.currentDay;
+    var offsetDays = _ref3.offsetDays;
 
     // add desired amount of days to the millisecs
     var day = currentDay.getTime() + offsetDays * DAY_IN_MILLISECONDS;
@@ -409,11 +420,11 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     });
   }
 
-  function offsetDate(_ref3) {
-    var date = _ref3.date;
-    var minutes = _ref3.minutes;
-    var hours = _ref3.hours;
-    var seconds = _ref3.seconds;
+  function offsetDate(_ref4) {
+    var date = _ref4.date;
+    var minutes = _ref4.minutes;
+    var hours = _ref4.hours;
+    var seconds = _ref4.seconds;
 
     var d = date;
     // console.log('date: ' + date);
@@ -435,7 +446,8 @@ angular.module('lukkari.services').factory('MyDate', [function () {
     getDayFromToday: getDayFromToday,
     getLocaleDate: getLocaleDate,
     getDayFromDay: getDayFromDay,
-    offsetDate: offsetDate
+    offsetDate: offsetDate,
+    getLocaleTime: getLocaleTime
   };
 }]);
 'use strict';
@@ -511,7 +523,7 @@ angular.module('lukkari.services').factory('Notifications', ['LocalStorage', '$i
 }]);
 'use strict';
 
-angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'ApiKey', function ($http, ApiEndpoint, ApiKey) {
+angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', function ($http, ApiEndpoint) {
   function search(_ref) {
     var name = _ref.name;
     var studentGroups = _ref.studentGroups;
@@ -521,7 +533,7 @@ angular.module('lukkari.services').factory('Search', ['$http', 'ApiEndpoint', 'A
     var successCallback = _ref.successCallback;
     var errorCallback = _ref.errorCallback;
 
-    var url = [ApiEndpoint.url, '/realization/search', '?apiKey=', ApiKey.key].join('');
+    var url = [ApiEndpoint.url, '/realization/search'].join('');
 
     var data = {};
     if (name !== undefined) {
@@ -572,7 +584,19 @@ angular.module('lukkari.directives').directive('date', [function () {
     scope: {
       day: '='
     },
-    template: ['{{day.toLocaleDateString(', navigator.language, ',', ' {weekday: "short", day: "numeric", month:"numeric"})}}'].join('')
+    //TODO Try to replace with https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DateTimeFormat as it would be faster. Might need to do it in the controller though, so that we don't have to create the object multiple times
+
+    // template: function(scope, element, attr) {
+    //   console.log(element);
+    //   console.log(typeof element.formatdate);
+    //   if (typeof element.formatdate !== 'undefined') {
+    //     return formatter(attr.day);
+    //   } else {
+    //     console.log('formatter undefined');
+    //   }
+    // }
+
+    template: ['{{day}}'].join('')
   };
 }]);
 'use strict';
@@ -591,9 +615,25 @@ angular.module('lukkari.directives').directive('ngLastRepeat', ['$timeout', func
 }]);
 'use strict';
 
-angular.module('lukkari.directives').directive('timeRange', [function () {
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
+angular.module('lukkari.directives').directive('timeRange', ['MyDate', function (MyDate) {
   return {
-    template: ['{{lesson.startDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}', ' — ' + '{{lesson.endDay.toLocaleTimeString', '(', navigator.language, ', {hour:"numeric", minute:"numeric"})}}'].join('')
+    scope: {
+      startDate: '=start',
+      endDate: '=end'
+    },
+    template: function template(element, attrs) {
+      console.log(element);
+      console.log(attrs);
+      console.log(_typeof(attrs.start));
+      console.log(startDate);
+      MyDate.getLocaleTime(attrs.startDate);
+    }
+    // template: [MyDate.getLocaleTime(startDate),
+    //   ' — ' +
+    //   MyDate.getLocaleTime(endDate)
+    // ].join('')
   };
 }]);
 'use strict';
@@ -1037,6 +1077,11 @@ angular.module('lukkari.controllers')
       key: 'groupName'
     })
   };
+  $scope.formatter = new Intl.DateTimeFormat(navigator.language, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'numeric'
+  });
   $scope.currentDate = MyDate.getMonday(new Date());
   $scope.endDate = MyDate.getDayFromDay({
     currentDay: $scope.currentDate,
@@ -1054,6 +1099,10 @@ angular.module('lukkari.controllers')
     });
   }
 
+  $scope.formatDate = function (date) {
+    return $scope.formatter.format(date);
+  };
+
   // closes the group name dialog
   $scope.closeGroupName = function () {
     return $scope.modal.hide();
@@ -1069,6 +1118,8 @@ angular.module('lukkari.controllers')
     Lessons.getWeek({
       day: $scope.currentDate,
       callback: function callback(response) {
+        // hide the loading after done
+        $ionicLoading.hide();
         if (!response.success) {
           console.error('ERROR');
 
@@ -1080,16 +1131,17 @@ angular.module('lukkari.controllers')
           for (var i = 0; i < 5; i++) {
             var day = {};
             // get mon-fri
-            day.date = MyDate.getDayFromDay({
+            var date = MyDate.getDayFromDay({
               currentDay: $scope.currentDate,
               offsetDays: i
             });
+            day.date = $scope.formatDate(date);
             day.lessons = [];
             var lessonsLength = allLessons.length;
             for (var j = 0; j < lessonsLength; j++) {
               var lesson = allLessons[j];
               // if same day push into the day array
-              if (lesson.startDay.toDateString() === day.date.toDateString()) {
+              if (lesson.startDay.toDateString() === date.toDateString()) {
                 day.lessons.push(lesson);
               }
             }

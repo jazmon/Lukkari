@@ -10,6 +10,11 @@ angular.module('lukkari.controllers')
           key: 'groupName'
         })
       };
+      $scope.formatter = new Intl.DateTimeFormat(navigator.language, {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'numeric'
+      });
       $scope.currentDate = MyDate.getMonday(new Date());
       $scope.endDate = MyDate.getDayFromDay({
         currentDay: $scope.currentDate,
@@ -27,6 +32,10 @@ angular.module('lukkari.controllers')
         });
       }
 
+      $scope.formatDate = (date) => {
+        return $scope.formatter.format(date);
+      };
+
       // closes the group name dialog
       $scope.closeGroupName = () => $scope.modal.hide();
 
@@ -40,6 +49,8 @@ angular.module('lukkari.controllers')
         Lessons.getWeek({
           day: $scope.currentDate,
           callback: response => {
+            // hide the loading after done
+            $ionicLoading.hide();
             if (!response.success) {
               console.error('ERROR');
 
@@ -51,17 +62,18 @@ angular.module('lukkari.controllers')
               for (let i = 0; i < 5; i++) {
                 let day = {};
                 // get mon-fri
-                day.date = MyDate.getDayFromDay({
+                const date = MyDate.getDayFromDay({
                   currentDay: $scope.currentDate,
                   offsetDays: i
                 });
+                day.date = $scope.formatDate(date);
                 day.lessons = [];
                 const lessonsLength = allLessons.length;
                 for (let j = 0; j < lessonsLength; j++) {
                   const lesson = allLessons[j];
                   // if same day push into the day array
                   if (lesson.startDay.toDateString() ===
-                    day.date.toDateString()) {
+                    date.toDateString()) {
                     day.lessons.push(lesson);
                   }
                 }

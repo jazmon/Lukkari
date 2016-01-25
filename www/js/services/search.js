@@ -1,12 +1,11 @@
 angular.module('lukkari.services')
-  .factory('Search', ['$http', 'ApiEndpoint', 'ApiKey',
-    function($http, ApiEndpoint, ApiKey) {
+  .factory('Search', ['$http', 'ApiEndpoint',
+    function($http, ApiEndpoint) {
       function search({
         name, studentGroups, startDate, endDate, codes, successCallback,
         errorCallback
       }) {
-        const url = [ApiEndpoint.url, '/realization/search',
-          '?apiKey=', ApiKey.key
+        const url = [ApiEndpoint.url, '/realization/search'
         ].join('');
 
         let data = {};

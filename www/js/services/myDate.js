@@ -1,6 +1,16 @@
 angular.module('lukkari.services')
   .factory('MyDate', [function() {
     const DAY_IN_MILLISECONDS = 86400000;
+    const dateFormatter = new Intl.DateTimeFormat(navigator.language, {
+      month: 'numeric',
+      day: 'numeric',
+      weekday: 'long'
+    });
+
+    const timeFormatter = new Intl.DateTimeFormat(navigator.language, {
+      hour: 'numeric',
+      minute: 'numeric'
+    });
 
     // returns the monday of the week date object of the given date
     function getMonday(d) {
@@ -13,13 +23,15 @@ angular.module('lukkari.services')
     function getLocaleDate({
       day, years, weekday
     }) {
-      const options = {
-        month: 'numeric',
-        day: 'numeric'
-      };
-      options.year = years ? 'numeric' : undefined;
-      options.weekday = weekday ? 'long' : undefined;
-      return new Intl.DateTimeFormat('fi-FI', options).format(day);
+      // options.year = years ? 'numeric' : undefined;
+      // options.weekday = weekday ? 'long' : undefined;
+      return dateFormatter.format(day);
+    }
+
+    function getLocaleTime({
+      time
+    }) {
+      return timeFormatter.format(time);
     }
 
     function getDayFromDay({
@@ -64,6 +76,7 @@ angular.module('lukkari.services')
       getDayFromToday: getDayFromToday,
       getLocaleDate: getLocaleDate,
       getDayFromDay: getDayFromDay,
-      offsetDate: offsetDate
+      offsetDate: offsetDate,
+      getLocaleTime: getLocaleTime
     };
   }]);

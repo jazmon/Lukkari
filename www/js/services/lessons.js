@@ -1,6 +1,6 @@
 angular.module('lukkari.services')
-  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate', 'ApiKey',
-    function($http, ApiEndpoint, MyDate, ApiKey) {
+  .factory('Lessons', ['$http', 'ApiEndpoint', 'MyDate',
+    function($http, ApiEndpoint, MyDate) {
       let lessons = [];
       let savedGroupName;
 
@@ -36,9 +36,7 @@ angular.module('lukkari.services')
         const data = {
           studentGroup: [savedGroupName]
         };
-        const url = [ApiEndpoint.url, '/reservation/search',
-          '?apiKey=', ApiKey.key
-        ].join('');
+        const url = [ApiEndpoint.url, '/reservation/search'].join('');
         let lang = 'en';
         if (navigator.language.includes('fi')) {
           lang = 'fi';
@@ -49,6 +47,7 @@ angular.module('lukkari.services')
           data,
           withCredentials: true,
           headers: {
+            'authorization': 'Basic V3U0N3p6S0VQYTdhZ3ZpbjQ3ZjU6',
             'accept-language': lang,
             'content-type': 'application/json',
             'cache-control': 'no-cache'

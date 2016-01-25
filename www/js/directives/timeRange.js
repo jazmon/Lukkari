@@ -1,13 +1,20 @@
 angular.module('lukkari.directives')
-  .directive('timeRange', [function() {
+  .directive('timeRange', ['MyDate', function(MyDate) {
     return {
-      template: ['{{lesson.startDay.toLocaleTimeString',
-        '(', navigator.language,
-        ', {hour:"numeric", minute:"numeric"})}}',
-        ' — ' +
-        '{{lesson.endDay.toLocaleTimeString',
-        '(', navigator.language,
-        ', {hour:"numeric", minute:"numeric"})}}'
-      ].join('')
+      scope: {
+        startDate: '=start',
+        endDate: '=end'
+      },
+      template: function(element, attrs) {
+        console.log(element);
+        console.log(attrs);
+        console.log(typeof attrs.start);
+        console.log(startDate);
+        MyDate.getLocaleTime(attrs.startDate);
+      }
+      // template: [MyDate.getLocaleTime(startDate),
+      //   ' — ' +
+      //   MyDate.getLocaleTime(endDate)
+      // ].join('')
     };
   }]);

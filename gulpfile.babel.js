@@ -274,8 +274,19 @@ gulp.task('add-proxy', () => {
 // removes proxy for file:// hosting (device)
 gulp.task('remove-proxy', () => {
   return replace({
-    regex: 'http://localhost:8100/api',
+    regex: 'http://localhost:8100/api|http://192.168.0.100:8100/api',
     replacement: 'https://opendata.tamk.fi/r1',
+    paths: replaceFiles,
+    recursive: false,
+    silent: false,
+  });
+});
+
+// adds a proxy for http://192.168.0.100 hosting (livereload android)
+gulp.task('add-proxy-device', () => {
+  return replace({
+    regex: 'https://opendata.tamk.fi/r1|http://localhost:8100/api',
+    replacement: 'http://192.168.0.100:8100/api',
     paths: replaceFiles,
     recursive: false,
     silent: false,

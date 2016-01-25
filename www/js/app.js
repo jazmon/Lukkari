@@ -37,9 +37,6 @@ angular.module('lukkari', ['ionic', 'lukkari.controllers',
 .constant('ApiEndpoint', {
   url: 'http://localhost:8100/api'
 })
-.constant('ApiKey', {
-  key: 'Wu47zzKEPa7agvin47f5'
-})
 
 // menuContent-view is presented on the main view.
 .config(['$stateProvider', '$urlRouterProvider',
