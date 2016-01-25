@@ -77,12 +77,23 @@
     "select_start_date": "Select start date",
     "select_end_date": "Select end date",
     "set_reminder": "Set reminder",
-    "no_reminder": "No reminder"
+    "no_reminder": "No reminder",
+    "group_change_successful": "Group successfully changed!",
+    "calendar_name": "TAMK calendar",
+    "group": "Group(s): ",
+    "course_name": "Course: ",
+    "success_message": "Calendar events successfully added!",
+    "failure_message": "Failed to add calendar events!"
   },
   "today": {
     "no_lessons": "No lessons today"
   },
   "week": {
     "no_lessons": "No lessons"
+  },
+  "date_picker": {
+    "select_start_date": "Select start date",
+    "today": "Today",
+    "select_end_date": "Select end date"
   }
 }

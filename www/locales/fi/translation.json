@@ -77,12 +77,23 @@
     "select_start_date": "Valitse alku",
     "select_end_date": "Valitse loppu",
     "set_reminder": "Aseta muistutus",
-    "no_reminder": "Ei muistutusta"
+    "no_reminder": "Ei muistutusta",
+    "group_change_successful": "Ryhmä vaihdettu!",
+    "calendar_name": "TAMK kalenteri",
+    "group": "Ryhmä(t): ",
+    "course_name": "Kurssi: ",
+    "success_message": "Tapahtumat lisätty kalenteriin!",
+    "failure_message": "Tapahtumien lisäys kalenteriin epäonnistui!"
   },
   "today": {
     "no_lessons": "Ei oppitunteja tänään"
   },
   "week": {
     "no_lessons": "Ei oppitunteja"
+  },
+  "date_picker": {
+    "select_start_date": "Valitse aloituspäivä",
+    "today": "Tänään",
+    "select_end_date": "Valitse lopetuspäivä"
   }
 }
