@@ -1,7 +1,7 @@
 
 
 export default {
-  sourceDir: './www',
+  sourceDir: './www/',
   buildDir: './build/',
 
   styles: {
