@@ -1,15 +1,20 @@
-angular.module('lukkari.services')
-  .factory('LocalStorage', [function() {
-    function get({key}) {
-      return window.localStorage.getItem(key);
-    }
+'use strict';
 
-    function set({key, value}) {
-      return window.localStorage.setItem(key, value);
-    }
+function LocalStorage($http) {
+  const service = {};
 
-    return {
-      get: get,
-      set: set
-    };
-  }]);
+  service.get = function({key}) {
+    return window.localStorage.getItem(key);
+  };
+  service.get = function({key, value}) {
+    return window.localStorage.setItem(key, value);
+  };
+
+  return service;
+
+}
+
+export default {
+  name: 'LocalStorage',
+  fn: LocalStorage
+};
