@@ -1,0 +1,18 @@
+{
+  "ecmaVersion": 6,
+  "libs": [
+    "browser"
+  ],
+  "loadEagerly": [
+  ],
+  "dontLoad": [
+    "node_modules/**/*.js",
+    "bower_components/**/*.js"
+  ],
+  "plugins": {
+    "node": {},
+    "modules": {},
+    "angular": {},
+    "complete_strings": {}
+  }
+}
